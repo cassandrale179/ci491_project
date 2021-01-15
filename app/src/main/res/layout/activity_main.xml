@@ -6,18 +6,69 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/container" />
+    <LinearLayout
+            android:id="@+id/splashScreen"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="80dp"
+            android:layout_marginBottom="50dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:gravity="center"
+            >
 
-    <!-- This is where the bottom navigation bar style is -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/bottomNavigation"
-        android:layout_alignParentBottom="true"
-        android:background="@color/design_default_color_on_primary"
-        app:menu="@menu/menu"/>
+            <ImageView
+            android:id="@+id/logo"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@drawable/logo" />
+
+            <TextView
+                android:layout_marginTop="20dp"
+                android:id="@+id/caregiverTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="40dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="CAREGIVER"
+                android:textColor="@color/black"/>
+
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:id="@+id/caregiverSubTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="sans-serif-medium"
+                android:text="An app to give and get the care you need"
+                android:gravity="center"
+                android:textSize="20dp"
+                android:layout_marginBottom="40dp"
+                />
+
+            <Button
+                android:id="@+id/caregiverButton"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:textSize="25dp"
+                android:text="Caregiver >> "
+                android:textAllCaps="false"
+                />
+
+            <Button
+                android:id="@+id/caregiveeButton"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:textSize="25dp"
+                android:text="Caregivee >>"
+                android:textAllCaps="false"
+                />
+
+        </LinearLayout>
+
 
 </RelativeLayout>
+
