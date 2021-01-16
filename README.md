@@ -20,3 +20,10 @@ the name after that is the feature you are working on.
 git checkout -b ml-firebase
 ```
 - Open a Pull Request, so we can code-review together and merge it to the main branch.
+
+
+## 3. Tips and Resources
+- If you want to use the blue color in the design, add the following line to your button:
+```xml
+android:backgroundTint="@color/teal_700"
+```
