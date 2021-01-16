@@ -11,13 +11,16 @@ import android.widget.TextView;
 
 public class Identification extends AppCompatActivity {
 
+    public String tag;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_identification);
 
-        String tag = setTag();
+        /** Get the user role as caregiver or caregivee and display it */
+        tag = setTag();
         TextView textView = (TextView) findViewById(R.id.identificationLabel);
         String sourceString = "You identified as a <b>" + tag + "</b>. Login or Sign Up now to access the app!";
         textView.setText(Html.fromHtml(sourceString));
@@ -36,7 +39,6 @@ public class Identification extends AppCompatActivity {
 
     /** Navigation function to move to sign up page **/
     public void openSignUp(View v){
-        String tag = (String) v.getTag();
         Intent i = new Intent(Identification.this, Signup.class);
         i.putExtra("tag", tag);
         startActivity(i);
