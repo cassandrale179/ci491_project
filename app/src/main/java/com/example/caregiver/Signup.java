@@ -2,15 +2,16 @@ package com.example.caregiver;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import static java.util.Objects.isNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,6 +61,12 @@ public class Signup extends AppCompatActivity {
         }
     }
 
+    public void displayErrorMessage(String sourceString){
+        TextView textView = (TextView) findViewById(R.id.signupMessage);
+        textView.setText(Html.fromHtml(sourceString));
+        textView.setVisibility(View.VISIBLE);
+    }
+
     /**
      * This function takes in the text fields label on sign up page
      * @param v This is the view in activity_signup.xml
@@ -78,13 +85,16 @@ public class Signup extends AppCompatActivity {
         String confirm = confirmField.getText().toString();
 
         if (!confirm.equals(password)){
-            Log.d("error", "handle error");
+            displayErrorMessage("Password do not match");
+
         } else if (email.isEmpty() || password.isEmpty()) {
-            Log.d("error", "empty fields need to be fill");
-        }  else if (tag.isEmpty() || tag == null){
-            Log.d("no tag", "None");
+            displayErrorMessage("Email or password fields are empty.");
+
+        }  else if (tag == null){
+            displayErrorMessage("No role is assigned. Please quit app and try again.");
+
         } else {
-            Log.d("create", "creating user here!");
+            displayErrorMessage("");
             callFirebase(email, password, name);
         }
     }
@@ -110,9 +120,11 @@ public class Signup extends AppCompatActivity {
                 usersRef.updateChildren(userObject);
 
                 Log.w("success", "createUserWithEmail:success");
+
             } else {
                 // Sign in fails, display a message to the user.
                 Log.w("failure", "createUserWithEmail:failure", task.getException());
+                displayErrorMessage(task.getException().getMessage());
             }
         });
     }
