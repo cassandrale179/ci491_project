@@ -24,6 +24,6 @@ git checkout -b ml-firebase
 
 ## 3. Tips and Resources
 - If you want to use the blue color in the design, add the following line to your button:
-```xml
+```java
 android:backgroundTint="@color/teal_700"
 ```

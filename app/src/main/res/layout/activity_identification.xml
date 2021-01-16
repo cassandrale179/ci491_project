@@ -40,7 +40,8 @@
             android:textAllCaps="false"
             android:layout_marginTop="70dp"
             android:textSize="20dp"
-            android:backgroundTint="@color/teal_700"/>
+            android:backgroundTint="@color/teal_700"
+            android:onClick="openSignUp"/>
 
         <Button
             android:id="@+id/loginButton"
