@@ -21,6 +21,10 @@ public class Signup extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
     }
 
+    /**
+     * This function takes in the text fields label on sign up page
+     * @param v This is the view
+     */
     public void createUser(View v){
         EditText nameField = findViewById(R.id.userName);
         String name = nameField.getText().toString();
@@ -41,6 +45,12 @@ public class Signup extends AppCompatActivity {
             Log.d("error", "handle error");
         }
     }
+
+    /**
+     * This function make a call to Firebase Auth to sign up the user by email and password.
+     * @param email the user email to sign up
+     * @param password the password to sign up
+     */
 
     public void callFirebase(String email, String password){
         mAuth.createUserWithEmailAndPassword(email, password)
