@@ -18,14 +18,17 @@
             android:gravity="center"
             >
 
-            <ImageView
-            android:id="@+id/logo"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:layout_centerHorizontal="true"
-            app:srcCompat="@drawable/logo" />
+        <!-- Logo of Caregiver -->
+        <ImageView
+        android:id="@+id/logo"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/logo" />
 
-            <TextView
+
+        <!-- Title headings and subtitle -->
+        <TextView
                 android:layout_marginTop="20dp"
                 android:id="@+id/caregiverTitle"
                 android:layout_width="match_parent"
@@ -37,38 +40,42 @@
                 android:textColor="@color/black"/>
 
 
-            <TextView
-                android:layout_marginTop="10dp"
-                android:id="@+id/caregiverSubTitle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fontFamily="sans-serif-medium"
-                android:text="An app to give and get the care you need"
-                android:gravity="center"
-                android:textSize="20dp"
-                android:layout_marginBottom="40dp"
-                />
+        <TextView
+            android:layout_marginTop="10dp"
+            android:id="@+id/caregiverSubTitle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-medium"
+            android:text="An app to give and get the care you need"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:layout_marginBottom="40dp"
+            />
 
-            <Button
-                android:id="@+id/caregiverButton"
-                android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:textSize="25dp"
-                android:text="Caregiver >> "
-                android:textAllCaps="false"
-                />
 
-            <Button
-                android:id="@+id/caregiveeButton"
-                android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:textSize="25dp"
-                android:text="Caregivee >>"
-                android:textAllCaps="false"
-                />
+        <!-- Login button for carevier and caregivee -->
+        <Button
+            android:id="@+id/caregiverButton"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:textSize="25dp"
+            android:text="Caregiver >> "
+            android:textAllCaps="false"
+            android:onClick="openIdentification"
+            android:tag="caregiver"
+            />
+
+        <Button
+            android:id="@+id/caregiveeButton"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:textSize="25dp"
+            android:text="Caregivee >>"
+            android:textAllCaps="false"
+            android:onClick="openIdentification"
+            android:tag="caregivee"
+            />
 
         </LinearLayout>
-
-
 </RelativeLayout>
 
