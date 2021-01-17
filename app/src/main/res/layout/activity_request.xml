@@ -11,10 +11,10 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="80dp"
         android:layout_marginBottom="50dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
+        android:layout_marginTop="80dp"
         android:gravity="center"
         >
 
@@ -71,7 +71,8 @@
         android:textAllCaps="false"
         android:layout_marginTop="10dp"
         android:textSize="20dp"
-        android:backgroundTint="@color/teal_700" />
+        android:backgroundTint="@color/teal_700"
+        android:onClick="openDialogBox"/>
 
         <Button
         android:id="@+id/skipButton"
