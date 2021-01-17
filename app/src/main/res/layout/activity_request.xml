@@ -49,6 +49,15 @@
         android:layout_marginBottom="10dp"
         />
 
+        <TextView
+        android:id="@+id/requestMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:textStyle="italic"
+        android:layout_marginBottom="20dp"
+        android:textColor="@color/red" />
+
         <EditText
         android:id="@+id/requestEmail"
         android:layout_width="match_parent"
