@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
@@ -17,6 +18,15 @@ public class Request extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request);
+    }
+
+    /**
+     * This is the onClick function for the Skip button, which transition user to Home Page
+     * @param v The request activity view
+     */
+    public void transitionToDashboard(View v){
+        Intent i = new Intent(Request.this, Dashboard.class);
+        startActivity(i);
     }
 
     /**

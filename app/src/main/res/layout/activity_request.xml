@@ -90,7 +90,8 @@
         android:text="Skip"
         android:textAllCaps="false"
         android:layout_marginTop="10dp"
-        android:textSize="20dp" />
+        android:textSize="20dp"
+            android:onClick="transitionToDashboard"/>
 
     </LinearLayout>
 </RelativeLayout>
