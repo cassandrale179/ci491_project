@@ -8,6 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.kontakt.sdk.android.ble.manager.ProximityManager;
+import com.kontakt.sdk.android.ble.manager.listeners.EddystoneListener;
+import com.kontakt.sdk.android.ble.manager.listeners.IBeaconListener;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link BeaconFragment#newInstance} factory method to
