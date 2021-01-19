@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.database.FirebaseDatabase;
 import com.kontakt.sdk.android.ble.connection.OnServiceReadyListener;
 import com.kontakt.sdk.android.ble.manager.ProximityManager;
 import com.kontakt.sdk.android.ble.manager.ProximityManagerFactory;
@@ -17,6 +16,7 @@ import com.kontakt.sdk.android.ble.manager.listeners.EddystoneListener;
 import com.kontakt.sdk.android.ble.manager.listeners.IBeaconListener;
 import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleEddystoneListener;
 import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleIBeaconListener;
+import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleScanStatusListener;
 import com.kontakt.sdk.android.common.KontaktSDK;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.profile.IBeaconRegion;
@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         proximityManager = ProximityManagerFactory.create(this);
         proximityManager.setIBeaconListener(createIBeaconListener());
         proximityManager.setEddystoneListener(createEddystoneListener());
+        proximityManager.setScanStatusListener((createSimpleScanStatusListener()));
     }
 
     @Override
@@ -71,6 +72,20 @@ public class MainActivity extends AppCompatActivity {
                 proximityManager.startScanning();
             }
         });
+    }
+
+    private SimpleScanStatusListener createSimpleScanStatusListener() {
+        return new SimpleScanStatusListener() {
+            @Override
+            public void onScanStart() {
+                Log.i("Sample", "Scanning started");
+            }
+
+            @Override
+            public void onScanStop() {
+                Log.i("Sample", "Scanning stopped");
+            }
+        };
     }
 
     private IBeaconListener createIBeaconListener() {
