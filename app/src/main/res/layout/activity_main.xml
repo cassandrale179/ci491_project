@@ -20,11 +20,11 @@
 
         <!-- Logo of Caregiver -->
         <ImageView
-        android:id="@+id/logo"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_centerHorizontal="true"
-        app:srcCompat="@drawable/logo" />
+            android:id="@+id/logo"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@drawable/logo" />
 
 
         <!-- Title headings and subtitle -->

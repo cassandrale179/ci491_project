@@ -23,7 +23,9 @@ git checkout -b ml-firebase
 
 
 ## 3. Tips and Resources
-- If you want to use the blue color in the design, add the following line to your button:
-```xml
+- If you want to use the blue color in the design, it is the @color/teal_700:
+```java
 android:backgroundTint="@color/teal_700"
 ```
+
+- If you ever run into this error when writing to Firebase (com.google.firebase.database.DatabaseException: No properties to serialize found on class), make sure your class have public variables or getter/setter. (https://stackoverflow.com/questions/37743661/firebase-no-properties-to-serialize-found-on-class)
