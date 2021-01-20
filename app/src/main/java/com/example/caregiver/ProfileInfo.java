@@ -62,9 +62,6 @@ public class ProfileInfo extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
 
-        TextView textView = view.findViewById(R.id.text_view);
-        textView.setText("Profile Info");
-
         return view;
     }
 }
