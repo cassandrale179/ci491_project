@@ -1,6 +1,7 @@
 package com.example.caregiver;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -118,6 +119,9 @@ public class Signup extends AppCompatActivity {
 
                 userObject.put(user.getUid(), new User(name, email, tag));
                 usersRef.updateChildren(userObject);
+
+                Intent i = new Intent(Signup.this, Request.class);
+                startActivity(i);
 
                 Log.w("success", "createUserWithEmail:success");
 
