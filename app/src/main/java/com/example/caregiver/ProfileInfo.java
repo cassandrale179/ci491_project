@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 /**
@@ -56,12 +57,32 @@ public class ProfileInfo extends Fragment {
         }
     }
 
+    /**
+     * This function set the hint text on user profile
+     * and display their current name, email and password.
+     */
+    public void displayUserInfo(View view){
+        EditText nameField = (EditText) view.findViewById(R.id.profileName);
+        nameField.setHint("HintFirst HintLast");
+
+        EditText emailField = (EditText) view.findViewById(R.id.profileEmail);
+        emailField.setHint("Email");
+
+        EditText oldPasswordField = (EditText) view.findViewById(R.id.profileOldPassword);
+
+        EditText newPasswordField =  (EditText) view.findViewById(R.id.profileNewPassword);
+        newPasswordField.setHint("New Password");
+
+        EditText newConfirmField = (EditText) view.findViewById(R.id.profileNewPassword2);
+        newConfirmField.setHint("Confirm Password");
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
-
+        displayUserInfo(view);
         return view;
     }
 }
