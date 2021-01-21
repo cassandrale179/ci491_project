@@ -60,7 +60,6 @@ public class ProfileRequest extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         View view = inflater.inflate(R.layout.fragment_profile_request, container, false);
         TextView textView = view.findViewById(R.id.text_view);
         textView.setText("Request Page");

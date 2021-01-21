@@ -20,18 +20,18 @@
 
         <ImageView
             android:id="@+id/profileImage"
-            android:layout_width="183dp"
-            android:layout_height="168dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             app:srcCompat="@drawable/identification_screen_logo" />
         <TextView
             android:id="@+id/profileTextLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="View your profile below."
+            android:text="View or edit your profile below."
             tools:layout_editor_absoluteX="174dp"
             tools:layout_editor_absoluteY="130dp"
             android:gravity="center"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:layout_marginBottom="10dp"
             />
 
