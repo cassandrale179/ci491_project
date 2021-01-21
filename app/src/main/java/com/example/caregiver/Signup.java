@@ -22,9 +22,9 @@ public class Signup extends AppCompatActivity {
 
 
     public String tag; /* user is caregiver or caregivee */
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseAuth mAuth;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference ref = database.getReference("");
+    private final DatabaseReference ref = database.getReference("");
 
     /** Initialize a user class to store their info **/
     public class User {
@@ -45,6 +45,7 @@ public class Signup extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_signup);
         tag = getTag();
     }
@@ -54,8 +55,7 @@ public class Signup extends AppCompatActivity {
         Log.d("this should be call!", "getTag");
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            String tag = extras.getString("tag");
-            return tag;
+            return extras.getString("tag");
         } else {
             Log.d("no tag found", "None");
             return "None";
