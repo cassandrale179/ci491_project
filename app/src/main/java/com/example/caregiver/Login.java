@@ -58,7 +58,7 @@ public class Login extends AppCompatActivity {
     }
 
     /**
-     * Navigates to Dashboard after successful signin thru Firebase
+     * Navigates to Dashboard after successful sign in through Firebase
      */
     private void navigateToDashboard(){
         Intent i = new Intent(Login.this, Dashboard.class);
