@@ -43,4 +43,11 @@ public class Identification extends AppCompatActivity {
         i.putExtra("tag", tag);
         startActivity(i);
     }
+
+    /** Navigation function to move to login page **/
+    public void openLogIn(View v){
+        Intent i = new Intent(Identification.this, Login.class);
+        i.putExtra("tag", tag);
+        startActivity(i);
+    }
 }
