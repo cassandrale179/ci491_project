@@ -1,6 +1,8 @@
 package com.example.caregiver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -46,9 +48,13 @@ public class Login extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        Log.d("success","signInWithEmail:success");
+                        Log.w("success","signInWithEmail:success");
                         // move to dashboard
-                        navigateToDashboard();
+                        if ( mAuth.getCurrentUser() != null ) {
+                            navigateToDashboard(mAuth.getCurrentUser().getUid());
+                        } else {
+                            Log.w("failure", "Can't find user id");
+                        }
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w("failure", "signInWithEmail:failure", task.getException());
@@ -60,7 +66,12 @@ public class Login extends AppCompatActivity {
     /**
      * Navigates to Dashboard after successful sign in through Firebase
      */
-    private void navigateToDashboard(){
+    private void navigateToDashboard(String userId){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("userId", userId);
+        editor.apply();
+
         Intent i = new Intent(Login.this, Dashboard.class);
         startActivity(i);
     }
