@@ -13,7 +13,6 @@ public class Identification extends AppCompatActivity {
 
     public String tag;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

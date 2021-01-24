@@ -32,7 +32,7 @@
             tools:layout_editor_absoluteY="130dp"
             android:gravity="center"
             android:textSize="15dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="5dp"
             />
 
         <TextView
