@@ -48,9 +48,9 @@ public class Login extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        Log.d("success","signInWithEmail:success");
+                        Log.w("success","signInWithEmail:success");
                         // move to dashboard
-                        if ( mAuth.getCurrentUser() != null) {
+                        if ( mAuth.getCurrentUser() != null ) {
                             navigateToDashboard(mAuth.getCurrentUser().getUid());
                         } else {
                             Log.w("failure", "Can't find user id");

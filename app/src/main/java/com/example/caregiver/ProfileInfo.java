@@ -11,13 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 /**
@@ -34,9 +32,6 @@ public class ProfileInfo extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment ProfileInfo.
      */
     // TODO: Rename and change types and number of parameters
@@ -51,14 +46,15 @@ public class ProfileInfo extends Fragment {
     }
 
     /**
-     * This function set the hint text on user profile
-     * and display their current name, email and password.
+     * This function populate the text fields on the profile info page
+     * @param view the view of the profile info page
+     * @param userId the user id of the currently logged in user
      */
     public void displayUserInfo(View view, String userId){
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference ref = database.child("users/" + userId);
 
-        // Attach a listener to read the data at our posts reference
+        // Attach a listener to read data of user (name, email, id)
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -90,7 +86,6 @@ public class ProfileInfo extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Get current userId
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String userId = preferences.getString("userId", "");
