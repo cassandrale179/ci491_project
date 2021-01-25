@@ -66,9 +66,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private class ProfileAdapter extends FragmentPagerAdapter{
-        ArrayList<String> arrayList = new ArrayList<>();
-        List<Fragment> fragmentList = new ArrayList<>();
-
         public ProfileAdapter(@NonNull FragmentManager fm){
             super(fm);
         }
