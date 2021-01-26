@@ -9,6 +9,11 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.FirebaseDatabase;
+import com.kontakt.sdk.android.ble.configuration.ActivityCheckConfiguration;
+import com.kontakt.sdk.android.ble.configuration.ForceScanConfiguration;
+import com.kontakt.sdk.android.ble.configuration.ScanMode;
+import com.kontakt.sdk.android.ble.configuration.ScanPeriod;
 import com.kontakt.sdk.android.ble.connection.OnServiceReadyListener;
 import com.kontakt.sdk.android.ble.manager.ProximityManager;
 import com.kontakt.sdk.android.ble.manager.ProximityManagerFactory;
@@ -17,11 +22,16 @@ import com.kontakt.sdk.android.ble.manager.listeners.IBeaconListener;
 import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleEddystoneListener;
 import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleIBeaconListener;
 import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleScanStatusListener;
+import com.kontakt.sdk.android.ble.rssi.RssiCalculators;
+import com.kontakt.sdk.android.ble.spec.EddystoneFrameType;
 import com.kontakt.sdk.android.common.KontaktSDK;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.profile.IBeaconRegion;
 import com.kontakt.sdk.android.common.profile.IEddystoneDevice;
 import com.kontakt.sdk.android.common.profile.IEddystoneNamespace;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,9 +51,25 @@ public class MainActivity extends AppCompatActivity {
         KontaktSDK.initialize("clYwuEPnEpprKHUBKIwTudpdiEqMgMQq");
 
         proximityManager = ProximityManagerFactory.create(this);
+        configureProximityManager();
         proximityManager.setIBeaconListener(createIBeaconListener());
         proximityManager.setEddystoneListener(createEddystoneListener());
         proximityManager.setScanStatusListener((createSimpleScanStatusListener()));
+    }
+
+    private void configureProximityManager() {
+        proximityManager.configuration()
+                .scanMode(ScanMode.BALANCED)
+                .scanPeriod(ScanPeriod.RANGING)
+                .activityCheckConfiguration(ActivityCheckConfiguration.DISABLED)
+                .forceScanConfiguration(ForceScanConfiguration.DISABLED)
+                .deviceUpdateCallbackInterval(TimeUnit.SECONDS.toMillis(5))
+                .rssiCalculator(RssiCalculators.DEFAULT)
+                .cacheFileName("Example")
+                .resolveShuffledInterval(3)
+                .monitoringEnabled(true)
+                .monitoringSyncInterval(10)
+                .eddystoneFrameTypes(Arrays.asList(EddystoneFrameType.UID, EddystoneFrameType.URL));
     }
 
     @Override
@@ -92,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         return new SimpleIBeaconListener() {
             @Override
             public void onIBeaconDiscovered(IBeaconDevice ibeacon, IBeaconRegion region) {
-                Log.i("Sample", "IBeacon discovered: " + ibeacon.toString());
+                Log.i("Sample", "IBeacon discovered: " + ibeacon.getName() + " " + ibeacon.toString());
             }
         };
     }
@@ -101,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         return new SimpleEddystoneListener() {
             @Override
             public void onEddystoneDiscovered(IEddystoneDevice eddystone, IEddystoneNamespace namespace) {
-                Log.i("Sample", "Eddystone discovered: " + eddystone.toString());
+                Log.i("Sample", "Eddystone discovered: " + eddystone.getName() + " " + eddystone.toString());
             }
         };
     }
