@@ -1,6 +1,7 @@
 package com.example.caregiver;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -47,18 +48,16 @@ public class ProfileInfo extends Fragment{
     public String currentEmail;
     public String currentName;
 
+    // Color for error and success message
+    int red;
+    int green;
 
     public ProfileInfo() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     * @return A new instance of fragment ProfileInfo.
-     */
     // TODO: Rename and change types and number of parameters
-    public static ProfileInfo newInstance(String param1, String param2) {
+    public static ProfileInfo newInstance() {
         ProfileInfo fragment = new ProfileInfo();
         return fragment;
     }
@@ -117,17 +116,21 @@ public class ProfileInfo extends Fragment{
         confirmPasswordField = (EditText) view.findViewById(R.id.profileNewPassword2);
         errorMessage =  (TextView) view.findViewById(R.id.profileInfoMessage);
 
+        // Set color
+        red = view.getResources().getColor(R.color.red);
+        green = view.getResources().getColor(R.color.green);
+
         return view;
     }
 
     /**
      * Render the error message field.
-     * @param v The profile info view
      * @param sourceString The text message to be displayed
      */
-    public void displayErrorMessage(String sourceString){
+    public void displayMessage(String sourceString, int color){
         errorMessage.setText(Html.fromHtml(sourceString));
         errorMessage.setVisibility(View.VISIBLE);
+        errorMessage.setTextColor(color);
     }
 
     /**
@@ -138,15 +141,15 @@ public class ProfileInfo extends Fragment{
      */
     public void handleChangePassword(String oldPassword, String newPassword, String confirmPassword){
         if (oldPassword.isEmpty() || oldPassword == null) {
-            displayErrorMessage("You need to input your old password first.");
+            displayMessage("You need to input your old password first.", red);
             return;
         }
         if (!newPassword.equals(confirmPassword)){
-            displayErrorMessage("Your new and confirm password must be the same.");
+            displayMessage("Your new and confirm password must be the same.", red);
             return;
         }
         if (currentEmail == null || currentEmail.isEmpty()) {
-            displayErrorMessage("Unable to get your current email");
+            displayMessage("Unable to get your current email", red);
             return;
         }
 
@@ -162,14 +165,14 @@ public class ProfileInfo extends Fragment{
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Log.d("success", "Password updated");
+                                displayMessage("Successfully change your password", green);
                             } else {
-                                displayErrorMessage("Cannot update password.");
+                                displayMessage("Cannot update password.", red);
                             }
                         }
                     });
                 } else {
-                    displayErrorMessage("Your old password is not correct.");
+                    displayMessage("Your old password is not correct.", red);
                 }
             }
         });
