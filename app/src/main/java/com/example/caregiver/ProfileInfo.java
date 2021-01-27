@@ -262,5 +262,4 @@ public class ProfileInfo extends Fragment {
             askForOldPassword();
         }
     };
-
 }
