@@ -66,8 +66,6 @@ public class ProfileInfo extends Fragment {
         // Required empty public constructor
     }
 
-
-
     // TODO: Rename and change types and number of parameters
     public static ProfileInfo newInstance() {
         ProfileInfo fragment = new ProfileInfo();
@@ -186,6 +184,8 @@ public class ProfileInfo extends Fragment {
                 if (task.isSuccessful()) {
                     displayMessage("Successfully change your email", green);
                     rootRef.child("users").child(user.getUid()).child("email").setValue(email);
+                    currentEmail = email;
+                    emailField.setHint(currentEmail);
                 } else {
                     displayMessage("Cannot update email.", red);
                 }
@@ -198,7 +198,7 @@ public class ProfileInfo extends Fragment {
      */
     public void askForOldPassword() {
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setMessage("Please input your old password below.");
+        alert.setMessage("Please input your current password below.");
         final EditText input = new EditText(getActivity());
         input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         alert.setView(input);
@@ -234,15 +234,16 @@ public class ProfileInfo extends Fragment {
      */
     public void updateUserInformation(@NonNull FirebaseUser user) {
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-
         String name = nameField.getText().toString();
         String email = emailField.getText().toString();
         String newPassword = newPasswordField.getText().toString();
         String confirmPassword = confirmPasswordField.getText().toString();
 
         if (name != null && !name.isEmpty()) {
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.child("users").child(user.getUid()).child("name").setValue(name);
+            currentName = name;
+            nameField.setHint(currentName);
         }
         if (!email.isEmpty()) {
             changeEmail(user, email);
