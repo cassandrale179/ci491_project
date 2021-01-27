@@ -41,6 +41,7 @@ public class ProfileInfo extends Fragment{
     public EditText oldPasswordField;
     public EditText newPasswordField;
     public EditText confirmPasswordField;
+    public TextView errorMessage;
 
     // Variables pointing to the user
     public String currentEmail;
@@ -114,6 +115,7 @@ public class ProfileInfo extends Fragment{
         oldPasswordField = (EditText) view.findViewById(R.id.profileOldPassword);
         newPasswordField = (EditText) view.findViewById(R.id.profileNewPassword);
         confirmPasswordField = (EditText) view.findViewById(R.id.profileNewPassword2);
+        errorMessage =  (TextView) view.findViewById(R.id.profileInfoMessage);
 
         return view;
     }
@@ -123,50 +125,54 @@ public class ProfileInfo extends Fragment{
      * @param v The profile info view
      * @param sourceString The text message to be displayed
      */
-    public void displayErrorMessage(View v, String sourceString){
-        TextView textView = (TextView) v.findViewById(R.id.profileInfoMessage);
-        textView.setText(Html.fromHtml(sourceString));
-        textView.setVisibility(View.VISIBLE);
+    public void displayErrorMessage(String sourceString){
+        errorMessage.setText(Html.fromHtml(sourceString));
+        errorMessage.setVisibility(View.VISIBLE);
     }
 
     /**
      * This function will be called if user want to change password
-     * @param v The profile info view
      * @param oldPassword User current password
      * @param newPassword User new password
      * @param confirmPassword User new password (should be same as newPassword)
      */
-    public void handleChangePassword(View v, String oldPassword, String newPassword, String confirmPassword){
-        if (oldPassword.isEmpty() || oldPassword == null){
-            displayErrorMessage(v,"You need to input your old password first!");
-        } else if (!newPassword.equals(confirmPassword)){
-            displayErrorMessage(v,"Your new and confirm password must be the same.");
-        } else {
-            // Re-authenticate user to ensure they enter the correct old password
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            AuthCredential credential = EmailAuthProvider
-                    .getCredential(currentEmail, oldPassword);
-            // Prompt the user to re-provide their sign-in credentials
-            user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d("success", "Password updated");
-                                } else {
-                                    displayErrorMessage(v, "Cannot update password.");
-                                }
-                            }
-                        });
-                    } else {
-                        displayErrorMessage(v, "Account cannot be authenticated.");
-                    }
-                }
-            });
+    public void handleChangePassword(String oldPassword, String newPassword, String confirmPassword){
+        if (oldPassword.isEmpty() || oldPassword == null) {
+            displayErrorMessage("You need to input your old password first.");
+            return;
         }
+        if (!newPassword.equals(confirmPassword)){
+            displayErrorMessage("Your new and confirm password must be the same.");
+            return;
+        }
+        if (currentEmail == null || currentEmail.isEmpty()) {
+            displayErrorMessage("Unable to get your current email");
+            return;
+        }
+
+        // Re-authenticate user to ensure they enter the correct old password
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        AuthCredential credential = EmailAuthProvider
+                .getCredential(currentEmail, oldPassword);
+        user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d("success", "Password updated");
+                            } else {
+                                displayErrorMessage("Cannot update password.");
+                            }
+                        }
+                    });
+                } else {
+                    displayErrorMessage("Your old password is not correct.");
+                }
+            }
+        });
     }
 
     /**
@@ -180,17 +186,14 @@ public class ProfileInfo extends Fragment{
             String oldPassword = oldPasswordField.getText().toString();
             String newPassword = newPasswordField.getText().toString();
             String confirmPassword = confirmPasswordField.getText().toString();
-
-            if (name != null){
-                currentName = name;
-                Log.d("newname", currentName);
-            }
-            if (email != null){
-                currentEmail = email;
-                Log.d("newemail", currentEmail);
-            }
             if (newPassword != null && confirmPassword != null){
-                handleChangePassword(v, oldPassword, newPassword, confirmPassword);
+                handleChangePassword(oldPassword, newPassword, confirmPassword);
+            }
+            if (name != null && !name.isEmpty()){
+                currentName = name;
+            }
+            if (email != null && !email.isEmpty()){
+                currentEmail = email;
             }
         }
     };
