@@ -35,13 +35,14 @@
             />
 
         <TextView
-            android:id="@+id/profileMessage"
+            android:id="@+id/profileInfoMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="invisible"
             android:textStyle="italic"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:textColor="@color/red" />
+
 
         <EditText
             android:id="@+id/profileName"
@@ -93,6 +94,7 @@
                 android:padding="10dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginRight="10dp"
+                android:hint="New Password"
                 android:layout_weight="0.5"/>
 
             <EditText
@@ -104,6 +106,7 @@
                 android:background="@color/gray"
                 android:padding="10dp"
                 android:layout_marginBottom="10dp"
+                android:hint="Confirm Password"
                 android:layout_weight="0.5"/>
         </LinearLayout>
 
@@ -113,7 +116,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/requestButton"
+            android:id="@+id/profileUpdateButton"
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:text="Update"
@@ -122,10 +125,10 @@
             android:textSize="20dp"
             android:backgroundTint="@color/teal_700"
             android:layout_marginRight="10dp"
-            android:layout_weight="0.5"/>
+            android:layout_weight="0.5" />
 
         <Button
-            android:id="@+id/skipButton"
+            android:id="@+id/logOutButton"
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:text="Log Out"

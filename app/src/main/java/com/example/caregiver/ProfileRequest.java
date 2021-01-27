@@ -74,7 +74,6 @@ public class ProfileRequest extends Fragment {
             }
         });
 
-
         return view;
     }
 }

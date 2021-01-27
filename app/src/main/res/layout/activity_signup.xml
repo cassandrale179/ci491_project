@@ -106,16 +106,27 @@
         android:padding="10dp"
         android:layout_marginBottom="10dp"/>
 
-    <Button
-        android:id="@+id/signupButton"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:text="@string/sign_up"
-        android:textAllCaps="false"
-        android:layout_marginTop="10dp"
-        android:textSize="20dp"
-        android:backgroundTint="@color/teal_700"
-        android:onClick="createUser" />
+<!--    <Button-->
+<!--        android:id="@+id/signupButton"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="70dp"-->
+<!--        android:text="@string/sign_up"-->
+<!--        android:textAllCaps="false"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:textSize="20dp"-->
+<!--        android:backgroundTint="@color/teal_700"-->
+<!--        android:onClick="createUser" />-->
+
+        <Button
+            android:id="@+id/signupButton"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:text="@string/sign_up"
+            android:textAllCaps="false"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            android:backgroundTint="@color/teal_700"
+             />
 
     </LinearLayout>
 
