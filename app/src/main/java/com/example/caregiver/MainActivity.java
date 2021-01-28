@@ -40,11 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
 
-    public static Intent createIntent(@NonNull Context context) {
-        return new Intent(context, MainActivity.class);
-    }
-    private Intent serviceIntent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +51,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
         
         //TODO: How do we get API key from user?
-        KontaktSDK.initialize("clYwuEPnEpprKHUBKIwTudpdiEqMgMQq");
-
-        serviceIntent = createIntent(this);
-        startService(serviceIntent);
-
     }
 
 

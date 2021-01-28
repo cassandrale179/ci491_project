@@ -1,12 +1,37 @@
 package com.example.caregiver;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.kontakt.sdk.android.common.KontaktSDK;
+import com.kontakt.sdk.android.ble.configuration.ActivityCheckConfiguration;
+import com.kontakt.sdk.android.ble.configuration.ForceScanConfiguration;
+import com.kontakt.sdk.android.ble.configuration.ScanMode;
+import com.kontakt.sdk.android.ble.configuration.ScanPeriod;
+import com.kontakt.sdk.android.ble.connection.OnServiceReadyListener;
+import com.kontakt.sdk.android.ble.manager.ProximityManager;
+import com.kontakt.sdk.android.ble.manager.ProximityManagerFactory;
+import com.kontakt.sdk.android.ble.manager.listeners.EddystoneListener;
+import com.kontakt.sdk.android.ble.manager.listeners.IBeaconListener;
+import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleEddystoneListener;
+import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleIBeaconListener;
+import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleScanStatusListener;
+import com.kontakt.sdk.android.ble.rssi.RssiCalculators;
+import com.kontakt.sdk.android.ble.spec.EddystoneFrameType;
+import com.kontakt.sdk.android.common.KontaktSDK;
+import com.kontakt.sdk.android.common.profile.IBeaconDevice;
+import com.kontakt.sdk.android.common.profile.IBeaconRegion;
+import com.kontakt.sdk.android.common.profile.IEddystoneDevice;
+import com.kontakt.sdk.android.common.profile.IEddystoneNamespace;
+import com.example.caregiver.services.BeaconScanService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +61,9 @@ public class HomeFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment HomeFragment.
      */
+
+//    private Intent serviceIntent;
+
     // TODO: Rename and change types and number of parameters
     public static HomeFragment newInstance(String param1, String param2) {
         HomeFragment fragment = new HomeFragment();
@@ -53,6 +81,8 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        getActivity().startService(new Intent(getActivity(),BeaconScanService.class));
     }
 
     @Override

@@ -32,6 +32,7 @@ import com.kontakt.sdk.android.ble.manager.listeners.SpaceListener;
 import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleIBeaconListener;
 import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleScanStatusListener;
 import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleSpaceListener;
+import com.kontakt.sdk.android.common.KontaktSDK;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.profile.IBeaconRegion;
 import com.kontakt.sdk.android.common.profile.IEddystoneNamespace;
@@ -57,6 +58,7 @@ public class BeaconScanService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        KontaktSDK.initialize("clYwuEPnEpprKHUBKIwTudpdiEqMgMQq");
         setupProximityManager();
         setupSpaces();
         createNotificationChannel();
@@ -205,6 +207,11 @@ public class BeaconScanService extends Service {
       stopSelf();
       return START_NOT_STICKY;
     }
+
+  if (isRunning) {
+//    Toast.makeText(this, "Service is already running.", Toast.LENGTH_SHORT).show();
+    return START_STICKY;
+  }
 
     startInForeground();
     startScanning();

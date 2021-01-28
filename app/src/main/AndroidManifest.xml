@@ -12,8 +12,13 @@
 
         <meta-data
             android:name="kontakt.io.API_KEY"
-            android:value="@string/kontakt_io_api_key" />
-        <service android:name="com.kontakt.sdk.android.ble.service.ProximityService" android:exported="false"/>
+            android:value="clYwuEPnEpprKHUBKIwTudpdiEqMgMQq"/>
+        <service
+            android:name="com.kontakt.sdk.android.ble.service.ProximityService"
+            android:exported="false"/>
+        <service
+            android:name=".services.BeaconScanService"
+            android:exported="false"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,5 +34,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 </manifest>
