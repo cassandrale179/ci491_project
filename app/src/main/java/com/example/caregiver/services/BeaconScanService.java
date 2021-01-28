@@ -37,6 +37,8 @@ import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.profile.IBeaconRegion;
 import com.kontakt.sdk.android.common.profile.IEddystoneNamespace;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -87,6 +89,7 @@ public class BeaconScanService extends Service {
       
       //TODO: When user sets up the regions, send UUID and region as input here
       private void setupSpaces() {
+        Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
         //Setting up single iBeacon region. Put your own desired values here.
         IBeaconRegion region1 = new BeaconRegion.Builder().identifier("Mannika Bedroom")
                 .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
@@ -94,7 +97,7 @@ public class BeaconScanService extends Service {
                 .major(1)
                 .minor(2)
                 .build();
-        proximityManager.spaces().iBeaconRegion(region1);
+        beaconRegions.add(region1);
     
         IBeaconRegion region2 = new BeaconRegion.Builder().identifier("Mannika Bathroom") //Region identifier is mandatory.
                 .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
@@ -102,7 +105,7 @@ public class BeaconScanService extends Service {
                 .major(1)
                 .minor(1)
                 .build();
-        proximityManager.spaces().iBeaconRegion(region2);
+        beaconRegions.add(region2);
     
         IBeaconRegion region3 = new BeaconRegion.Builder().identifier("Mannika Kitchen") //Region identifier is mandatory.
                 .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
@@ -110,7 +113,33 @@ public class BeaconScanService extends Service {
                 .major(1)
                 .minor(3)
                 .build();
-        proximityManager.spaces().iBeaconRegion(region3);
+        beaconRegions.add(region3);
+
+        IBeaconRegion region4 = new BeaconRegion.Builder().identifier("Jui Bedroom")
+                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
+                //Optional major and minor values
+                .major(2)
+                .minor(2)
+                .build();
+        beaconRegions.add(region4);
+
+        IBeaconRegion region5 = new BeaconRegion.Builder().identifier("Jui Bathroom") //Region identifier is mandatory.
+                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
+                //Optional major and minor values
+                .major(2)
+                .minor(1)
+                .build();
+        beaconRegions.add(region5);
+
+        IBeaconRegion region6 = new BeaconRegion.Builder().identifier("Jui Kitchen") //Region identifier is mandatory.
+                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
+                //Optional major and minor values
+                .major(2)
+                .minor(3)
+                .build();
+        beaconRegions.add(region6);
+
+        proximityManager.spaces().iBeaconRegions(beaconRegions);
       }
 
   private SpaceListener createSpaceListener() {
@@ -255,12 +284,28 @@ public class BeaconScanService extends Service {
       @Override
       public void onIBeaconDiscovered(IBeaconDevice ibeacon, IBeaconRegion region) {
         Log.i("Sample", "IBeacon discovered: " + ibeacon.getName() + " " + ibeacon.toString());
+        String contentText = String.format("Name = %s, Distance = %f, RSSI = %f", ibeacon.getName(), ibeacon.getDistance(), ibeacon.getRssi());
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.alert_dark_frame)
+                .setContentTitle("Beacon Discovered")
+                .setContentText(contentText);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
+        notificationManager.notify(2, builder.build());
       }
 
       @Override
       public void onIBeaconLost(IBeaconDevice ibeacon, IBeaconRegion region) {
         super.onIBeaconLost(ibeacon, region);
         Log.e(TAG, "onIBeaconLost: " + ibeacon.getName() + " " + ibeacon.toString());
+        String contentText = String.format("Name = %s, Distance = %f, RSSI = %f", ibeacon.getName(), ibeacon.getDistance(), ibeacon.getRssi());
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.alert_dark_frame)
+                .setContentTitle("Beacon Lost")
+                .setContentText(contentText);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
+        notificationManager.notify(3, builder.build());
       }
     };
   }
