@@ -79,8 +79,8 @@ public class BeaconScanService extends Service {
             .scanMode(ScanMode.BALANCED);
 
         //Setting up iBeacon and Eddystone spaces listeners
-        createSpaceListener();
-    
+        proximityManager.setSpaceListener(createSpaceListener());
+
         // Set up iBeacon listener
         proximityManager.setIBeaconListener(createIBeaconListener());
       }
@@ -97,7 +97,7 @@ public class BeaconScanService extends Service {
         proximityManager.spaces().iBeaconRegion(region1);
     
         IBeaconRegion region2 = new BeaconRegion.Builder().identifier("Mannika Bathroom") //Region identifier is mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) ///TODO: Add users UUID
+                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
                 //Optional major and minor values
                 .major(1)
                 .minor(1)
@@ -111,36 +111,14 @@ public class BeaconScanService extends Service {
                 .minor(3)
                 .build();
         proximityManager.spaces().iBeaconRegion(region3);
-
-        IBeaconRegion region4 = new BeaconRegion.Builder().identifier("Jui Bedroom") //Region identifier is mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
-                //Optional major and minor values
-                .major(2)
-                .minor(2)
-                .build();
-        proximityManager.spaces().iBeaconRegion(region4);
-    
-        IBeaconRegion region5 = new BeaconRegion.Builder().identifier("Jui Bathroom") //Region identifier is mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) ///TODO: Add users UUID
-                //Optional major and minor values
-                .major(2)
-                .minor(1)
-                .build();
-        proximityManager.spaces().iBeaconRegion(region5);
-    
-        IBeaconRegion region6 = new BeaconRegion.Builder().identifier("Jui Kitchen") //Region identifier is mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
-                //Optional major and minor values
-                .major(2)
-                .minor(3)
-                .build();
-        proximityManager.spaces().iBeaconRegion(region6);
       }
 
-  private void createSpaceListener() {
-     proximityManager.setSpaceListener(new SimpleSpaceListener() {
+  private SpaceListener createSpaceListener() {
+      Log.i("Sample", "createSpaceListener Called");
+     return new SimpleSpaceListener() {
       @Override
       public void onRegionEntered(IBeaconRegion region) {
+        Log.i("Sample", "Region Entered");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.alert_dark_frame)
                 .setContentTitle("Region Entered")
@@ -152,7 +130,7 @@ public class BeaconScanService extends Service {
 
       @Override
       public void onRegionAbandoned(IBeaconRegion region) {
-
+        Log.i("Sample", "Region Abandoned");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.alert_dark_frame)
                 .setContentTitle("Region Abandoned")
@@ -161,45 +139,8 @@ public class BeaconScanService extends Service {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
         notificationManager.notify(0, builder.build());
       }
-    });
+    };
   }
-      
-//      private SpaceListener createSpaceListener() {
-//        return new SpaceListener() {
-//          @Override
-//          public void onRegionEntered(IBeaconRegion region) {
-//            NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
-//                    .setSmallIcon(android.R.drawable.alert_dark_frame)
-//                    .setContentTitle("Region Entered")
-//                    .setContentText(region.getIdentifier());
-//
-//            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
-//            notificationManager.notify(0, builder.build());
-//          }
-//
-//          @Override
-//          public void onRegionAbandoned(IBeaconRegion region) {
-//
-//            NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
-//                    .setSmallIcon(android.R.drawable.alert_dark_frame)
-//                    .setContentTitle("Region Abandoned")
-//                    .setContentText(region.getIdentifier());
-//
-//            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
-//            notificationManager.notify(0, builder.build());
-//          }
-//
-//          @Override
-//          public void onNamespaceEntered(IEddystoneNamespace namespace) {
-//
-//          }
-//
-//          @Override
-//          public void onNamespaceAbandoned(IEddystoneNamespace namespace) {
-//
-//          }
-//        };
-//      }
 
 @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
@@ -254,10 +195,10 @@ public class BeaconScanService extends Service {
         PendingIntent.FLAG_CANCEL_CURRENT
     );
 
-    // Create notification channel
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      createNotificationChannel();
-    }
+//    // Create notification channel
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//      createNotificationChannel();
+//    }
 
     // Build notification
     final NotificationCompat.Action action = new NotificationCompat.Action(0, "Stop", stopIntent);
