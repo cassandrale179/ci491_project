@@ -284,7 +284,7 @@ public class BeaconScanService extends Service {
       @Override
       public void onIBeaconDiscovered(IBeaconDevice ibeacon, IBeaconRegion region) {
         Log.i("Sample", "IBeacon discovered: " + ibeacon.getName() + " " + ibeacon.toString());
-        String contentText = String.format("Name = %s, Distance = %f, RSSI = %f", ibeacon.getName(), ibeacon.getDistance(), ibeacon.getRssi());
+        String contentText = String.format("Region = %s, Distance = %d, RSSI = %d", region.getIdentifier(), ibeacon.getDistance(), ibeacon.getRssi());
         NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.alert_dark_frame)
                 .setContentTitle("Beacon Discovered")
@@ -298,7 +298,7 @@ public class BeaconScanService extends Service {
       public void onIBeaconLost(IBeaconDevice ibeacon, IBeaconRegion region) {
         super.onIBeaconLost(ibeacon, region);
         Log.e(TAG, "onIBeaconLost: " + ibeacon.getName() + " " + ibeacon.toString());
-        String contentText = String.format("Name = %s, Distance = %f, RSSI = %f", ibeacon.getName(), ibeacon.getDistance(), ibeacon.getRssi());
+        String contentText = String.format("Region = %s, Distance = %d, RSSI = %d", region.getIdentifier(), ibeacon.getDistance(), ibeacon.getRssi());
         NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.alert_dark_frame)
                 .setContentTitle("Beacon Lost")
