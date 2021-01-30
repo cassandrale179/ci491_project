@@ -37,8 +37,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 
 public class BeaconScanService extends Service {
 
@@ -49,6 +52,17 @@ public class BeaconScanService extends Service {
     private static final String DEFAULT_CHANNEL_ID = "Caregiver_Channel_ID";
     private Intent serviceIntent;
     private static String lastSeenRegionIdentifier = null;
+    private static HashMap<String, HashMap<String, Integer>> regionRssiMap = new HashMap<String, HashMap<String, Integer>>();
+    private static HashMap<String, Integer> rssiDataMap = new HashMap<String, Integer>();
+
+    static {
+        rssiDataMap.put("sum", 0);
+        rssiDataMap.put("count", 0);
+    }
+
+    ;
+    private long lastTimeInMillis = getTimeNow();
+    private static int thirtySecondsInMillis = 30000;
 
     public static Intent createIntent(final Context context) {
         return new Intent(context, BeaconScanService.class);
@@ -73,100 +87,101 @@ public class BeaconScanService extends Service {
 
         // Configure proximity manager basic options
         proximityManager.configuration()
-                //Scans for 10 minutes with 2 second pauses to avoid getting killed by Android
+                // Scans for 10 minutes with 2 second pauses to avoid getting killed by Android
                 .scanPeriod(ScanPeriod.create(TimeUnit.MINUTES.toMillis(10), TimeUnit.SECONDS.toMillis(2)))
-                //Using BALANCED for best performance/battery ratio
+                // Using BALANCED for best performance/battery ratio
                 .scanMode(ScanMode.BALANCED);
 
-        //Setting up iBeacon and Eddystone spaces listeners
+        // Setting up iBeacon and Eddystone spaces listeners
         // proximityManager.setSpaceListener(createSpaceListener());
 
         // Set up iBeacon listener
         proximityManager.setIBeaconListener(createIBeaconListener());
     }
 
-    //TODO: When user sets up the regions, send UUID and region as input here
+    // TODO: When user sets up the regions, send UUID and region as input here
     private void setupSpaces() {
         Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
-        //Setting up single iBeacon region. Put your own desired values here.
+        // Setting up single iBeacon region. Put your own desired values here.
         IBeaconRegion region1 = new BeaconRegion.Builder().identifier("Mannika Bedroom")
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
-                //Optional major and minor values
-                .major(1)
-                .minor(2)
-                .build();
+                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
+                // Optional major and minor values
+                .major(1).minor(2).build();
         beaconRegions.add(region1);
+        regionRssiMap.put("Mannika Bedroom", rssiDataMap);
 
-        IBeaconRegion region2 = new BeaconRegion.Builder().identifier("Mannika Bathroom") //Region identifier is mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
-                //Optional major and minor values
-                .major(1)
-                .minor(1)
-                .build();
+        IBeaconRegion region2 = new BeaconRegion.Builder().identifier("Mannika Bathroom") // Region identifier is
+                // mandatory.
+                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
+                // Optional major and minor values
+                .major(1).minor(1).build();
         beaconRegions.add(region2);
+        regionRssiMap.put("Mannika Bathroom", rssiDataMap);
 
-        IBeaconRegion region3 = new BeaconRegion.Builder().identifier("Mannika Kitchen") //Region identifier is mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
-                //Optional major and minor values
-                .major(1)
-                .minor(3)
-                .build();
+        IBeaconRegion region3 = new BeaconRegion.Builder().identifier("Mannika Kitchen") // Region identifier is
+                // mandatory.
+                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
+                // Optional major and minor values
+                .major(1).minor(3).build();
         beaconRegions.add(region3);
+        regionRssiMap.put("Mannika Kitchen", rssiDataMap);
 
         IBeaconRegion region4 = new BeaconRegion.Builder().identifier("Jui Bedroom")
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
-                //Optional major and minor values
-                .major(2)
-                .minor(2)
-                .build();
+                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
+                // Optional major and minor values
+                .major(2).minor(2).build();
         beaconRegions.add(region4);
+        regionRssiMap.put("Jui Bedroom", rssiDataMap);
 
-        IBeaconRegion region5 = new BeaconRegion.Builder().identifier("Jui Bathroom") //Region identifier is mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
-                //Optional major and minor values
-                .major(2)
-                .minor(1)
-                .build();
+        IBeaconRegion region5 = new BeaconRegion.Builder().identifier("Jui Bathroom") // Region identifier is mandatory.
+                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
+                // Optional major and minor values
+                .major(2).minor(1).build();
         beaconRegions.add(region5);
+        regionRssiMap.put("Jui Bathroom", rssiDataMap);
 
-        IBeaconRegion region6 = new BeaconRegion.Builder().identifier("Jui Kitchen") //Region identifier is mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) //TODO: Add users UUID
-                //Optional major and minor values
-                .major(2)
-                .minor(3)
-                .build();
+        IBeaconRegion region6 = new BeaconRegion.Builder().identifier("Jui Kitchen") // Region identifier is mandatory.
+                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
+                // Optional major and minor values
+                .major(2).minor(3).build();
+        regionRssiMap.put("Jui Kitchen", rssiDataMap);
+
         beaconRegions.add(region6);
 
         proximityManager.spaces().iBeaconRegions(beaconRegions);
     }
 
     // private SpaceListener createSpaceListener() {
-    //     Log.i("Sample", "createSpaceListener Called");
-    //    return new SimpleSpaceListener() {
-    //     @Override
-    //     public void onRegionEntered(IBeaconRegion region) {
-    //       Log.i("Sample", "Region Entered");
-    //       NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
-    //               .setSmallIcon(android.R.drawable.alert_dark_frame)
-    //               .setContentTitle("Region Entered")
-    //               .setContentText(region.getIdentifier());
+    // Log.i("Sample", "createSpaceListener Called");
+    // return new SimpleSpaceListener() {
+    // @Override
+    // public void onRegionEntered(IBeaconRegion region) {
+    // Log.i("Sample", "Region Entered");
+    // NotificationCompat.Builder builder = new
+    // NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
+    // .setSmallIcon(android.R.drawable.alert_dark_frame)
+    // .setContentTitle("Region Entered")
+    // .setContentText(region.getIdentifier());
 
-    //       NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
-    //       notificationManager.notify(0, builder.build());
-    //     }
+    // NotificationManagerCompat notificationManager =
+    // NotificationManagerCompat.from(BeaconScanService.this);
+    // notificationManager.notify(0, builder.build());
+    // }
 
-    //     @Override
-    //     public void onRegionAbandoned(IBeaconRegion region) {
-    //       Log.i("Sample", "Region Abandoned");
-    //       NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
-    //               .setSmallIcon(android.R.drawable.alert_dark_frame)
-    //               .setContentTitle("Region Abandoned")
-    //               .setContentText(region.getIdentifier());
+    // @Override
+    // public void onRegionAbandoned(IBeaconRegion region) {
+    // Log.i("Sample", "Region Abandoned");
+    // NotificationCompat.Builder builder = new
+    // NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
+    // .setSmallIcon(android.R.drawable.alert_dark_frame)
+    // .setContentTitle("Region Abandoned")
+    // .setContentText(region.getIdentifier());
 
-    //       NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
-    //       notificationManager.notify(0, builder.build());
-    //     }
-    //   };
+    // NotificationManagerCompat notificationManager =
+    // NotificationManagerCompat.from(BeaconScanService.this);
+    // notificationManager.notify(0, builder.build());
+    // }
+    // };
     // }
 
     @Override
@@ -204,32 +219,19 @@ public class BeaconScanService extends Service {
     private void startInForeground() {
         // Create notification intent
         final Intent notificationIntent = new Intent();
-        final PendingIntent pendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                notificationIntent,
-                0
-        );
+        final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         // Create stop intent with action
         final Intent intent = BeaconScanService.createIntent(this);
         intent.setAction(STOP_SERVICE_ACTION);
-        final PendingIntent stopIntent = PendingIntent.getService(
-                this,
-                0,
-                intent,
-                PendingIntent.FLAG_CANCEL_CURRENT
-        );
+        final PendingIntent stopIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         // Build notification
         final NotificationCompat.Action action = new NotificationCompat.Action(0, "Stop", stopIntent);
         final Notification notification = new NotificationCompat.Builder(this, DEFAULT_CHANNEL_ID)
-                .setContentTitle("Caregiver")
-                .setContentText("Actively scanning beacons")
-                .addAction(action)
+                .setContentTitle("Caregiver").setContentText("Actively scanning beacons").addAction(action)
                 .setSmallIcon(android.R.mipmap.sym_def_app_icon) // TODO: Add caregiver icon
-                .setContentIntent(pendingIntent)
-                .build();
+                .setContentIntent(pendingIntent).build();
 
         // Start foreground service
         startForeground(1, notification);
@@ -237,14 +239,13 @@ public class BeaconScanService extends Service {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationChannel() {
-        final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager == null) return;
+        final NotificationManager notificationManager = (NotificationManager) getSystemService(
+                Context.NOTIFICATION_SERVICE);
+        if (notificationManager == null)
+            return;
 
-        final NotificationChannel channel = new NotificationChannel(
-                DEFAULT_CHANNEL_ID,
-                NOTIFICATION_CHANEL_NAME,
-                NotificationManager.IMPORTANCE_DEFAULT
-        );
+        final NotificationChannel channel = new NotificationChannel(DEFAULT_CHANNEL_ID, NOTIFICATION_CHANEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT);
         notificationManager.createNotificationChannel(channel);
     }
 
@@ -271,39 +272,89 @@ public class BeaconScanService extends Service {
         };
     }
 
+    // lastTimestamp = 0
+    // onIBeaconDiscovered()
+    // check if currTimestamp - lastTimestamp < 30
+    // write to container
+    // else:
+    // Average RSSI for each region
+    // Send notification if curr region != last seen region
+    // empty container
+    // lastTimestamp = currTimestamp
+
+    private void sendBeaconNotification(String contentText) {
+        Log.i("Sample", "IBeacon discovered: " + contentText);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.alert_dark_frame).setContentTitle("Beacon Discovered")
+                .setContentText(contentText);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
+        notificationManager.notify(2, builder.build());
+    }
+
     private IBeaconListener createIBeaconListener() {
         return new SimpleIBeaconListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onIBeaconDiscovered(IBeaconDevice ibeacon, IBeaconRegion region) {
-                if (ibeacon.getDistance() <= 1.0 && lastSeenRegionIdentifier != region.getIdentifier()) {
-                    lastSeenRegionIdentifier = region.getIdentifier();
-                    String contentText = String.format("Region = %s, Distance = %f, RSSI = %d, Timestamp = %s", region.getIdentifier(), ibeacon.getDistance(), ibeacon.getRssi(), convertUnixToTimestamp(ibeacon.getTimestamp()));
-                    Log.i("Sample", "IBeacon discovered: " + contentText);
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
-                            .setSmallIcon(android.R.drawable.alert_dark_frame)
-                            .setContentTitle("Beacon Discovered")
-                            .setContentText(contentText);
 
-                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
-                    notificationManager.notify(2, builder.build());
+                if (getTimeNow() - lastTimeInMillis < thirtySecondsInMillis) {
+                    int oldSum = regionRssiMap.get(region.getIdentifier()).get("sum");
+                    int oldCount = regionRssiMap.get(region.getIdentifier()).get("count");
+                    regionRssiMap.get(region.getIdentifier()).replace("sum", oldSum + ibeacon.getRssi());
+                    regionRssiMap.get(region.getIdentifier()).replace("count", oldCount + 1);
+                } else {
+                    final String[] maxRegion = new String[1];
+                    int maxRssi = Integer.MIN_VALUE;
+                    regionRssiMap.forEach(
+                            (regionKey, rssiData) -> {
+                                if (rssiDataMap.get("count") != 0) {
+                                    float avg = rssiDataMap.get("sum") / rssiDataMap.get("count");
+                                    if (avg > maxRssi) {
+                                        maxRegion[0] = regionKey;
+                                    }
+                                    rssiDataMap.replace("sum", 0);
+                                    rssiDataMap.replace("count", 0);
+                                    if (maxRegion[0] != lastSeenRegionIdentifier) {
+                                        String contentText = String.format("Region = %s, Distance = %f, RSSI = %d, Timestamp = %s",
+                                                region.getIdentifier(), ibeacon.getDistance(), ibeacon.getRssi(),
+                                                convertUnixToTimestamp(ibeacon.getTimestamp()));
+                                        sendBeaconNotification(contentText);
+                                        lastSeenRegionIdentifier = maxRegion[0];
+                                        lastTimeInMillis = getTimeNow();
+                                    }
+                                }
+                            });
                 }
+                // if (ibeacon.getDistance() <= 1.0) {
+                //     lastSeenRegionIdentifier = region.getIdentifier();
+                //     String contentText = String.format("Region = %s, Distance = %f, RSSI = %d, Timestamp = %s",
+                //             region.getIdentifier(), ibeacon.getDistance(), ibeacon.getRssi(),
+                //             convertUnixToTimestamp(ibeacon.getTimestamp()));
+
+                //     sendBeaconNotification(contentText);
+                // }
             }
 
-            @Override
-            public void onIBeaconLost(IBeaconDevice ibeacon, IBeaconRegion region) {
-                super.onIBeaconLost(ibeacon, region);
-                if (ibeacon.getDistance() > 1.5) {
-                    String contentText = String.format("Region = %s, Distance = %f, RSSI = %d, Timestamp = %s", region.getIdentifier(), ibeacon.getDistance(), ibeacon.getRssi(), convertUnixToTimestamp(ibeacon.getTimestamp()));
-                    Log.e("Sample", "IBeacon Lost: " + contentText);
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
-                            .setSmallIcon(android.R.drawable.alert_dark_frame)
-                            .setContentTitle("Beacon Lost")
-                            .setContentText(contentText);
+            // @Override
+            // public void onIBeaconLost(IBeaconDevice ibeacon, IBeaconRegion region) {
+            // super.onIBeaconLost(ibeacon, region);
+            // if (ibeacon.getDistance() > 1.5) {
+            // String contentText = String.format("Region = %s, Distance = %f, RSSI = %d,
+            // Timestamp = %s", region.getIdentifier(), ibeacon.getDistance(),
+            // ibeacon.getRssi(), convertUnixToTimestamp(ibeacon.getTimestamp()));
+            // Log.e("Sample", "IBeacon Lost: " + contentText);
+            // NotificationCompat.Builder builder = new
+            // NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
+            // .setSmallIcon(android.R.drawable.alert_dark_frame)
+            // .setContentTitle("Beacon Lost")
+            // .setContentText(contentText);
 
-                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
-                    notificationManager.notify(3, builder.build());
-                }
-            }
+            // NotificationManagerCompat notificationManager =
+            // NotificationManagerCompat.from(BeaconScanService.this);
+            // notificationManager.notify(3, builder.build());
+            // }
+            // }
         };
     }
 
@@ -313,8 +364,8 @@ public class BeaconScanService extends Service {
         return dateFormatter.format(date);
     }
 
-    private String getTimeNow() {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy:MM:dd_HH:mm:ss");
-        return dateFormatter.format(Calendar.getInstance().getTime());
+    private long getTimeNow() {
+        // SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy:MM:dd_HH:mm:ss");
+        return Calendar.getInstance().getTimeInMillis();
     }
 }
