@@ -7,6 +7,11 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,14 +20,10 @@ import android.view.ViewGroup;
  */
 public class TaskFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    ExpandableListView caregiveeList;
+    ArrayList<String> listGroup = new ArrayList<>();
+    HashMap<String, ArrayList<String>> listChild = new HashMap<>();
+    MainAdapter adapter;
 
     public TaskFragment() {
         // Required empty public constructor
@@ -40,8 +41,7 @@ public class TaskFragment extends Fragment {
     public static TaskFragment newInstance(String param1, String param2) {
         TaskFragment fragment = new TaskFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,16 +49,29 @@ public class TaskFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_task, container, false);
+        View view = inflater.inflate(R.layout.fragment_task, container, false);
+
+        // Set up the child list view
+
+        caregiveeList = (ExpandableListView) view.findViewById(R.id.caregiveelist);
+        for (int g = 0; g <= 10; g++){
+            listGroup.add("Group" + g);
+            ArrayList<String> arrayList = new ArrayList<>();
+            for (int c = 0; c <= 10; c++){
+               arrayList.add("Item" + c);
+            }
+            listChild.put(listGroup.get(g), arrayList);
+        }
+
+        adapter = new MainAdapter(listGroup, listChild);
+        caregiveeList.setAdapter(adapter);
+        return view;
     }
 }
