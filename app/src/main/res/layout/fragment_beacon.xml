@@ -67,7 +67,8 @@
         android:layout_marginTop="10dp"
         android:textSize="20dp"
         android:backgroundTint="@color/teal_700"
-        android:text="Start Scanning" />
+        android:text="Start Scanning" 
+        />
 
     <Button
         android:id="@+id/stop_button"

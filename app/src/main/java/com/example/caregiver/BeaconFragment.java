@@ -1,5 +1,7 @@
 package com.example.caregiver;
 
+import android.content.ContentProviderClient;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,10 +9,10 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
-import com.kontakt.sdk.android.ble.manager.ProximityManager;
-import com.kontakt.sdk.android.ble.manager.listeners.EddystoneListener;
-import com.kontakt.sdk.android.ble.manager.listeners.IBeaconListener;
+import com.example.caregiver.services.BeaconScanService;
 
 /**
  * Start Scanning button 
@@ -62,6 +64,17 @@ public class BeaconFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_beacon, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_beacon, container, false);
+        Button startScanButton = (Button) rootView.findViewById(R.id.start_button);
+        startScanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().startService(new Intent(getActivity(), BeaconScanService.class));
+            }
+        });
+
+        return rootView;
     }
+
+
 }
