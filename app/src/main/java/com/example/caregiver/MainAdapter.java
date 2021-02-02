@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * DO NOT modify anything here! If you do, please talk to me first @Minh.
  * Reusable class to create the expandable list view on the Tasks page.
  * Beside the OnClickListener on child item, everything else should be reusable.
- * DO NOT modify anything here! If you do, please talk to me first @Minh.
  */
 public class MainAdapter extends BaseExpandableListAdapter {
     // Initialize variable

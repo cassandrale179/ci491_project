@@ -1,5 +1,6 @@
 package com.example.caregiver;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,7 +8,10 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ExpandableListView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -20,10 +24,12 @@ import java.util.HashMap;
  */
 public class TaskFragment extends Fragment {
 
+    // Create glonal variables
     ExpandableListView caregiveeList;
     ArrayList<String> listGroup = new ArrayList<>();
     HashMap<String, ArrayList<String>> listChild = new HashMap<>();
     MainAdapter adapter;
+
 
     public TaskFragment() {
         // Required empty public constructor
@@ -36,18 +42,7 @@ public class TaskFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_task, container, false);
-
+    public void createExpandableList(View view){
         // Set up the child list view
         ArrayList<String> fakeNames = new ArrayList<String>();
         fakeNames.add("Mary Yu");
@@ -68,13 +63,39 @@ public class TaskFragment extends Fragment {
                 // TODO: this is a brute force attempt to set left margin to child text
                 // for some reason I can't set it in MainAdapter.
                 // If someone can fix this, that would be great.
-               arrayList.add("    " + fakeTasks.get(c));
+                arrayList.add("    " + fakeTasks.get(c));
             }
             listChild.put(listGroup.get(g), arrayList);
         }
 
         adapter = new MainAdapter(listGroup, listChild);
         caregiveeList.setAdapter(adapter);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_task, container, false);
+
+        // Build the expandable list
+        createExpandableList(view);
+
+        // Redirect to add task page for floating + button
+        FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.addTaskButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(view.getContext(), AddTask.class));
+            }
+        });
+
         return view;
     }
 }
