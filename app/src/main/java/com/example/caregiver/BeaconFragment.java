@@ -13,6 +13,11 @@ import com.kontakt.sdk.android.ble.manager.listeners.EddystoneListener;
 import com.kontakt.sdk.android.ble.manager.listeners.IBeaconListener;
 
 /**
+ * Start Scanning button 
+ * 
+ */
+
+/**
  * A simple {@link Fragment} subclass.
  * Use the {@link BeaconFragment#newInstance} factory method to
  * create an instance of this fragment.

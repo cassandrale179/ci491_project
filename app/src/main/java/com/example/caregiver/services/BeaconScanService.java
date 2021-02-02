@@ -53,16 +53,6 @@ public class BeaconScanService extends Service {
     private Intent serviceIntent;
     private static String lastSeenRegionIdentifier = "";
     private static final HashMap<String, HashMap<String, Double>> regionRssiMap = new HashMap<String, HashMap<String, Double>>();
-    // private static final HashMap<String, Integer> rssiDataMap;
-
-    // static {
-    //     rssiDataMap = new HashMap<String, Integer>() {
-    //         {
-    //             put("sum", 0);
-    //             put("count", 0);
-    //         }
-    //     };
-    // }
 
     private long lastTimeInMillis = getTimeNow();
     private static final int thirtySecondsInMillis = 30000;
@@ -284,7 +274,7 @@ public class BeaconScanService extends Service {
 
                 Log.i("Sample", "discovering");
 
-                Log.i("Sample", "Beacon discovered " + region.getIdentifier());
+                Log.i("Sample", "Beacon discovered " + region.getIdentifier() + " beacon unique id " + ibeacon.getUniqueId());
                 Log.i("Sample", "Current time = " + getTimeNow() + " Last time = " + lastTimeInMillis + " Difference = " + (getTimeNow() - lastTimeInMillis));
 
 

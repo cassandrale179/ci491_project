@@ -2,4 +2,8 @@
     <string name="app_name">caregiver</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="uuid_prompt">Enter UUID here</string>
+    <string name="region_prompt">Enter room name</string>
+    <string name="major_prompt">Major</string>
+    <string name="minor_prompt">Minor</string>
 </resources>
