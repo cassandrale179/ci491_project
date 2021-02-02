@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,7 +77,8 @@ public class MainAdapter extends BaseExpandableListAdapter {
         TextView textView = view.findViewById(android.R.id.text1);
         String sChild = String.valueOf(getChild(groupPosition, childPosition));
         textView.setText(sChild);
-        textView.setTypeface(null, Typeface.BOLD);
+        textView.setTypeface(null, Typeface.NORMAL);
+
 
         // Set onclick listener
         textView.setOnClickListener(new View.OnClickListener() {
