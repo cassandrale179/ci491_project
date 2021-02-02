@@ -66,10 +66,20 @@ public class BeaconFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_beacon, container, false);
         Button startScanButton = (Button) rootView.findViewById(R.id.start_button);
+        Intent scanServiceIntent = new Intent(getActivity(), BeaconScanService.class);
         startScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().startService(new Intent(getActivity(), BeaconScanService.class));
+                getActivity().startService(scanServiceIntent);
+            }
+        });
+
+        Button stopScanButton = (Button) rootView.findViewById(R.id.stop_button);
+        stopScanButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                getActivity().stopService(scanServiceIntent);
             }
         });
 

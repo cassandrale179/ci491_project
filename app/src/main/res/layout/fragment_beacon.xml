@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".BeaconFragment" >
+    tools:context=".BeaconFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -23,12 +23,12 @@
     <EditText
         android:id="@+id/UUIDText"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:ems="10"
         android:hint="@string/uuid_prompt"
         android:inputType="textShortMessage"
-        android:textSize="20sp"
-        android:layout_marginBottom="20dp"/>
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -38,47 +38,54 @@
 
         <EditText
             android:id="@+id/regionName"
-            android:layout_width="171dp"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textShortMessage"
-            android:hint="@string/region_prompt"/>
+            android:hint="@string/region_prompt"
+            android:inputType="textShortMessage" />
 
         <EditText
             android:id="@+id/major"
-            android:layout_width="128dp"
-            android:layout_height="50dp"
+            android:layout_width="84dp"
+            android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textShortMessage|number"
-            android:hint="@string/major_prompt"/>
+            android:hint="@string/major_prompt"
+            android:inputType="textShortMessage|number" />
 
         <EditText
             android:id="@+id/minor"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/minor_prompt"
             android:inputType="textShortMessage|number" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/start_button"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:textAllCaps="false"
-        android:textSize="20sp"
-        android:backgroundTint="@color/teal_700"
-        android:text="@string/start_scanning"
-        android:layout_marginBottom="20dp"
-        />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/stop_button"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:textAllCaps="false"
-        android:textSize="20sp"
-        android:backgroundTint="@color/teal_700"
-        android:text="@string/stop_scanning" />
+        <Button
+            android:id="@+id/start_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/teal_700"
+            android:text="@string/start_scanning"
+            android:textAllCaps="true"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/stop_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/teal_700"
+            android:text="@string/stop_scanning"
+            android:textAllCaps="true"
+            android:textSize="14sp" />
+
+    </LinearLayout>
 
 </LinearLayout>
