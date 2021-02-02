@@ -5,14 +5,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Reusable class to create the expandable list view on the Tasks page.
+ * Beside the OnClickListener on child item, everything else should be reusable.
+ * DO NOT modify anything here! If you do, please talk to me first @Minh.
+ */
 public class MainAdapter extends BaseExpandableListAdapter {
     // Initialize variable
 
@@ -80,7 +83,7 @@ public class MainAdapter extends BaseExpandableListAdapter {
         textView.setTypeface(null, Typeface.NORMAL);
 
 
-        // Set onclick listener
+        // Set onclick listener on child items
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
