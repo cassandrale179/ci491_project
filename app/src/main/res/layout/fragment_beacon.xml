@@ -9,30 +9,32 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="317dp">
+        android:layout_height="317dp"
+        android:layout_marginBottom="20dp">
 
         <TableLayout
             android:id="@+id/tableLayout1"
             android:layout_width="fill_parent"
             android:layout_height="317dp"
-            android:padding="10dip"
-            android:isScrollContainer="true">
-        </TableLayout>
+            android:isScrollContainer="true"
+            android:padding="10dip"></TableLayout>
     </ScrollView>
 
-        <EditText
-            android:id="@+id/UUIDText"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:ems="10"
-            android:hint="@string/uuid_prompt"
-            android:textSize="20dp"
-            android:inputType="textShortMessage" />
+    <EditText
+        android:id="@+id/UUIDText"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:hint="@string/uuid_prompt"
+        android:inputType="textShortMessage"
+        android:textSize="20sp"
+        android:layout_marginBottom="20dp"/>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp">
 
         <EditText
             android:id="@+id/regionName"
@@ -64,10 +66,10 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:textAllCaps="false"
-        android:layout_marginTop="10dp"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:backgroundTint="@color/teal_700"
-        android:text="Start Scanning" 
+        android:text="@string/start_scanning"
+        android:layout_marginBottom="20dp"
         />
 
     <Button
@@ -75,9 +77,8 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:textAllCaps="false"
-        android:layout_marginTop="10dp"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:backgroundTint="@color/teal_700"
-        android:text="Stop Scanning" />
+        android:text="@string/stop_scanning" />
 
 </LinearLayout>
