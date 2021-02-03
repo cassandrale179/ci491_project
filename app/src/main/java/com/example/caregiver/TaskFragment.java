@@ -1,21 +1,37 @@
 package com.example.caregiver;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
+import android.renderscript.Sampler;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ExpandableListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +45,7 @@ public class TaskFragment extends Fragment {
     ArrayList<String> listGroup = new ArrayList<>();
     HashMap<String, ArrayList<String>> listChild = new HashMap<>();
     MainAdapter adapter;
+    DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
 
     public TaskFragment() {
@@ -42,50 +59,63 @@ public class TaskFragment extends Fragment {
         return fragment;
     }
 
-    public void createExpandableList(View view){
-        // Set up the child list view
-        ArrayList<String> fakeNames = new ArrayList<String>();
-        fakeNames.add("Mary Yu");
-        fakeNames.add("John Smith");
-        fakeNames.add("Robert Nguyen");
-
-        ArrayList<String> fakeTasks = new ArrayList<String>();
-        fakeTasks.add("Brush Your Teeth");
-        fakeTasks.add("Wash Your Hand");
-        fakeTasks.add("Do Your Laundry");
-
-        caregiveeList = (ExpandableListView) view.findViewById(R.id.caregiveelist);
-        for (int g = 0; g < fakeNames.size(); g++){
-            listGroup.add(fakeNames.get(g));
-            ArrayList<String> arrayList = new ArrayList<>();
-            for (int c = 0; c < fakeTasks.size(); c++){
-
-                // TODO: this is a brute force attempt to set left margin to child text
-                // for some reason I can't set it in MainAdapter.
-                // If someone can fix this, that would be great.
-                arrayList.add("    " + fakeTasks.get(c));
-            }
-            listChild.put(listGroup.get(g), arrayList);
-        }
-
-        adapter = new MainAdapter(listGroup, listChild);
-        caregiveeList.setAdapter(adapter);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    protected void getCaregiveeNameAndTask(String caregiveeId, int size) {
+        DatabaseReference ref = database.child("users/" + caregiveeId);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("name").getValue().toString();
+                listGroup.add(name);
+                if (listGroup.size() == size){
+                    adapter = new MainAdapter(listGroup, listChild);
+                    caregiveeList.setAdapter(adapter);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("failure", "Unable to obtain caregivee data.");
+            }
+        });
+    }
+
+    public void createExpandableList(View view){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String userId = preferences.getString("userId", "");
+        DatabaseReference ref = database.child("users/" + userId);
+        caregiveeList = (ExpandableListView) view.findViewById(R.id.caregiveelist);
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String value = snapshot.child("caregivees").getValue().toString();
+                List<String> caregivees =  Arrays.asList(value.split("\\s*,\\s*"));
+
+                for (int i = 0; i < caregivees.size(); i++) {
+                    getCaregiveeNameAndTask(caregivees.get(i), caregivees.size());
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_task, container, false);
 
-        // Build the expandable list
         createExpandableList(view);
+
 
         // Redirect to add task page for floating + button
         FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.addTaskButton);
@@ -98,4 +128,7 @@ public class TaskFragment extends Fragment {
 
         return view;
     }
+
+
 }
+
