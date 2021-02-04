@@ -25,12 +25,15 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import org.json.*;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import android.content.SharedPreferences;
@@ -70,25 +73,21 @@ public class TaskFragment extends Fragment {
     protected void displayCaregivees() {
         ArrayList < String > caregiveeNames = new ArrayList < >();
         HashMap< String, ArrayList < String> > listChild = new HashMap<>();
-
-//
-//        for (JsonElement caregivee : caregiveeArray ){
-//            JsonObject obj = caregivee.getAsJsonObject();
-//            String name = obj.get("name").toString().replace("\"", "");
-//            caregiveeNames.add(name);
-//        }
-//
-//        adapter = new MainAdapter(caregiveeNames, listChild);
-//        caregiveeList.setAdapter(adapter);
-//
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-//        SharedPreferences.Editor editor = preferences.edit();
-//        editor.putString("caregiveeArray", caregiveeArray.toString());
-//        editor.apply();
     }
 
     /**
-     * This function create a caregivee object that look like its representation on Firebase.
+     * This function parse the room and task object
+     * @param rooms All the rooms in the caregivee house
+     */
+    protected void createRoomAndTaskObject(String caregiveeId, JSONObject caregivee){
+        Iterator<String> keys = caregivee.keys();
+        while (keys.hasNext()){
+            Log.d("ya", keys.next().toString());
+        }
+    }
+
+    /**
+     * Query for data caregivee name, room and tasks from Firebase.
      * @param caregiveeId the id of the caregivee
      * @param size the size of the caregivees list
      */
@@ -97,25 +96,17 @@ public class TaskFragment extends Fragment {
         JsonObject caregivee = new JsonObject();
         ref.addValueEventListener(new ValueEventListener() {@Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            String name = dataSnapshot.child("name").getValue().toString();
-            Object rooms = dataSnapshot.child("room").getValue();
-            if (rooms != null){
-                try {
-                    JSONObject jsonObj = new JSONObject(rooms.toString());
-                    Iterator keysToCopyIterator = jsonObj.keys();
-                    List<String> keysList = new ArrayList<String>();
-                    while(keysToCopyIterator.hasNext()) {
-                        String key = (String) keysToCopyIterator.next();
-                        keysList.add(key);
-                        Log.d("key", key);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            String caregivee = dataSnapshot.getValue().toString();
+            try {
+                JSONObject obj = new JSONObject(caregivee);
+                caregivees.add(obj);
+                createRoomAndTaskObject(String caregiveeId, obj);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
+
             // TODO: this is very hacky way of trying to fill the main adapter not using async.
-            // TODO: we might run into case where caregivee id doesn't exist.
             if (caregivees.size() == size) {
                 displayCaregivees();
             }
@@ -168,3 +159,19 @@ public class TaskFragment extends Fragment {
         return view;
     }
 }
+
+
+//
+//        for (JsonElement caregivee : caregiveeArray ){
+//            JsonObject obj = caregivee.getAsJsonObject();
+//            String name = obj.get("name").toString().replace("\"", "");
+//            caregiveeNames.add(name);
+//        }
+//
+//        adapter = new MainAdapter(caregiveeNames, listChild);
+//        caregiveeList.setAdapter(adapter);
+//
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+//        SharedPreferences.Editor editor = preferences.edit();
+//        editor.putString("caregiveeArray", caregiveeArray.toString());
+//        editor.apply();
