@@ -3,30 +3,54 @@ package com.example.caregiver;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.json.JSONArray;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddTask extends AppCompatActivity {
 
-    public static final String[] BEACON_OPTIONS  = {"Bathroom", "Kitchen", "Bedroom"};
-    public static final String[] CAREGIVEE_OPTIONS  = {"Mary Yu", "John Smith", "Robert Ng."};
 
+    List<String> CAREGIVEE_OPTIONS = new ArrayList<>();
+    List<String> ROOM_OPTIONS = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
 
+        // Get data from the tasks page
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String caregiveeStr = preferences.getString("caregiveeArray", null);
+        if (caregiveeStr != null){
+            Gson gson = new Gson();
+            JsonArray caregiveeArray = gson.fromJson(caregiveeStr, JsonArray.class);
+            for (JsonElement element : caregiveeArray) {
+                JsonObject caregivee = element.getAsJsonObject();
+                CAREGIVEE_OPTIONS.add(caregivee.get("name").toString());
+            }
+        }
+
         // Set spinner options for beacons
         Spinner beaconSpinner = (Spinner) findViewById(R.id.taskBeacon);
         ArrayAdapter<String> adapter = new ArrayAdapter<String> (
-                this, android.R.layout.simple_spinner_item,  BEACON_OPTIONS);
+                this, android.R.layout.simple_spinner_item,  ROOM_OPTIONS);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         beaconSpinner.setAdapter(adapter);
 

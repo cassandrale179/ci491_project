@@ -29,22 +29,34 @@ public class MainAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getGroupCount() {
-        return listGroup.size();
+        if (listGroup != null){
+            return listGroup.size();
+        }
+        return 0;
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return listChild.get(listGroup.get(groupPosition)).size();
+        if (listChild != null &&  listChild.get(listGroup.get(groupPosition)) != null){
+            return listChild.get(listGroup.get(groupPosition)).size();
+        }
+        return 0;
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return listGroup.get(groupPosition);
+        if (listGroup != null){
+            return listGroup.get(groupPosition);
+        }
+        return null;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return listChild.get(listGroup.get(groupPosition)).get(childPosition);
+        if (listGroup != null && listChild != null){
+            return listChild.get(listGroup.get(groupPosition)).get(childPosition);
+        }
+        return null;
     }
 
     @Override
