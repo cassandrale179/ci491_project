@@ -98,7 +98,8 @@
             android:text="@string/nav_sign_up"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:onClick="navigateSignUp"/>
+            android:onClick="navigateSignUp"
+            android:textSize="15dp"/>
 
     </LinearLayout>
 
