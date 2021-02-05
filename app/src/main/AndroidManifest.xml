@@ -9,6 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Caregiver">
+        <activity
+            android:name=".AddCaregivee"
+            android:label="@string/title_activity_add_caregivee"
+            android:theme="@style/Theme.Caregiver.NoActionBar"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
