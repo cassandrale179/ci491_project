@@ -5,6 +5,7 @@
     <color name="red">#FF0000</color>
     <color name="gray">#F2F2F2</color>
     <color name="green">#148F77</color>
+    <color name="white">#FFFFFF</color>
 
     <!-- Unused color -->
     <color name="purple_200">#F2F2F2</color>
