@@ -1,16 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BeaconFragment">
+    android:orientation="vertical"
+    tools:context=".BeaconFragment" >
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:textSize="30dp"
-        android:layout_centerInParent="true"
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="317dp">
+
+        <TableLayout
+            android:id="@+id/tableLayout1"
+            android:layout_width="fill_parent"
+            android:layout_height="317dp"
+            android:padding="10dip"
+            android:isScrollContainer="true">
+        </TableLayout>
+    </ScrollView>
+
+        <EditText
+            android:id="@+id/UUIDText"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:ems="10"
+            android:hint="@string/uuid_prompt"
+            android:textSize="20dp"
+            android:inputType="textShortMessage" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Beacon" />
+        android:orientation="horizontal">
 
-</RelativeLayout>
+        <EditText
+            android:id="@+id/regionName"
+            android:layout_width="171dp"
+            android:layout_height="50dp"
+            android:ems="10"
+            android:inputType="textShortMessage"
+            android:hint="@string/region_prompt"/>
+
+        <EditText
+            android:id="@+id/major"
+            android:layout_width="128dp"
+            android:layout_height="50dp"
+            android:ems="10"
+            android:inputType="textShortMessage|number"
+            android:hint="@string/major_prompt"/>
+
+        <EditText
+            android:id="@+id/minor"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:ems="10"
+            android:hint="@string/minor_prompt"
+            android:inputType="textShortMessage|number" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:textAllCaps="false"
+        android:layout_marginTop="10dp"
+        android:textSize="20dp"
+        android:backgroundTint="@color/teal_700"
+        android:text="Start Scanning" />
+
+    <Button
+        android:id="@+id/stop_button"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:textAllCaps="false"
+        android:layout_marginTop="10dp"
+        android:textSize="20dp"
+        android:backgroundTint="@color/teal_700"
+        android:text="Stop Scanning" />
+
+</LinearLayout>
