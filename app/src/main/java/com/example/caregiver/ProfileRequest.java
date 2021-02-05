@@ -1,6 +1,7 @@
 package com.example.caregiver;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -11,9 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -72,6 +72,12 @@ public class ProfileRequest extends Fragment {
                 AlertDialog alert = builder.create();
                 alert.show();
             }
+        });
+
+        Button plusButton = view.findViewById(R.id.plusButton);
+        plusButton.setOnClickListener(v -> {
+            Intent intent = new Intent(view.getContext(), Request.class);
+            startActivity(intent);
         });
 
         return view;
