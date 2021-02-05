@@ -127,33 +127,33 @@ public class BeaconScanService extends Service {
         IBeaconRegion region4 = new BeaconRegion.Builder().identifier("Jui Bedroom")
                 .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
                 // Optional major and minor values
-                .major(2).minor(2).build();
+                .major(2).build();
         beaconRegions.add(region4);
         regionRssiMap.put("Jui Bedroom", new HashMap<String, Double>());
         regionRssiMap.get("Jui Bedroom").put("sum", 0.0);
         regionRssiMap.get("Jui Bedroom").put("count", 0.0);
         regionRssiMap.get("Jui Bedroom").put("dist", 0.0);
 
-        IBeaconRegion region5 = new BeaconRegion.Builder().identifier("Jui Bathroom") // Region identifier is mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
-                // Optional major and minor values
-                .major(2).minor(1).build();
-        beaconRegions.add(region5);
-        regionRssiMap.put("Jui Bathroom", new HashMap<String, Double>());
-        regionRssiMap.get("Jui Bathroom").put("sum", 0.0);
-        regionRssiMap.get("Jui Bathroom").put("count", 0.0);
-        regionRssiMap.get("Jui Bathroom").put("dist", 0.0);
+//        IBeaconRegion region5 = new BeaconRegion.Builder().identifier("Jui Bathroom") // Region identifier is mandatory.
+//                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
+//                // Optional major and minor values
+//                .major(2).minor(1).build();
+//        beaconRegions.add(region5);
+//        regionRssiMap.put("Jui Bathroom", new HashMap<String, Double>());
+//        regionRssiMap.get("Jui Bathroom").put("sum", 0.0);
+//        regionRssiMap.get("Jui Bathroom").put("count", 0.0);
+//        regionRssiMap.get("Jui Bathroom").put("dist", 0.0);
 
-        IBeaconRegion region6 = new BeaconRegion.Builder().identifier("Jui Kitchen") // Region identifier is mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
-                // Optional major and minor values
-                .major(2).minor(3).build();
-        regionRssiMap.put("Jui Kitchen", new HashMap<String, Double>());
-        regionRssiMap.get("Jui Kitchen").put("sum", 0.0);
-        regionRssiMap.get("Jui Kitchen").put("count", 0.0);
-        regionRssiMap.get("Jui Kitchen").put("dist", 0.0);
-
-        beaconRegions.add(region6);
+//        IBeaconRegion region6 = new BeaconRegion.Builder().identifier("Jui Kitchen") // Region identifier is mandatory.
+//                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
+//                // Optional major and minor values
+//                .major(2).minor(3).build();
+//        regionRssiMap.put("Jui Kitchen", new HashMap<String, Double>());
+//        regionRssiMap.get("Jui Kitchen").put("sum", 0.0);
+//        regionRssiMap.get("Jui Kitchen").put("count", 0.0);
+//        regionRssiMap.get("Jui Kitchen").put("dist", 0.0);
+//
+//        beaconRegions.add(region6);
 
         proximityManager.spaces().iBeaconRegions(beaconRegions);
     }
@@ -274,7 +274,7 @@ public class BeaconScanService extends Service {
 
                 Log.i("Sample", "discovering");
 
-                Log.i("Sample", "Beacon discovered " + region.getIdentifier() + " beacon unique id " + ibeacon.getUniqueId());
+                Log.i("Sample", "Beacon discovered " + region.getIdentifier() + " beacon address " + ibeacon.getAddress());
                 Log.i("Sample", "Current time = " + getTimeNow() + " Last time = " + lastTimeInMillis + " Difference = " + (getTimeNow() - lastTimeInMillis));
 
 
