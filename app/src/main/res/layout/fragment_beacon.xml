@@ -5,78 +5,105 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".BeaconFragment" >
+    tools:context=".BeaconFragment">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="317dp">
+        android:layout_height="317dp"
+        android:layout_marginBottom="20dp">
 
         <TableLayout
             android:id="@+id/tableLayout1"
             android:layout_width="fill_parent"
             android:layout_height="317dp"
-            android:padding="10dip"
-            android:isScrollContainer="true">
-        </TableLayout>
+            android:isScrollContainer="true"
+            android:padding="10dip"></TableLayout>
     </ScrollView>
 
-        <EditText
-            android:id="@+id/UUIDText"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:ems="10"
-            android:hint="@string/uuid_prompt"
-            android:textSize="20dp"
-            android:inputType="textShortMessage" />
+    <EditText
+        android:id="@+id/UUIDText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:ems="10"
+        android:hint="@string/uuid_prompt"
+        android:inputType="textShortMessage"
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        >
 
         <EditText
             android:id="@+id/regionName"
-            android:layout_width="171dp"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textShortMessage"
-            android:hint="@string/region_prompt"/>
+            android:hint="@string/region_prompt"
+            android:inputType="textShortMessage" />
 
         <EditText
             android:id="@+id/major"
-            android:layout_width="128dp"
-            android:layout_height="50dp"
+            android:layout_width="84dp"
+            android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textShortMessage|number"
-            android:hint="@string/major_prompt"/>
+            android:hint="@string/major_prompt"
+            android:inputType="number" />
 
         <EditText
             android:id="@+id/minor"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/minor_prompt"
-            android:inputType="textShortMessage|number" />
+            android:inputType="number" />
     </LinearLayout>
 
     <Button
-        android:id="@+id/start_button"
+        android:id="@+id/add_region"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:textAllCaps="false"
-        android:layout_marginTop="10dp"
-        android:textSize="20dp"
+        android:layout_height="wrap_content"
         android:backgroundTint="@color/teal_700"
-        android:text="Start Scanning" />
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:text="@string/add_region" />
 
-    <Button
-        android:id="@+id/stop_button"
+    <TextView
+        android:id="@+id/addRegionMessage"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:textAllCaps="false"
-        android:layout_marginTop="10dp"
-        android:textSize="20dp"
-        android:backgroundTint="@color/teal_700"
-        android:text="Stop Scanning" />
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:textStyle="italic"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/red" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/start_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/teal_700"
+            android:text="@string/start_scanning"
+            android:textAllCaps="true"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/stop_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/teal_700"
+            android:text="@string/stop_scanning"
+            android:textAllCaps="true"
+            android:textSize="14sp" />
+
+    </LinearLayout>
 
 </LinearLayout>
