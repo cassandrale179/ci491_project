@@ -1,8 +1,6 @@
 package com.example.caregiver;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -35,10 +33,12 @@ import com.example.caregiver.services.BeaconScanService;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+
 
 public class MainActivity extends AppCompatActivity {
-
-    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,4 +87,13 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             };
+    }
+
+    /** Navigation function to move to Identification Screen **/
+    public void openIdentification(View v){
+        String tag = (String) v.getTag();
+        Intent i = new Intent(MainActivity.this, Identification.class);
+        i.putExtra("tag", tag);
+        startActivity(i);
+    }
 }
