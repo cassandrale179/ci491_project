@@ -1,5 +1,6 @@
 package com.example.caregiver;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,6 +8,14 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ExpandableListView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,50 +24,78 @@ import android.view.ViewGroup;
  */
 public class TaskFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    // Create glonal variables
+    ExpandableListView caregiveeList;
+    ArrayList<String> listGroup = new ArrayList<>();
+    HashMap<String, ArrayList<String>> listChild = new HashMap<>();
+    MainAdapter adapter;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public TaskFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TaskFragment.
-     */
+
     // TODO: Rename and change types and number of parameters
     public static TaskFragment newInstance(String param1, String param2) {
         TaskFragment fragment = new TaskFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
+    }
+
+    public void createExpandableList(View view){
+        // Set up the child list view
+        ArrayList<String> fakeNames = new ArrayList<String>();
+        fakeNames.add("Mary Yu");
+        fakeNames.add("John Smith");
+        fakeNames.add("Robert Nguyen");
+
+        ArrayList<String> fakeTasks = new ArrayList<String>();
+        fakeTasks.add("Brush Your Teeth");
+        fakeTasks.add("Wash Your Hand");
+        fakeTasks.add("Do Your Laundry");
+
+        caregiveeList = (ExpandableListView) view.findViewById(R.id.caregiveelist);
+        for (int g = 0; g < fakeNames.size(); g++){
+            listGroup.add(fakeNames.get(g));
+            ArrayList<String> arrayList = new ArrayList<>();
+            for (int c = 0; c < fakeTasks.size(); c++){
+
+                // TODO: this is a brute force attempt to set left margin to child text
+                // for some reason I can't set it in MainAdapter.
+                // If someone can fix this, that would be great.
+                arrayList.add("    " + fakeTasks.get(c));
+            }
+            listChild.put(listGroup.get(g), arrayList);
+        }
+
+        adapter = new MainAdapter(listGroup, listChild);
+        caregiveeList.setAdapter(adapter);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_task, container, false);
+        View view = inflater.inflate(R.layout.fragment_task, container, false);
+
+        // Build the expandable list
+        createExpandableList(view);
+
+        // Redirect to add task page for floating + button
+        FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.addTaskButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(view.getContext(), AddTask.class));
+            }
+        });
+
+        return view;
     }
 }
