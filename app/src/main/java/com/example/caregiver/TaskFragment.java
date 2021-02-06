@@ -150,7 +150,6 @@ public class TaskFragment extends Fragment {
                 taskList.put(caregiveeId, tasks);
             }
             caregiveeInfo.put(caregiveeId, name);
-            int s = caregiveeInfo.size();
 
             // TODO: hacky way of display the list. Need to use async.
             if (caregiveeInfo.size() == size){
