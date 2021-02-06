@@ -36,16 +36,16 @@ public class AddTask extends AppCompatActivity {
         setContentView(R.layout.activity_add_task);
 
         // Get data from the tasks page
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String caregiveeStr = preferences.getString("caregiveeArray", null);
-        if (caregiveeStr != null){
-            Gson gson = new Gson();
-            JsonArray caregiveeArray = gson.fromJson(caregiveeStr, JsonArray.class);
-            for (JsonElement element : caregiveeArray) {
-                JsonObject caregivee = element.getAsJsonObject();
-                CAREGIVEE_OPTIONS.add(caregivee.get("name").toString());
-            }
-        }
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        String caregiveeStr = preferences.getString("caregiveeArray", null);
+//        if (caregiveeStr != null){
+//            Gson gson = new Gson();
+//            JsonArray caregiveeArray = gson.fromJson(caregiveeStr, JsonArray.class);
+//            for (JsonElement element : caregiveeArray) {
+//                JsonObject caregivee = element.getAsJsonObject();
+//                CAREGIVEE_OPTIONS.add(caregivee.get("name").toString());
+//            }
+//        }
 
         // Set spinner options for beacons
         Spinner beaconSpinner = (Spinner) findViewById(R.id.taskBeacon);
