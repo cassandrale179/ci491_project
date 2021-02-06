@@ -121,6 +121,7 @@ public class BeaconFragment extends Fragment {
         else {
             displayErrorMessage("", rootView);
             regionInfo newRegionInfo = new regionInfo(UUIDValue, regionName, majorValue);
+            updateRegionInfoInBackend(newRegionInfo);
             Log.i("Sample", "region Info = " + newRegionInfo.toString());
         }
 
