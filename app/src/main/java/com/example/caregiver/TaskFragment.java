@@ -60,7 +60,7 @@ public class TaskFragment extends Fragment {
         String taskName; /* task actions (e.g Brush Your Teeth) */
         String taskNote; /* task notes (Your Brush Is The Red One) */
         String assignedStatus; /* true = task assigned to caregivee to do, false otherwise*/
-        String completionStatus; /* complete = caregivee complete the tasks, incomplete otherwise */
+        String completionStatus; /* caregivee complete the tasks (complete), incomplete otherwise */
 
         // Default constructor
         public Task() {};
@@ -110,13 +110,11 @@ public class TaskFragment extends Fragment {
 
     /**
      * Return list of caregivees associated with the caregiver.
-     * @param view The view of the task page
      */
-    public void queryCaregivees(View view) {
+    public void queryCaregivees() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String userId = preferences.getString("userId", "");
         DatabaseReference ref = database.child("users/" + userId);
-        caregiveeList = (ExpandableListView) view.findViewById(R.id.caregiveelist);
 
         ref.addValueEventListener(new ValueEventListener() {@Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -139,8 +137,9 @@ public class TaskFragment extends Fragment {
      */
     protected void getCaregiveeNameAndTask(String caregiveeId, int size) {
         DatabaseReference ref = database.child("users/" + caregiveeId);
-        JsonObject caregivee = new JsonObject();
-        ref.addValueEventListener(new ValueEventListener() {@RequiresApi(api = Build.VERSION_CODES.N)@Override
+        ref.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             String name = dataSnapshot.child("name").getValue().toString();
             Object taskObject = dataSnapshot.child("rooms").getValue();
@@ -148,16 +147,13 @@ public class TaskFragment extends Fragment {
                 Gson gson = new Gson();
                 String tasksJson = gson.toJson(taskObject);
                 List<Task> tasks = createRoomAndTaskObject(caregiveeId, tasksJson);
-                caregiveeInfo.put(caregiveeId, name);
                 taskList.put(caregiveeId, tasks);
             }
-
+            caregiveeInfo.put(caregiveeId, name);
             int s = caregiveeInfo.size();
-            Log.d("caregiveeinfosize", String.valueOf(s));
 
             // TODO: hacky way of display the list. Need to use async.
             if (caregiveeInfo.size() == size){
-                Log.d("huh", "THIS SHOULD BE CALL!");
                 displayCaregivee();
             }
         }@Override
@@ -177,7 +173,6 @@ public class TaskFragment extends Fragment {
 
         // Initialize an array list that will store all tasks associated with the caregivee.
         List<Task> tasks = new ArrayList<>();
-
 
         // Parse the roomString to return a json Object representation.
         JsonParser parser = new JsonParser();
@@ -210,12 +205,24 @@ public class TaskFragment extends Fragment {
         return tasks;
     }
 
-    /**
-     * Display caregivee on the main screen.
-     */
+    /** Display caregivee on the main screen. */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void displayCaregivee(){
-        Log.d("call this!", caregiveeInfo.toString());
-        Log.d("yahoo!", taskList.toString());
+        ArrayList<String> listGroup = new ArrayList<>();
+        HashMap<String,ArrayList<String>> listChild = new HashMap<>();
+        caregiveeInfo.forEach((id, name) -> {
+            listGroup.add(name);
+            List < Task > tasks = taskList.get(id);
+            ArrayList < String > taskName =  new ArrayList<>();
+            if (tasks != null){
+                for (Task task : tasks){
+                    taskName.add("    " + task.taskName.replace("\"", ""));
+                }
+            }
+            listChild.put(name, taskName);
+        });
+        adapter = new MainAdapter(listGroup, listChild);
+        caregiveeList.setAdapter(adapter);
     }
 
     @Override
@@ -223,8 +230,11 @@ public class TaskFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_task, container, false);
 
+        // Get the expandable list id
+        caregiveeList = (ExpandableListView) view.findViewById(R.id.caregiveelist);
+
         // Query caregivees for this caregiver
-        queryCaregivees(view);
+        queryCaregivees();
 
         // Redirect to add task page for floating + button
         FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.addTaskButton);
