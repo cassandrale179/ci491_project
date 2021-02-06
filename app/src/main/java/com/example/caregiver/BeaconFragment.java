@@ -17,7 +17,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import com.example.caregiver.services.BeaconScanService;
+
+import java.util.HashMap;
 
 public class BeaconFragment extends Fragment {
 
@@ -31,14 +43,12 @@ public class BeaconFragment extends Fragment {
     public static class regionInfo {
         public String UUID; 
         public String regionName;
-        public int majorValue;
-        public int minorValue;
+        public String majorValue;
 
-        public regionInfo(String UUID, String regionName, int majorValue, int minorValue){
+        public regionInfo(String UUID, String regionName, String majorValue){
             this.UUID = UUID;
             this.regionName = regionName;
             this.majorValue = majorValue;
-            this.minorValue = minorValue;
         }
 
         @Override
@@ -47,7 +57,6 @@ public class BeaconFragment extends Fragment {
                     "UUID='" + UUID + '\'' +
                     ", regionName='" + regionName + '\'' +
                     ", majorValue=" + majorValue +
-                    ", minorValue=" + minorValue +
                     '}';
         }
     }
@@ -106,18 +115,23 @@ public class BeaconFragment extends Fragment {
         majorField = rootView.findViewById(R.id.major);
         String majorValue = majorField.getText().toString();
 
-        minorField = rootView.findViewById(R.id.minor);
-        String minorValue = minorField.getText().toString();
-
-        if (UUIDValue.isEmpty() || regionName.isEmpty() || majorValue.isEmpty() || minorValue.isEmpty()){
+        if (UUIDValue.isEmpty() || regionName.isEmpty() || majorValue.isEmpty()){
             displayErrorMessage("One or more fields are empty.", rootView);
         }
         else {
             displayErrorMessage("", rootView);
-            regionInfo newRegionInfo = new regionInfo(UUIDValue, regionName, Integer.parseUnsignedInt(majorValue), Integer.parseUnsignedInt(minorValue));
+            regionInfo newRegionInfo = new regionInfo(UUIDValue, regionName, majorValue);
             Log.i("Sample", "region Info = " + newRegionInfo.toString());
         }
 
+    }
+
+    public void updateRegionInfoInBackend(regionInfo newRegionInfo){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        HashMap<String, Object> newRegion = new HashMap<String, Object>();
+        newRegion.put(newRegionInfo.regionName, newRegionInfo.majorValue);
+        database.child("users").child(user.getUid()).child("rooms").updateChildren(newRegion);
     }
 
     public void displayErrorMessage(String sourceString, View rootView){
