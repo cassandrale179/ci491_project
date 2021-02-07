@@ -16,6 +16,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -46,5 +47,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.3.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.android.gms:play-services-basement:17.4.0'
+    implementation 'com.kontaktio:sdk:5.0.2'
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'androidx.multidex:multidex:2.0.1'
 }
