@@ -39,14 +39,14 @@
             android:layout_marginBottom="20dp"/>
 
         <ImageView
-            android:id="@+id/signupLogo"
+            android:id="@+id/addTaskLogo"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginBottom="20dp"
             app:srcCompat="@drawable/paper_note" />
 
         <TextView
-            android:id="@+id/signupMessage"
+            android:id="@+id/taskMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="invisible"

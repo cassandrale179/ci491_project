@@ -1,11 +1,13 @@
 package com.example.caregiver;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,12 +48,27 @@ public class AddTask extends AppCompatActivity {
     HashMap< String, List<String> > caregiveeRooms = new HashMap<>();
 
     // Set up global variables
-    Spinner caregiveeSpinner;
-    Spinner roomSpinner;
-    String selectedCaregiveeId;
-    EditText taskNameField;
-    EditText taskNotesField;
-    String caregiverId;
+    private Spinner caregiveeSpinner;
+    private Spinner roomSpinner;
+    public String selectedCaregiveeId;
+    private EditText taskNameField;
+    private EditText taskNotesField;
+    private String caregiverId;
+    private TextView errorMessage;
+    int red;
+    int green;
+
+    /**
+     * Render the error and success message field.
+     * @param sourceString The text message to be displayed.
+     * @param color The color for the text message (red for error, green for success).
+     */
+    public void displayMessage(String sourceString, int color) {
+        errorMessage.setText(Html.fromHtml(sourceString));
+        errorMessage.setVisibility(View.VISIBLE);
+        errorMessage.setTextColor(color);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +79,29 @@ public class AddTask extends AppCompatActivity {
         caregiveeSpinner = (Spinner) findViewById(R.id.taskCaregivee);
         roomSpinner = (Spinner) findViewById(R.id.taskRoom);
 
-        // Get data from the tasks page
+        // Initialize fields
+        taskNameField = (EditText) findViewById(R.id.taskName);
+        taskNotesField = (EditText) findViewById(R.id.taskNotes);
+        errorMessage = (TextView) findViewById(R.id.taskMessage);
+
+        // Set color
+        red = ContextCompat.getColor(getApplicationContext(), R.color.red);
+        green = ContextCompat.getColor(getApplicationContext(), R.color.green);
+
+        // Handling create spinner options
+        createSpinners();
+
+        // TODO: for some reason this crash the app after it return to the Tasks page
+        Button backButton = findViewById(R.id.taskBackButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(view.getContext(), TaskFragment.class));
+            }
+        });
+    }
+
+    protected void createSpinners(){
         Gson gson = new Gson();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String caregiveeRoomsStr = preferences.getString("caregiveeRooms", null);
@@ -108,17 +148,6 @@ public class AddTask extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
-        // TODO: for some reason this crash the app after it return to the Tasks page
-        taskNameField = (EditText) findViewById(R.id.taskName);
-        taskNotesField = (EditText) findViewById(R.id.taskNotes);
-        Button backButton = findViewById(R.id.taskBackButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(view.getContext(), TaskFragment.class));
-            }
-        });
     }
 
     /**
@@ -126,10 +155,10 @@ public class AddTask extends AppCompatActivity {
      * @param view The view of the Add Task page
      */
     public void CreateTask(View view){
-        if (taskNameField.getText() == null ||
+        if (taskNameField.getText().toString().isEmpty() ||
                 roomSpinner.getSelectedItem() == null ||
                 selectedCaregiveeId == null){
-            Log.d("Error", "Your field is missing");
+            displayMessage("Some fields are missing.", red);
             return;
         }
 
@@ -161,9 +190,9 @@ public class AddTask extends AppCompatActivity {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
-                    System.out.println("Data could not be saved " + databaseError.getMessage());
+                    displayMessage(databaseError.getMessage(), red);
                 } else {
-                    System.out.println("Data saved successfully.");
+                   displayMessage("Data saved successfully.", green);
                 }
             }
         });
