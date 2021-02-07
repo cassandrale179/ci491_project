@@ -7,6 +7,14 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,14 +27,6 @@ public class Task_Caregivee extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Task_Caregivee.
-     */
     // TODO: Rename and change types and number of parameters
     public static Task_Caregivee newInstance(String param1, String param2) {
         Task_Caregivee fragment = new Task_Caregivee();
@@ -38,10 +38,41 @@ public class Task_Caregivee extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    protected void loadCaregiveesTask(){
+
+
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_task__caregivee, container, false);
+        View view = inflater.inflate(R.layout.fragment_task__caregivee, container, false);
+
+        // Add list
+        ArrayList<String> arrayList = new ArrayList<String>();
+        arrayList.add("Brush Your Teeth");
+        arrayList.add("Wash Your Hand");
+        arrayList.add("Turn Off The Light");
+        arrayList.add("Lock the Door");
+        arrayList.add("Do Your Laundry");
+        arrayList.add("Set Alarm for Morning");
+
+        List<Map<String, String>> data = new ArrayList<Map<String, String>>();
+        for (int i=0; i <arrayList.size(); i++) {
+            Map<String, String> datum = new HashMap<String, String>(2);
+            datum.put("title", arrayList.get(i));
+            datum.put("subtitle", "bathroom");
+            data.add(datum);
+        }
+        final ListView list = view.findViewById(R.id.caregiveeTaskList);
+        SimpleAdapter adapter = new SimpleAdapter(getActivity(), data,
+                android.R.layout.simple_list_item_2,
+                new String[] {"title", "subtitle"},
+                new int[] {android.R.id.text1,
+                        android.R.id.text2});
+        list.setAdapter(adapter);
+
+        return view;
     }
 }
