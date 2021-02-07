@@ -240,13 +240,13 @@ public class TaskFragment extends Fragment {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SharedPreferences.Editor editor = preferences.edit();
         Gson gson = new Gson();
-        String caregiveeInfoStr = gson.toJson(caregiveeInfo);
-        String caregiveeRoomStr = gson.toJson(caregiveeRooms);
-
-        editor.putString("caregiveeInfo", caregiveeInfoStr);
-        editor.putString("caregiveeRoom", caregiveeRoomStr);
-
-        editor.apply();
+        if (caregiveeInfo != null && caregiveeRooms != null){
+            String caregiveeInfoStr = gson.toJson(caregiveeInfo);
+            String caregiveeRoomStr = gson.toJson(caregiveeRooms);
+            editor.putString("caregiveeInfo", caregiveeInfoStr);
+            editor.putString("caregiveeRoom", caregiveeRoomStr);
+            editor.apply();
+        }
     }
 
     @Override

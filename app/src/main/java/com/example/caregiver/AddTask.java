@@ -14,6 +14,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -27,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class AddTask extends AppCompatActivity {
 
@@ -39,14 +44,13 @@ public class AddTask extends AppCompatActivity {
     // Key is the caregivee id, value is a list of rooms in that caregivee's house
     HashMap< String, List<String> > caregiveeRooms = new HashMap<>();
 
-    // Initialize a default array of rooms in case caregivee has not create room yet.
-
-
-    // Set up drop down list
+    // Set up global variables
     Spinner caregiveeSpinner;
     Spinner roomSpinner;
-
     String selectedCaregiveeId;
+    EditText taskNameField;
+    EditText taskNotesField;
+    String caregiverId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,8 @@ public class AddTask extends AppCompatActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String caregiveeRoomsStr = preferences.getString("caregiveeRooms", null);
         String caregiveeNames = preferences.getString("caregiveeInfo", null);
+        caregiverId =  preferences.getString("userId", "");
+
         if (caregiveeNames != null){
             HashMap< String, String > caregiveeInfo = gson.fromJson(caregiveeNames, HashMap.class);
             caregiveeInfo.forEach((id, name) -> {
@@ -80,11 +86,11 @@ public class AddTask extends AppCompatActivity {
         caregiveeSpinner.setAdapter(adapter);
 
         // When user click on selected spinner, we want to get the caregivee id and their rooms.
-
-
         caregiveeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 selectedCaregiveeId = caregivee_spinner_ids.get(pos);
+
+                // If caregivee has not defined their room, we give them default value.
                 if (caregiveeRooms.size() > 0 && caregiveeRooms.containsKey(selectedCaregiveeId)){
                     List<String> rooms = caregiveeRooms.get(selectedCaregiveeId);
                     ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (
@@ -104,6 +110,8 @@ public class AddTask extends AppCompatActivity {
         });
 
         // TODO: for some reason this crash the app after it return to the Tasks page
+        taskNameField = (EditText) findViewById(R.id.taskName);
+        taskNotesField = (EditText) findViewById(R.id.taskNotes);
         Button backButton = findViewById(R.id.taskBackButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,16 +126,46 @@ public class AddTask extends AppCompatActivity {
      * @param view The view of the Add Task page
      */
     public void CreateTask(View view){
-        EditText taskNameField = (EditText) view.findViewById(R.id.taskName);
-        EditText taskNotesField = (EditText) view.findViewById(R.id.taskNotes);
+        if (taskNameField.getText() == null ||
+                roomSpinner.getSelectedItem() == null ||
+                selectedCaregiveeId == null){
+            Log.d("Error", "Your field is missing");
+            return;
+        }
+
         String taskName = taskNameField.getText().toString();
-        String taskNotes = taskNotesField.getText().toString();
+        String taskNotes = "N/A";
         String room = roomSpinner.getSelectedItem().toString();
+        String uniqueID = UUID.randomUUID().toString();
 
-        System.out.println(taskName);
-        System.out.println(taskNotes);
-        System.out.println(selectedCaregiveeId);
-        System.out.println(room);
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference taskRef = database
+                .child("users")
+                .child(selectedCaregiveeId)
+                .child("rooms")
+                .child(room)
+                .child("tasks");
 
+        if (taskNotesField.getText() != null){
+            taskNotes = taskNotesField.getText().toString();
+        }
+
+        Map<String, Object> userUpdates = new HashMap<>();
+        userUpdates.put(uniqueID+"/name", taskName);
+        userUpdates.put(uniqueID+"/notes", taskNotes);
+        userUpdates.put(uniqueID+"/caregiverID", caregiverId);
+        userUpdates.put(uniqueID+"/assignedStatus", "true");
+        userUpdates.put(uniqueID+"/completionStatus", "incomplete");
+
+        taskRef.updateChildren(userUpdates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    System.out.println("Data could not be saved " + databaseError.getMessage());
+                } else {
+                    System.out.println("Data saved successfully.");
+                }
+            }
+        });
     }
 }
