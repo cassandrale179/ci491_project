@@ -68,27 +68,24 @@
             android:layout_marginBottom="10dp"/>
 
         <Spinner
-            android:id="@+id/taskBeacon"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:ems="10"
-            tools:layout_editor_absoluteX="99dp"
-            tools:layout_editor_absoluteY="413dp"
-            android:background="@color/gray"
-            android:padding="10dp"
-            android:layout_marginBottom="10dp"/>
-
-        <Spinner
             android:id="@+id/taskCaregivee"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:ems="10"
             android:inputType="textPassword"
-            tools:layout_editor_absoluteX="100dp"
-            tools:layout_editor_absoluteY="490dp"
             android:background="@color/gray"
             android:padding="10dp"
             android:layout_marginBottom="10dp"/>
+
+        <Spinner
+            android:id="@+id/taskRoom"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:ems="10"
+            android:background="@color/gray"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"/>
+
 
         <EditText
             android:id="@+id/taskNotes"
@@ -97,8 +94,6 @@
             android:ems="10"
             android:inputType="text"
             android:hint="Task Notes"
-            tools:layout_editor_absoluteX="99dp"
-            tools:layout_editor_absoluteY="560dp"
             android:background="@color/gray"
             android:padding="10dp"
             android:layout_marginBottom="10dp"/>
@@ -119,7 +114,8 @@
                 android:textSize="20dp"
                 android:backgroundTint="@color/teal_700"
                 android:layout_marginRight="10dp"
-                android:layout_weight="0.5" />
+                android:layout_weight="0.5"
+                android:onClick="CreateTask"/>
 
             <Button
                 android:id="@+id/taskBackButton"

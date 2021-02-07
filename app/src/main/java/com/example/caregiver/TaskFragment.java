@@ -92,6 +92,11 @@ public class TaskFragment extends Fragment {
 
     // This hashmap store the caregivee id (key) and their name (value)
     HashMap< String, String > caregiveeInfo = new HashMap<>();
+
+    // This hashmap store the caregivee id (key) and their rooms (value)
+    HashMap < String, List< String >> caregiveeRooms = new HashMap<>();
+
+    // This is the adapter for the
     MainAdapter adapter;
 
     // Default public constructor
@@ -179,6 +184,9 @@ public class TaskFragment extends Fragment {
         List < String > rooms = roomObject.entrySet().stream().map(i
                 ->i.getKey()).collect(Collectors.toCollection(ArrayList::new));
 
+        // Store the caregivee and their rooms
+        caregiveeRooms.put(caregiveeId, rooms);
+
         // For each room, get their corresponding tasks
         for (String roomStr: rooms) {
             JsonObject singleRoom = roomObject.getAsJsonObject(roomStr);
@@ -222,6 +230,23 @@ public class TaskFragment extends Fragment {
         });
         adapter = new MainAdapter(listGroup, listChild);
         caregiveeList.setAdapter(adapter);
+
+        // Store caregivee + their name, and caregivee + their rooms for the Add Task page
+        shareDataWithAddTask();
+    }
+
+    /** Sent the data of the caregivee, their name, and their rooms to the Add Task page. */
+    public void shareDataWithAddTask(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences.Editor editor = preferences.edit();
+        Gson gson = new Gson();
+        String caregiveeInfoStr = gson.toJson(caregiveeInfo);
+        String caregiveeRoomStr = gson.toJson(caregiveeRooms);
+
+        editor.putString("caregiveeInfo", caregiveeInfoStr);
+        editor.putString("caregiveeRoom", caregiveeRoomStr);
+
+        editor.apply();
     }
 
     @Override
