@@ -164,8 +164,8 @@ public class Task_Caregivee extends Fragment {
         List<Map<String, String>> data = new ArrayList<Map<String, String>>();
         for (Task t : tasks) {
             Map<String, String> room = new HashMap<String, String>(2);
-            room.put("title",t.taskName);
-            room.put("subtitle", t.room);
+            room.put("title",t.taskName.replace("\"", " "));
+            room.put("subtitle", " " + t.room);
             data.add(room);
         }
         final ListView list = view.findViewById(R.id.caregiveeTaskList);
