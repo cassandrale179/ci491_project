@@ -2,7 +2,9 @@ package com.example.caregiver;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -119,6 +121,15 @@ public class Signup extends AppCompatActivity {
 
                 userObject.put(user.getUid(), new User(name, email, tag));
                 usersRef.updateChildren(userObject);
+
+                // store in current session shared preferences
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("userId", user.getUid());
+                editor.putString("name", name);
+                editor.putString("email", email);
+                editor.putString("tag", tag);
+                editor.apply();
 
                 Intent i = new Intent(Signup.this, Request.class);
                 startActivity(i);

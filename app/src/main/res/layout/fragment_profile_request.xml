@@ -38,7 +38,7 @@
             android:text="@string/plus"
             android:textSize="23sp"
             android:textStyle="bold"
-            android:visibility="visible" />
+            android:visibility="invisible" />
 
 
     </LinearLayout>

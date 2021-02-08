@@ -12,6 +12,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class Login extends AppCompatActivity {
 
@@ -67,11 +72,29 @@ public class Login extends AppCompatActivity {
      * Navigates to Dashboard after successful sign in through Firebase
      */
     private void navigateToDashboard(String userId){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users/" + userId);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("userId", userId);
-        editor.apply();
 
+        // Attach a listener to read name , email of user
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("name").getValue().toString();
+                String email = dataSnapshot.child("email").getValue().toString();
+                String tag = dataSnapshot.child("role").getValue().toString();
+                editor.putString("name", name);
+                editor.putString("email", email);
+                editor.putString("tag", tag);
+                editor.apply();
+                Log.d("SUCCESS", "Added name as " + name + " and email as " + email);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("failure", "Unable to obtain user information");
+            }
+        });
         Intent i = new Intent(Login.this, Dashboard.class);
         startActivity(i);
     }

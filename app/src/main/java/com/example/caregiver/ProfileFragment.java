@@ -65,7 +65,7 @@ public class ProfileFragment extends Fragment {
         viewPager.setAdapter(adapter);
     }
 
-    private class ProfileAdapter extends FragmentPagerAdapter{
+    private static class ProfileAdapter extends FragmentPagerAdapter{
         public ProfileAdapter(@NonNull FragmentManager fm){
             super(fm);
         }
@@ -75,13 +75,11 @@ public class ProfileFragment extends Fragment {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    ProfileInfo infoFragment = new ProfileInfo();
-                    return infoFragment;
+                    return new ProfileInfo();
                 case 1:
-                    ProfileRequest requestFragment = new ProfileRequest();
-                    return requestFragment;
+                    return new ProfileRequest();
                 default:
-                    return null;
+                    return new ProfileInfo();
             }
         }
 
