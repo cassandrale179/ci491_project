@@ -10,6 +10,8 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.Set;
+
 public class Dashboard extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
@@ -34,7 +36,8 @@ public class Dashboard extends AppCompatActivity {
                 fragment = new HomeFragment();
                 break;
             case R.id.task:
-                fragment = new TaskFragment();
+                //fragment = new TaskFragment();
+                fragment = new SetTasksFragment(); // For testing.
                 break;
             case R.id.beacon:
                 fragment = new BeaconFragment();
