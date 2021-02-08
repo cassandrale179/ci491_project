@@ -69,7 +69,7 @@ public class SetTasksFragment extends Fragment {
         // Set the content of the ListView
         ListView listView = (ListView)view.findViewById(R.id.listView);
         String[] testData = {"One", "Two", "Three"};
-        ArrayAdapter<String> testAdapter = new ArrayAdapter<String>(getContext(),
+        ArrayCheckboxAdapter<String> testAdapter = new ArrayCheckboxAdapter<String>(getContext(),
                 android.R.layout.simple_list_item_1, testData);
         listView.setAdapter(testAdapter);
 

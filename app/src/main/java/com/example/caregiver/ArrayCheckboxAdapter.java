@@ -7,12 +7,18 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
+
+    private ArrayList<Integer> selectedPositions;
 
     public ArrayCheckboxAdapter(Context context, int layout, T[] array)
     {
         super(context, layout, array);
+        selectedPositions = new ArrayList<>();
     }
 
     @Override
@@ -23,13 +29,34 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
 
         // Add the checkbox
         CheckBox checkbox = new CheckBox(this.getContext());
+        checkbox.setOnClickListener(view -> {
+            if (selectedPositions.contains(position))
+            {
+                selectedPositions.remove(position);
+            }
+            else
+            {
+                selectedPositions.add(position);
+            }
+        });
         row.addView(checkbox);
 
         // Add the descriptive text
-        EditText text = new EditText(this.getContext());
+        TextView text = new TextView(this.getContext());
         text.setText(this.getItem(position).toString());
+        text.setTextSize(20);
         row.addView(text);
 
         return row;
+    }
+
+    public T[] getSelectedObjects()
+    {
+        ArrayList<T> retVal = new ArrayList<T>();
+        for (int i : selectedPositions)
+        {
+            retVal.add(getItem(i));
+        }
+        return (T[])retVal.toArray();
     }
 }
