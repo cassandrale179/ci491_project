@@ -74,6 +74,8 @@ public class Login extends AppCompatActivity {
 
         Intent i = new Intent(Login.this, Dashboard.class);
         startActivity(i);
+
+
     }
 
     /**
