@@ -1,6 +1,7 @@
 package com.example.caregiver;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -25,14 +26,18 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
     public View getView (int position, View convertView, ViewGroup parent)
     {
         LinearLayout row = new LinearLayout(this.getContext());
+        row.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         row.setOrientation(LinearLayout.HORIZONTAL);
 
         // Add the checkbox
         CheckBox checkbox = new CheckBox(this.getContext());
+        checkbox.setScaleX(1.5f);
+        checkbox.setScaleY(1.5f);
+        checkbox.setHeight((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getContext().getResources().getDisplayMetrics()));
         checkbox.setOnClickListener(view -> {
             if (selectedPositions.contains(position))
             {
-                selectedPositions.remove(position);
+                selectedPositions.remove(selectedPositions.indexOf(position));
             }
             else
             {
@@ -44,19 +49,19 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
         // Add the descriptive text
         TextView text = new TextView(this.getContext());
         text.setText(this.getItem(position).toString());
-        text.setTextSize(20);
+        text.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
         row.addView(text);
 
         return row;
     }
 
-    public T[] getSelectedObjects()
+    public ArrayList<T> getSelectedObjects()
     {
         ArrayList<T> retVal = new ArrayList<T>();
         for (int i : selectedPositions)
         {
             retVal.add(getItem(i));
         }
-        return (T[])retVal.toArray();
+        return retVal;
     }
 }

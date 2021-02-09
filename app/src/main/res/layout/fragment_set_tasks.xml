@@ -8,6 +8,7 @@
     <!-- TODO: Update blank fragment layout -->
 
     <LinearLayout
+        android:id="@+id/setTasksVertLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -33,27 +34,44 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
             android:text="John Smith"
-            android:textSize="30sp"
-            android:layout_marginLeft="40dp"/>
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1 of 3 tasks assigned"
-            android:textSize="20dp"
-            android:textStyle="italic"
             android:layout_marginLeft="40dp"
-            android:textColor="@color/teal_700"/>
+            android:text="1 of 3 tasks assigned"
+            android:textColor="@color/teal_700"
+            android:textSize="20dp"
+            android:textStyle="italic" />
 
-        <ListView
-            android:id="@+id/listView"
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="20dp" />
+        <ListView
+            android:id="@+id/setTasksListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="40dp"/>
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <Button
+            android:id="@+id/assignTasksButton"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginHorizontal="50dp"
+            android:backgroundTint="@color/teal_700"
+            android:text="Assign Task"
+            android:textSize="20sp"
+            android:textAllCaps="false"
+            android:layout_gravity="center"/>
 
     </LinearLayout>
-
 
 </FrameLayout>

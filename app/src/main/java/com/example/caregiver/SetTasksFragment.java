@@ -7,8 +7,14 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.WrapperListAdapter;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,11 +73,35 @@ public class SetTasksFragment extends Fragment {
 
 
         // Set the content of the ListView
-        ListView listView = (ListView)view.findViewById(R.id.listView);
+        ListView listView = (ListView)view.findViewById(R.id.setTasksListView);
         String[] testData = {"One", "Two", "Three"};
         ArrayCheckboxAdapter<String> testAdapter = new ArrayCheckboxAdapter<String>(getContext(),
                 android.R.layout.simple_list_item_1, testData);
         listView.setAdapter(testAdapter);
+
+
+        // Make the button do something.
+        Button button = view.findViewById(R.id.assignTasksButton);
+        button.setOnClickListener(v -> {
+            ListAdapter adapter = listView.getAdapter();
+            if (adapter instanceof WrapperListAdapter)
+            {
+                adapter = ((WrapperListAdapter) adapter).getWrappedAdapter();
+            }
+            ArrayList<String> selVals = ((ArrayCheckboxAdapter<String>)adapter).getSelectedObjects();
+
+            // Add a TextView so we can see if it worked
+            LinearLayout vert = (LinearLayout)view.findViewById(R.id.setTasksVertLayout);
+            TextView text = new TextView(getContext());
+            String displayText = "You selected: ";
+            for (String s : selVals)
+            {
+                displayText += s + ", ";
+            }
+            displayText = displayText.substring(0, displayText.length()-2);
+            text.setText(displayText);
+            vert.addView(text);
+        });
 
         return view;
     }
