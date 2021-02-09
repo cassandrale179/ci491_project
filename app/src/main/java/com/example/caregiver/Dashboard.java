@@ -24,6 +24,7 @@ public class Dashboard extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
     }
 
+
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = new
             BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
