@@ -87,7 +87,6 @@
                 android:gravity="center"
                 android:textSize="18dp"
                 android:text="Help"
-                android:textColor="@color/white"
                 />
         </LinearLayout>
 
