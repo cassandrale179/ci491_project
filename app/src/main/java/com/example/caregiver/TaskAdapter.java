@@ -28,10 +28,13 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         Task t = getItem(position);
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER);
+        row.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         // add a vertical LinearLayout to our row, which will hold the Task name and duration
         LinearLayout vert = new LinearLayout(getContext());
         vert.setOrientation(LinearLayout.VERTICAL);
+        vert.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f));
         vert.setGravity(Gravity.LEFT);
         row.addView(vert);
 
@@ -40,18 +43,14 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         taskName.setText(t.getName());
         taskName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
         taskName.setTypeface(null, Typeface.BOLD);
+        taskName.setGravity(Gravity.LEFT);
         vert.addView(taskName);
 
         // add the Duration text to vert
         TextView duration = new TextView(getContext());
-        if (t.getTimeCompleted() == null)
-        {
-            duration.setText("N/A");
-        }
-        else {
-            duration.setText("Time completed: " + durationToString(t.getTimeCompleted()));
-        }
+        duration.setText("Time completed: " + durationToString(t.getTimeCompleted()));
         duration.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+        duration.setGravity(Gravity.LEFT);
         vert.addView(duration);
 
         //add the Completion status to the right side of the row
@@ -65,7 +64,8 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             status.setText(t.getStatus().toString());
         }
         status.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-        row.setGravity(Gravity.RIGHT);
+        status.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f));
+        status.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
         row.addView(status);
 
         return row;
@@ -75,6 +75,10 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     {
         // Helper method to convert Duration to human-readable strings. Since toString() yields
         // an ISO-8601 format time, which is not easily readable.
+
+        if (d == null) {
+            return "N/A";
+        }
 
         long hours = (long)Math.floor(d.toHours());
         long minutes = (long)Math.floor(d.toMinutes()) - (60 * hours);
