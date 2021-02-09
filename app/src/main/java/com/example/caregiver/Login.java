@@ -18,6 +18,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Login extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -58,7 +60,7 @@ public class Login extends AppCompatActivity {
                         if ( mAuth.getCurrentUser() != null ) {
                             navigateToDashboard(mAuth.getCurrentUser().getUid());
                         } else {
-                            Log.w("failure", "Can't find user id");
+                            Log.w("failure", "signInWithEmail: cannot find user");
                         }
                     } else {
                         // If sign in fails, display a message to the user.
@@ -78,21 +80,18 @@ public class Login extends AppCompatActivity {
         editor.putString("userId", userId);
 
         // Attach a listener to read name , email of user
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String name = dataSnapshot.child("name").getValue().toString();
-                String email = dataSnapshot.child("email").getValue().toString();
-                String tag = dataSnapshot.child("role").getValue().toString();
-                editor.putString("name", name);
-                editor.putString("email", email);
-                editor.putString("tag", tag);
+                editor.putString("name", dataSnapshot.child("name").getValue().toString());
+                editor.putString("email", dataSnapshot.child("email").getValue().toString());
+                editor.putString("tag", dataSnapshot.child("role").getValue().toString());
                 editor.apply();
-                Log.d("SUCCESS", "Added name as " + name + " and email as " + email);
+                Log.i("INFO", "navToDashboard: Added user info ");
             }
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("failure", "Unable to obtain user information");
+            public void onCancelled(@NotNull DatabaseError databaseError) {
+                Log.d("failure", "navToDashboard: Unable to obtain user information");
             }
         });
         Intent i = new Intent(Login.this, Dashboard.class);
