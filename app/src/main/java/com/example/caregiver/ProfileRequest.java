@@ -1,14 +1,11 @@
 package com.example.caregiver;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -18,13 +15,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,7 +28,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,16 +56,34 @@ public class ProfileRequest extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    private void declineRequest(DataSnapshot requestSnapshot, List allRequests, int position){
+        // get user info & db ref
+        String userId = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString("userId", "");
+        final DatabaseReference ref = database.child("/users/" + userId);
+
+        // find the corresponding request to remove
+        for (DataSnapshot postSnapshot : requestSnapshot.getChildren()){
+            if(postSnapshot.getValue().toString().equals(allRequests.get(position))){
+                ref.child("/requests/" + postSnapshot.getKey()).removeValue();
+                Log.i("INFO", "declineRequest:removed " + postSnapshot.getValue());
+            }
+        }
+    }
+
     private void approveRequest(DataSnapshot requestSnapshot){
-        String userid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userId", "");
-        final DatabaseReference ref = database.child("/users/" + userid);
+        // get user info & db ref
+        String userId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userId", "");
+        String name = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("name", "");
+        final DatabaseReference ref = database.child("/users/" + userId);
+
         Map<String, Object> caregivers = new HashMap<>();
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean caregiverExists = false;
-                // if caregivers list exists, check if request caregiver exists there
+                // if caregivers list exists, check if requested caregiver exists there
                 if(snapshot.child("/caregivers/").exists()) {
                     for (DataSnapshot child : snapshot.child("/caregivers/").getChildren()) {
                         if (Objects.equals(child.getKey(), requestSnapshot.getKey())) {
@@ -79,11 +91,21 @@ public class ProfileRequest extends Fragment {
                         }
                     }
                 }
-                // add caregiver
+                // if caregiver doesn't exist in list of caregivers ->
+                // add caregiver to caregivee's list
+                // add caregivee to caregiver's list
                 if(!caregiverExists){
                     caregivers.put("/caregivers/" + requestSnapshot.getKey(), requestSnapshot.getValue());
                     ref.updateChildren(caregivers);
-                    Log.i("SUCCESS", "added caregiver: " + requestSnapshot.toString());
+                    Log.i("SUCCESS", "approveRequest:added caregiver " + requestSnapshot.getValue() + " to caregivee " + name);
+
+                    // add caregivee to caregiver's list
+                    final DatabaseReference caregiveeRef = database.child("/users/" + requestSnapshot.getKey());
+                    Map<String, Object> caregivers = new HashMap<>();
+                    caregivers.put("/caregivees/" + userId, name);
+                    caregiveeRef.updateChildren(caregivers);
+                    Log.i("INFO", "approveRequest:added caregivee " + name + " to caregiver " + requestSnapshot.getValue());
+
                 } else {
                     // inform user caregiver already exists
                     AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
@@ -93,8 +115,8 @@ public class ProfileRequest extends Fragment {
                 }
                 // remove request
                 if(snapshot.child("/requests/").exists()){
-                    ref.child("/requests/" +requestSnapshot.getKey()).removeValue();
-                    Log.i("INFO", "removed request " + requestSnapshot.toString());
+                    ref.child("/requests/" + requestSnapshot.getKey()).removeValue();
+                    Log.i("INFO", "approveRequest:removed request from " + requestSnapshot.getValue());
                 }
             }
 
@@ -105,75 +127,58 @@ public class ProfileRequest extends Fragment {
         });
     }
 
-//    private void removeCaregiverFromRequest(Object request){
-//        String userid = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userId", "");
-//        final DatabaseReference ref = database.child("/users/" + userid);
-//        ref.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                // remove request
-//                if(snapshot.child("/requests/").exists()){
-//                    ref.child("/requests/" + request).removeValue();
-//                    Log.i("INFO", "removed request " + request.toString());
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.e("FAIL", "approveRequest:onCancelled " + error.toException());
-//            }
-//        });
-//    }
+    private void displayMessageCaregiver(View view){
+        // display option to send request
+        TextView text = view.findViewById(R.id.profileTextLabel);
+        text.setText("Add a new Caregivee by clicking the round button below.");
+        text.setTextSize(15);
 
+        Button plusButton = view.findViewById(R.id.plusButton);
+        // show request initiation button
+        plusButton.setVisibility(View.VISIBLE);
+        plusButton.setOnClickListener(v -> {
+            Intent intent = new Intent(view.getContext(), Request.class);
+            startActivity(intent);
+        });
+    }
 
     @SuppressLint("SetTextI18n")
-    public void displayRequestList(View view, List allRequests, DataSnapshot snapshot){
-        boolean isCaregivee = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .getString("tag", "")
-                .equals("caregivee");
-
+    private void displayRequestListCaregivee(View view, List allRequests, DataSnapshot snapshot){
+        // get list element
         final ListView list = view.findViewById(R.id.requestList);
-        ArrayAdapter<String> arrayAdapter;
         list.setAdapter(null); // clear previous contents
-        Log.i("INFO", "re-displaying - cleared list: " + allRequests.toString());
-        // if requests is empty and its not a caregivee
-        if(allRequests.isEmpty() && !isCaregivee){
-            TextView text = view.findViewById(R.id.profileTextLabel);
-            text.setText("Add a new Caregivee by clicking the round button below.");
-            text.setTextSize(15);
-        }
-        // if requests is empty & is a caregivee
-        if(allRequests.isEmpty() && isCaregivee){
+        ArrayAdapter<String> arrayAdapter;
+
+        // if requests is empty
+        if(allRequests.isEmpty()){
             TextView text = view.findViewById(R.id.profileTextLabel);
             text.setText("No more requests. You're all clear :)");
             text.setTextSize(15);
-        }
-        arrayAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, allRequests);
+        } else {
+            arrayAdapter = new ArrayAdapter<String>(getActivity(),
+                    android.R.layout.simple_list_item_1, allRequests);
 
-        list.setAdapter(arrayAdapter);
-        list.setOnItemClickListener((parent, view1, position, id) -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("Approve " + allRequests.get(position).toString() + " as your Caregiver?")
-                    .setPositiveButton("Approve", (dialog, which) -> {
-                        // Add approved caregiver to Firebase - confirm user is a caregivee
-                        if(isCaregivee){
+            list.setAdapter(arrayAdapter);
+            list.setOnItemClickListener((parent, view1, position, id) -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Approve " + allRequests.get(position).toString() + " as your Caregiver?")
+                        .setPositiveButton("Approve", (dialog, which) -> {
+                            // Add approved caregiver to Firebase
                             for (DataSnapshot postSnapshot : snapshot.getChildren()){
-                               if(postSnapshot.getValue().toString().equals(allRequests.get(position))){
-                                   approveRequest(postSnapshot);
-//                                   removeCaregiverFromRequest(postSnapshot.getKey());
-                               }
+                                if(postSnapshot.getValue().toString().equals(allRequests.get(position))){
+                                    approveRequest(postSnapshot);
+                                }
                             }
-                        }
-                        // remove approved caregiver from requests
+                            // display success message
+                            Log.i("SUCCESS", "displayRequestListCaregivee: successful request approval");
 
-                        // add user in caregiver's list of caregivees
-
-                        // display success message
-                    }).setNegativeButton("Cancel", null);
-            AlertDialog alert = builder.create();
-            alert.show();
-        });
+                        }).setNegativeButton("Decline", ((dialog, which) -> {
+                            // Decline request & remove from Firebase
+                            declineRequest(snapshot, allRequests, position);
+                        }));
+                builder.create().show();
+            });
+        }
     }
 
     @Override
@@ -184,16 +189,27 @@ public class ProfileRequest extends Fragment {
 
         List<String> allRequests = new ArrayList<>();
 
-        String userId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userId", "");
+        String userId = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString("userId", "");
+        String role = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString("tag", "");
+        boolean isCaregivee = role.equals("caregivee");
+
         DatabaseReference ref = database.child("users/" + userId + "/requests/");
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                allRequests.clear();
-                for (DataSnapshot postSnapshot: snapshot.getChildren()) {
-                    allRequests.add(Objects.requireNonNull(postSnapshot.getValue()).toString());
+                // if caregivee, formulate list with requests & display
+                if(isCaregivee) {
+                    allRequests.clear();
+                    for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                        allRequests.add(Objects.requireNonNull(postSnapshot.getValue()).toString());
+                    }
+                    displayRequestListCaregivee(view, allRequests, snapshot);
+                } else {
+                    // is caregiver, display message through component
+                    displayMessageCaregiver(view);
                 }
-                displayRequestList(view, allRequests, snapshot);
             }
 
             @Override
@@ -202,17 +218,6 @@ public class ProfileRequest extends Fragment {
             }
         };
         ref.addValueEventListener(valueEventListener);
-
-        Button plusButton = view.findViewById(R.id.plusButton);
-        String role = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("tag", "");
-        Log.d("SUCCESS", "role = " + role);
-        if(role.equals("caregiver")) {
-            plusButton.setVisibility(View.VISIBLE);
-            plusButton.setOnClickListener(v -> {
-                Intent intent = new Intent(view.getContext(), Request.class);
-                startActivity(intent);
-            });
-        }
 
         return view;
     }

@@ -68,7 +68,7 @@ public class Request extends AppCompatActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String userId = preferences.getString("userId", "");
         String name = preferences.getString("name", "");
-        Log.d("SUCCESS", "found userId " + userId + " and name " + name);
+        Log.d("SUCCESS", "sendFirebaseRequest:found userId " + userId + " and name " + name);
         map.put(caregiveeId + "/requests/" + userId, name);
         ref.updateChildren(map);
     }
