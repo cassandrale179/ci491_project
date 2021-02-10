@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
                     switch(menuItem.getItemId()){
 
                         case R.id.home:
-                            fragment = new HomeFragment();
+                            fragment = new my_caregivee();
                             break;
 
                         case R.id.task:
