@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,7 +35,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         // add a vertical LinearLayout to our row, which will hold the Task name and duration
         LinearLayout vert = new LinearLayout(getContext());
         vert.setOrientation(LinearLayout.VERTICAL);
-        vert.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f));
+        vert.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         vert.setGravity(Gravity.LEFT);
         row.addView(vert);
 
@@ -53,6 +54,31 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         duration.setGravity(Gravity.LEFT);
         vert.addView(duration);
 
+        // add an inner row to hold the dot and status
+        LinearLayout innerRow = new LinearLayout(getContext());
+        innerRow.setOrientation(LinearLayout.HORIZONTAL);
+        innerRow.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        innerRow.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f));
+        row.addView(innerRow);
+
+        //add the colored status dot to the right side of the row
+        ImageView dot = new ImageView(getContext());
+        switch (t.getStatus()) {
+            case Completed:
+                dot.setImageResource(R.drawable.status_dot_green);
+                break;
+            case Incomplete:
+                dot.setImageResource(R.drawable.status_dot_red);
+                break;
+            case InProgress:
+                dot.setImageResource(R.drawable.status_dot_yellow);
+                break;
+        }
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        //lp.gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
+        dot.setLayoutParams(lp);
+        innerRow.addView(dot);
+
         //add the Completion status to the right side of the row
         TextView status = new TextView(getContext());
         if (t.getStatus() == TaskStatus.InProgress)
@@ -64,9 +90,9 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             status.setText(t.getStatus().toString());
         }
         status.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-        status.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f));
-        status.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
-        row.addView(status);
+        status.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        //status.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
+        innerRow.addView(status);
 
         return row;
     }
