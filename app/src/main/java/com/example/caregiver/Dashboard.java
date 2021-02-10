@@ -28,7 +28,7 @@ public class Dashboard extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        role = preferences.getString("role", "");
+        role = preferences.getString("userRole", "");
 
         // Set bottom navigation bar
         bottomNavigationView = findViewById(R.id.bottomNavigation);

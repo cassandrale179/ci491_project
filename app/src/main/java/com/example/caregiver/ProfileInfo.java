@@ -84,26 +84,13 @@ public class ProfileInfo extends Fragment {
      * @param userId the user id of the currently logged in user
      */
     public void displayUserInfo(View view, String userId) {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference ref = database.child("users/" + userId);
-
-        // Attach a listener to read data of user (name, email, id)
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                currentName = dataSnapshot.child("name").getValue().toString();
-                currentEmail = dataSnapshot.child("email").getValue().toString();
-                EditText nameField = (EditText) view.findViewById(R.id.profileName);
-                EditText emailField = (EditText) view.findViewById(R.id.profileEmail);
-                nameField.setHint(currentName);
-                emailField.setHint(currentEmail);
-
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("failure", "Unable to obtain user information");
-            }
-        });
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        currentName = preferences.getString("userName", "");
+        currentEmail = preferences.getString("userEmail", "");
+        EditText nameField = (EditText) view.findViewById(R.id.profileName);
+        EditText emailField = (EditText) view.findViewById(R.id.profileEmail);
+        nameField.setHint(currentName);
+        emailField.setHint(currentEmail);
     }
 
     @Override

@@ -12,6 +12,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class Login extends AppCompatActivity {
 
@@ -67,10 +72,39 @@ public class Login extends AppCompatActivity {
      * Navigates to Dashboard after successful sign in through Firebase
      */
     private void navigateToDashboard(String userId){
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("userId", userId);
-        editor.apply();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref = database.child("users/" + userId);
+
+        // Attach a listener to read data of user (name, email, id)
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String currentName = dataSnapshot.child("name").getValue().toString();
+                String currentEmail = dataSnapshot.child("email").getValue().toString();
+                String currentRole = dataSnapshot.child("role").getValue().toString();
+                Log.d("currentName", currentName);
+                Log.d("currentEmail", currentEmail);
+                Log.d("currentRole", currentRole);
+
+                editor.putString("userId", userId);
+                editor.putString("userName", currentName);
+                editor.putString("userEmail", currentEmail);
+                editor.putString("userRole", currentRole);
+                editor.apply();
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("failure", "Unable to obtain user information");
+            }
+        });
+
+
+
+
 
         Intent i = new Intent(Login.this, Dashboard.class);
         startActivity(i);
