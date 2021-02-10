@@ -19,7 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_marginTop="100dp">
         <TextView
             android:id="@+id/taskName"
             android:layout_width="match_parent"
@@ -53,43 +54,39 @@
             android:textColor="@color/black"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:paddingLeft="40dp">
-            <TextView
+            android:paddingLeft="40dp"
+            android:layout_marginTop="30dp">
+
+            <Chronometer
                 android:id="@+id/timer"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:background="@drawable/text_view_circle"
-                android:padding="2dp"
                 android:gravity="center"
                 android:textSize="18dp"
-                android:text="12:00"
                 android:textColor="@color/white"
                 android:layout_marginRight="20dp"
                 />
-            <TextView
-                android:id="@+id/playButton"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:background="@drawable/text_view_circle"
-                android:gravity="center"
-                android:textSize="40dp"
-                android:textColor="@color/white"
-                android:text=">"
-                android:layout_marginRight="20dp"
-                />
+
+            <ImageView
+                android:id="@+id/playBtn"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                app:srcCompat="@drawable/play_img"
+                android:layout_marginRight="20dp"/>
+
+
             <TextView android:id="@+id/helpMe"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:background="@drawable/text_view_circle"
-                android:padding="2dp"
                 android:gravity="center"
                 android:textSize="18dp"
                 android:text="Help"
                 />
         </LinearLayout>
-
-
     </LinearLayout>
 </RelativeLayout>
+
