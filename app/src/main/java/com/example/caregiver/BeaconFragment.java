@@ -2,12 +2,15 @@ package com.example.caregiver;
 
 import android.content.ContentProviderClient;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,13 +42,15 @@ public class BeaconFragment extends Fragment {
     public EditText majorField;
     public EditText minorField;
 
+    // Variables pointing to the user
+    public String currentUUID;
 
     public static class regionInfo {
-        public String UUID; 
+        public String UUID;
         public String regionName;
         public String majorValue;
 
-        public regionInfo(String UUID, String regionName, String majorValue){
+        public regionInfo(String UUID, String regionName, String majorValue) {
             this.UUID = UUID;
             this.regionName = regionName;
             this.majorValue = majorValue;
@@ -78,9 +83,18 @@ public class BeaconFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Get current userId
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String userId = preferences.getString("userId", "");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_beacon, container, false);
         Intent scanServiceIntent = new Intent(getActivity(), BeaconScanService.class);
+
+        displayUuid(rootView, userId);
+        Button updateButton = (Button) rootView.findViewById(R.id.uuidUpdateButton);
+        updateButton.setOnClickListener(v -> updateUuid(user, rootView));
 
         Button startScanButton = rootView.findViewById(R.id.start_button);
         startScanButton.setOnClickListener(v -> startBeaconScanService(scanServiceIntent));
@@ -89,56 +103,91 @@ public class BeaconFragment extends Fragment {
         stopScanButton.setOnClickListener(v -> stopBeaconScanService(scanServiceIntent));
 
         Button addRegionButton = rootView.findViewById(R.id.add_region);
-        addRegionButton.setOnClickListener(v -> addRegion(rootView));
+        addRegionButton.setOnClickListener(v -> addRegion(user, rootView));
 
         return rootView;
 
     }
 
-    public void startBeaconScanService(Intent scanServiceIntent){
+    public void startBeaconScanService(Intent scanServiceIntent) {
         getActivity().startService(scanServiceIntent);
     }
 
-    public void stopBeaconScanService(Intent scanServiceIntent){
+    public void stopBeaconScanService(Intent scanServiceIntent) {
         getActivity().stopService(scanServiceIntent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void addRegion(View rootView){
-        
-        UUIDField = rootView.findViewById(R.id.UUIDText);
+    public void addRegion(@NonNull FirebaseUser user, View rootView) {
+
+        EditText UUIDField = (EditText) rootView.findViewById(R.id.UUIDText);
         String UUIDValue = UUIDField.getText().toString();
 
-        regionNameField = rootView.findViewById(R.id.regionName);
+        EditText regionNameField = (EditText) rootView.findViewById(R.id.regionName);
         String regionName = regionNameField.getText().toString();
 
-        majorField = rootView.findViewById(R.id.major);
+        EditText majorField = (EditText) rootView.findViewById(R.id.major);
         String majorValue = majorField.getText().toString();
 
-        if (UUIDValue.isEmpty() || regionName.isEmpty() || majorValue.isEmpty()){
+        if (UUIDValue.isEmpty() || regionName.isEmpty() || majorValue.isEmpty()) {
             displayErrorMessage("One or more fields are empty.", rootView);
-        }
-        else {
+        } else {
             displayErrorMessage("", rootView);
             regionInfo newRegionInfo = new regionInfo(UUIDValue, regionName, majorValue);
-            updateRegionInfoInBackend(newRegionInfo);
+            updateRegionInfoInBackend(user, newRegionInfo);
             Log.i("Sample", "region Info = " + newRegionInfo.toString());
         }
 
     }
 
-    public void updateRegionInfoInBackend(regionInfo newRegionInfo){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    public void updateRegionInfoInBackend(@NonNull FirebaseUser user, regionInfo newRegionInfo) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> newRegion = new HashMap<String, Object>();
         newRegion.put(newRegionInfo.regionName, newRegionInfo.majorValue);
         database.child("users").child(user.getUid()).child("rooms").updateChildren(newRegion);
     }
 
-    public void displayErrorMessage(String sourceString, View rootView){
+    public void displayErrorMessage(String sourceString, View rootView) {
         TextView textView = rootView.findViewById(R.id.addRegionMessage);
         textView.setText(Html.fromHtml(sourceString));
         textView.setVisibility(View.VISIBLE);
+    }
+
+    public void updateUuid(@NonNull FirebaseUser user, View rootView) {
+        EditText UUIDField = (EditText) rootView.findViewById(R.id.UUIDText);
+        String UUIDValue = UUIDField.getText().toString();
+//        if (UUIDField.getText() != null) {
+//            String UUIDValue = UUIDField.getText().toString();
+            if (UUIDValue != null && !UUIDValue.isEmpty()) {
+                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                rootRef.child("users").child(user.getUid()).child("uuid").setValue(UUIDValue);
+                currentUUID = UUIDValue;
+                UUIDField.setHint(currentUUID);
+            }
+//        }
+    }
+
+    public void displayUuid(View view, String userId) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref = database.child("users/" + userId);
+
+        // Attach a listener to read data of user (name, email, id)
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("uuid").getValue() != null) {
+                    currentUUID = dataSnapshot.child("uuid").getValue().toString();
+                    EditText UUIDField = (EditText) view.findViewById(R.id.UUIDText);
+                    UUIDField.setHint(currentUUID);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("failure", "Unable to obtain user information");
+            }
+        });
+
     }
 
 

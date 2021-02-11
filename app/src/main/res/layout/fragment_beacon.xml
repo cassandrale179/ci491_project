@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BeaconFragment">
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".BeaconFragment">
+    android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -20,15 +26,28 @@
             android:padding="10dip"></TableLayout>
     </ScrollView>
 
-    <EditText
-        android:id="@+id/UUIDText"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:ems="10"
-        android:hint="@string/uuid_prompt"
-        android:inputType="textShortMessage"
-        android:textSize="20sp" />
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/UUIDText"
+            android:layout_width="296dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/uuid_prompt"
+            android:inputType="textShortMessage" />
+
+        <Button
+            android:id="@+id/uuidUpdateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/teal_700"
+            android:textSize="14sp"
+            android:textAllCaps="true"
+            android:text="Update" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -107,3 +126,4 @@
     </LinearLayout>
 
 </LinearLayout>
+</ScrollView>
