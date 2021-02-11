@@ -130,8 +130,7 @@ public class ProfileRequest extends Fragment {
     private void displayMessageCaregiver(View view){
         // display option to send request
         TextView text = view.findViewById(R.id.profileTextLabel);
-        text.setText("Add a new Caregivee by clicking the round button below.");
-        text.setTextSize(15);
+        text.setText(R.string.add_caregivee_msg);
 
         Button plusButton = view.findViewById(R.id.plusButton);
         // show request initiation button
@@ -153,7 +152,6 @@ public class ProfileRequest extends Fragment {
         if(allRequests.isEmpty()){
             TextView text = view.findViewById(R.id.profileTextLabel);
             text.setText("No more requests. You're all clear :)");
-            text.setTextSize(15);
         } else {
             arrayAdapter = new ArrayAdapter<String>(getActivity(),
                     android.R.layout.simple_list_item_1, allRequests);
