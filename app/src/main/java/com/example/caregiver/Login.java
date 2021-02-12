@@ -18,6 +18,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Login extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -58,7 +60,7 @@ public class Login extends AppCompatActivity {
                         if ( mAuth.getCurrentUser() != null ) {
                             navigateToDashboard(mAuth.getCurrentUser().getUid());
                         } else {
-                            Log.w("failure", "Can't find user id");
+                            Log.w("failure", "signInWithEmail: cannot find user");
                         }
                     } else {
                         // If sign in fails, display a message to the user.
@@ -72,36 +74,25 @@ public class Login extends AppCompatActivity {
      * Navigates to Dashboard after successful sign in through Firebase
      */
     private void navigateToDashboard(String userId){
-
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference ref = database.child("users/" + userId);
 
-        // Attach a listener to read data of user (name, email, id)
-        ref.addValueEventListener(new ValueEventListener() {
+        // Attach a listener to read name , email of user
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String currentName = dataSnapshot.child("name").getValue().toString();
-                String currentEmail = dataSnapshot.child("email").getValue().toString();
-                String currentRole = dataSnapshot.child("role").getValue().toString();
-                Log.d("currentName", currentName);
-                Log.d("currentEmail", currentEmail);
-                Log.d("currentRole", currentRole);
-
-                editor.putString("userId", userId);
-                editor.putString("userName", currentName);
-                editor.putString("userEmail", currentEmail);
-                editor.putString("userRole", currentRole);
+                editor.putString("name", dataSnapshot.child("name").getValue().toString());
+                editor.putString("email", dataSnapshot.child("email").getValue().toString());
+                editor.putString("tag", dataSnapshot.child("role").getValue().toString());
                 editor.apply();
-
             }
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("failure", "Unable to obtain user information");
+            public void onCancelled(@NotNull DatabaseError databaseError) {
+                Log.d("failure", "navToDashboard: Unable to obtain user information");
             }
         });
-
         Intent i = new Intent(Login.this, Dashboard.class);
         startActivity(i);
     }
