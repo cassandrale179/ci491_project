@@ -106,8 +106,8 @@ public class Task_Caregivee extends Fragment {
             if (roomObject != null) {
                 Gson gson = new Gson();
                 String tasksJson = gson.toJson(roomObject);
-                List < Task > tasks = createTaskList(tasksJson);
-                displayTaskList(tasks);
+                taskList = createTaskList(tasksJson);
+                displayTaskList(taskList);
             }
         }@Override
         public void onCancelled(@NonNull DatabaseError error) {
@@ -182,9 +182,17 @@ public class Task_Caregivee extends Fragment {
                         android.R.id.text2
                 });
         list.setAdapter(adapter);
+
+        // Redirect to TaskSingleView page with the task data
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {@Override
         public void onItemClick(AdapterView < ?>parent, View view, final int position, long id) {
-            startActivity(new Intent(view.getContext(), TaskSingleView.class));
+            Gson gson = new Gson();
+            if (taskList.get(position) != null){
+                String taskJson = gson.toJson(taskList.get(position));
+                Intent i = new Intent(view.getContext(), TaskSingleView.class);
+                i.putExtra("taskObject", taskJson);
+                startActivity(i);
+            }
         }
         });
     }
