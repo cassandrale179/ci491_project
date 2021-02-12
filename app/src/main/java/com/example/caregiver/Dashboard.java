@@ -31,7 +31,7 @@ public class Dashboard extends AppCompatActivity {
             Fragment fragment = null;
             switch(menuItem.getItemId()){
             case R.id.home:
-                fragment = new HomeFragment();
+                fragment = new my_caregivee();
                 break;
             case R.id.task:
                 fragment = new TaskFragment();
