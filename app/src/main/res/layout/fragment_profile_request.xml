@@ -20,23 +20,23 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:text="@string/request_approval_directions"
-            android:textSize="15sp" />
+            android:textSize="20sp" />
 
         <ListView
             android:id="@+id/requestList"
             android:layout_width="match_parent"
-            android:layout_height="420dp" />
+            android:layout_height="470dp" />
 
         <Button
             android:id="@+id/plusButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="bottom|end"
-            android:layout_marginEnd="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginRight="50dp"
             android:background="@drawable/roundedbutton"
             android:text="@string/plus"
-            android:textSize="23sp"
+            android:textSize="27sp"
             android:textStyle="bold"
             android:visibility="invisible" />
 
