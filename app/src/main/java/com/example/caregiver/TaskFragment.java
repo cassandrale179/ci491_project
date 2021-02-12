@@ -123,11 +123,13 @@ public class TaskFragment extends Fragment {
 
         ref.addValueEventListener(new ValueEventListener() {@Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
-            String value = snapshot.child("caregivees").getValue().toString();
-            List < String > caregivees = Arrays.asList(value.split("\\s*,\\s*"));
-            for (int i = 0; i < caregivees.size(); i++) {
-                getCaregiveeNameAndTask(caregivees.get(i), caregivees.size());
+            for (DataSnapshot caregivee :  snapshot.child("caregivees").getChildren()) {
+                String caregiveeId = caregivee.getKey();
+                String caregiveeName = caregivee.getValue().toString();
+                long size = snapshot.child("caregivees").getChildrenCount();
+                getCaregiveeNameAndTask(caregiveeId, size);
             }
+
         }@Override
         public void onCancelled(@NonNull DatabaseError error) {
             Log.d("error", "Can't query caregivees for this caregiver");
@@ -140,7 +142,7 @@ public class TaskFragment extends Fragment {
      * @param caregiveeId the id of the caregivee
      * @param size the size of the caregivees list
      */
-    protected void getCaregiveeNameAndTask(String caregiveeId, int size) {
+    protected void getCaregiveeNameAndTask(String caregiveeId, long size) {
         DatabaseReference ref = database.child("users/" + caregiveeId);
         ref.addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
