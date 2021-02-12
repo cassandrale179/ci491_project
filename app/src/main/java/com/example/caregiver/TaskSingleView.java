@@ -82,7 +82,7 @@ public class TaskSingleView extends AppCompatActivity {
                 builder.setMessage("Finish your task?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {@Override
                 public void onClick(DialogInterface dialog, int which) {
                     Intent i = new Intent(TaskSingleView.this, TaskFinish.class);
-                    long elapsedMillis = SystemClock.elapsedRealtime() - timer.getBase();
+                    long elapsedMillis = (SystemClock.elapsedRealtime() - timer.getBase()) / 1000;
                     i.putExtra("finishTime", String.valueOf(elapsedMillis));
                     i.putExtra("finishTask", taskStr);
                     startActivity(i);

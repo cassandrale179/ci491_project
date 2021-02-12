@@ -4,12 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -49,11 +52,12 @@ public class TaskFinish extends AppCompatActivity {
                 .child("progress");
 
 
+        // Get the date today in Epoch format
         long now = Instant.now().toEpochMilli();
 
+        // Store the progress update as a key-value pair in the database
         Map<String, Object> progressUpdates = new HashMap<>();
         progressUpdates.put(String.valueOf(now), time);
-
         taskRef.updateChildren(progressUpdates, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -76,10 +80,20 @@ public class TaskFinish extends AppCompatActivity {
         GradientDrawable helpBg = (GradientDrawable) timerCircle.getBackground();
         helpBg.setColor(getResources().getColor(R.color.teal_700));
 
+        // Add listener on the back arrow on the single task view screen
+        ImageView backArrow = (ImageView) findViewById(R.id.backArrow);
+        backArrow.setOnClickListener(new View.OnClickListener() {@Override
+        public void onClick(View v) {
+            Intent i = new Intent(TaskFinish.this, Dashboard.class);
+            startActivity(i);
+        }
+        });
+
         Bundle b = getIntent().getExtras();
         if (b != null) {
             String taskStr = b.getString("finishTask");
             String taskTime = b.getString("finishTime");
+            timerCircle.setText(taskTime + ":00");
             doSomething(taskStr, taskTime);
         } else {
             Log.d("error", "Cannot get task.");
