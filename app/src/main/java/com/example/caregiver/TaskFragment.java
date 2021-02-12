@@ -125,7 +125,6 @@ public class TaskFragment extends Fragment {
         public void onDataChange(@NonNull DataSnapshot snapshot) {
             for (DataSnapshot caregivee :  snapshot.child("caregivees").getChildren()) {
                 String caregiveeId = caregivee.getKey();
-                String caregiveeName = caregivee.getValue().toString();
                 long size = snapshot.child("caregivees").getChildrenCount();
                 getCaregiveeNameAndTask(caregiveeId, size);
             }
