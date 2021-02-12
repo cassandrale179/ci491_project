@@ -5,19 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -86,8 +82,9 @@ public class TaskSingleView extends AppCompatActivity {
                 builder.setMessage("Finish your task?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {@Override
                 public void onClick(DialogInterface dialog, int which) {
                     Intent i = new Intent(TaskSingleView.this, TaskFinish.class);
-                    i.putExtra("time", timeWhenStopped);
-                    i.putExtra("taskStr", taskStr);
+                    long elapsedMillis = SystemClock.elapsedRealtime() - timer.getBase();
+                    i.putExtra("finishTime", String.valueOf(elapsedMillis));
+                    i.putExtra("finishTask", taskStr);
                     startActivity(i);
                 }
                 }).setNegativeButton("No", null);

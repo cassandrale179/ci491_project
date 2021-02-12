@@ -140,7 +140,7 @@ public class ProfileInfo extends Fragment {
     public void changePassword(
             FirebaseUser user, @NonNull String newPassword, @NonNull String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
-            displayMessage("Your new and confirm password must be the same.", red);
+            displayMessage("Password do not match.", red);
             return;
         }
         if (newPassword.length() < 6 || confirmPassword.length() < 6) {
