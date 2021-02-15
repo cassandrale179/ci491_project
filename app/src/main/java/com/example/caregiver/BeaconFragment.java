@@ -1,6 +1,5 @@
 package com.example.caregiver;
 
-import android.content.ContentProviderClient;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,11 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
-import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 public class BeaconFragment extends Fragment {
 
