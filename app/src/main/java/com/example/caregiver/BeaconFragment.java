@@ -3,10 +3,6 @@ package com.example.caregiver;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
-
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+
+import com.example.caregiver.services.BeaconScanService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -23,8 +23,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import com.example.caregiver.services.BeaconScanService;
 import com.kontakt.sdk.android.ble.device.BeaconRegion;
 import com.kontakt.sdk.android.common.profile.IBeaconRegion;
 
@@ -37,37 +35,15 @@ import java.util.UUID;
 
 public class BeaconFragment extends Fragment {
 
+    public static final HashMap<String, HashMap<String, Double>> regionRssiMap = new HashMap<>();
+    public static String regionName;
+    public static int regionMajorValue;
+    public static String kontaktUUID;
+    public static Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
     // Variables pointing to field names
     public EditText UUIDField; //check
     public EditText regionNameField;
     public EditText majorField;
-
-    public static String regionName;
-    public static int regionMajorValue;
-    public static String kontaktUUID;
-    public static final HashMap<String, HashMap<String, Double>> regionRssiMap = new HashMap<>();
-    public static Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
-
-    public static class regionInfo {
-        public String UUID; 
-        public String regionName;
-        public String majorValue;
-
-        public regionInfo(String UUID, String regionName, String majorValue){
-            this.UUID = UUID;
-            this.regionName = regionName;
-            this.majorValue = majorValue;
-        }
-
-        @Override
-        public String toString() {
-            return "regionInfo{" +
-                    "UUID='" + UUID + '\'' +
-                    ", regionName='" + regionName + '\'' +
-                    ", majorValue=" + majorValue +
-                    '}';
-        }
-    }
 
     public BeaconFragment() {
         // Required empty public constructor
@@ -91,6 +67,7 @@ public class BeaconFragment extends Fragment {
         Intent scanServiceIntent = new Intent(getActivity(), BeaconScanService.class);
 
         Button startScanButton = rootView.findViewById(R.id.start_button);
+        // Once beacon regions are extracted from firebase database, BeaconScanService is started
         startScanButton.setOnClickListener(v -> getBeaconRegions(scanServiceIntent));
 
         Button stopScanButton = rootView.findViewById(R.id.stop_button);
@@ -118,19 +95,20 @@ public class BeaconFragment extends Fragment {
                 for (DataSnapshot ds : newRegions) {
                     regionName = ds.getKey();
                     regionMajorValue = Integer.parseUnsignedInt((String) ds.getValue());
-                    Log.i("Sample", "Region found: " + regionName + " " + regionMajorValue);
                     IBeaconRegion region = new BeaconRegion.Builder()
                             .identifier(regionName)
                             .proximity(UUID.fromString(kontaktUUID))
-                            .major(2).build();
+                            .major(regionMajorValue).build();
 
                     beaconRegions.add(region);
+                    Log.i("BeaconFragment", "Region retrieved " + region.toString());
 
                     regionRssiMap.put(regionName, new HashMap<String, Double>());
                     regionRssiMap.get(regionName).put("sum", 0.0);
                     regionRssiMap.get(regionName).put("count", 0.0);
                     regionRssiMap.get(regionName).put("dist", 0.0);
                 }
+                // All beacon regions are available from firebase, starting BeaconScanService
                 startBeaconScanService(scanServiceIntent);
             }
 
@@ -142,18 +120,17 @@ public class BeaconFragment extends Fragment {
 
     }
 
-    public void startBeaconScanService(Intent scanServiceIntent){
-        Log.i("AsyncFirebase","Calling startBeaconScanService");
-            getActivity().startService(scanServiceIntent);
+    public void startBeaconScanService(Intent scanServiceIntent) {
+        getActivity().startService(scanServiceIntent);
     }
 
-    public void stopBeaconScanService(Intent scanServiceIntent){
+    public void stopBeaconScanService(Intent scanServiceIntent) {
         getActivity().stopService(scanServiceIntent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void addRegion(View rootView){
-        
+    public void addRegion(View rootView) {
+
         UUIDField = rootView.findViewById(R.id.UUIDText);
         String UUIDValue = UUIDField.getText().toString();
 
@@ -163,19 +140,18 @@ public class BeaconFragment extends Fragment {
         majorField = rootView.findViewById(R.id.major);
         String majorValue = majorField.getText().toString();
 
-        if (UUIDValue.isEmpty() || regionName.isEmpty() || majorValue.isEmpty()){
+        if (UUIDValue.isEmpty() || regionName.isEmpty() || majorValue.isEmpty()) {
             displayErrorMessage("One or more fields are empty.", rootView);
-        }
-        else {
+        } else {
             displayErrorMessage("", rootView);
             regionInfo newRegionInfo = new regionInfo(UUIDValue, regionName, majorValue);
             updateRegionInfoInBackend(newRegionInfo);
-            Log.i("Sample", "region Info = " + newRegionInfo.toString());
+            Log.i("BeaconFragment", "New Region Added " + newRegionInfo.toString());
         }
 
     }
 
-    public void updateRegionInfoInBackend(regionInfo newRegionInfo){
+    public void updateRegionInfoInBackend(regionInfo newRegionInfo) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> newRegion = new HashMap<String, Object>();
@@ -183,10 +159,31 @@ public class BeaconFragment extends Fragment {
         database.child("users").child(user.getUid()).child("rooms").updateChildren(newRegion);
     }
 
-    public void displayErrorMessage(String sourceString, View rootView){
+    public void displayErrorMessage(String sourceString, View rootView) {
         TextView textView = rootView.findViewById(R.id.addRegionMessage);
         textView.setText(Html.fromHtml(sourceString));
         textView.setVisibility(View.VISIBLE);
+    }
+
+    public static class regionInfo {
+        public String UUID;
+        public String regionName;
+        public String majorValue;
+
+        public regionInfo(String UUID, String regionName, String majorValue) {
+            this.UUID = UUID;
+            this.regionName = regionName;
+            this.majorValue = majorValue;
+        }
+
+        @Override
+        public String toString() {
+            return "regionInfo{" +
+                    "UUID='" + UUID + '\'' +
+                    ", regionName='" + regionName + '\'' +
+                    ", majorValue=" + majorValue +
+                    '}';
+        }
     }
 
 
