@@ -31,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
 
 public class BeaconFragment extends Fragment {
@@ -57,7 +56,27 @@ public class BeaconFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        getKontaktUUID();
         super.onCreate(savedInstanceState);
+    }
+
+    private void getKontaktUUID() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref = database.child("users/" + user.getUid());
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
+                kontaktUUID = dataSnapshot.child("uuid").getValue().toString();
+             }
+
+            @Override
+            public void onCancelled(@NotNull DatabaseError databaseError) {
+                Log.d("failure", "Unable to obtain user information");
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -92,23 +111,16 @@ public class BeaconFragment extends Fragment {
             @Override
             public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> newRegions = dataSnapshot.getChildren();
-//                kontaktUUID = dataSnapshot.child("uuid").getValue().toString();
-                kontaktUUID = "f7826da6-4fa2-4e98-8024-bc5b71e0893e";
+
                 for (DataSnapshot ds : newRegions) {
                     regionName = ds.getKey();
-                    for (DataSnapshot child : ds.getChildren()){
-                        if (child.getKey().equals("beaconMajor")){
-                            regionMajorValue = Integer.parseUnsignedInt((String) child.getValue());
-                        }
-                    }
-
+                    regionMajorValue = Integer.parseUnsignedInt(dataSnapshot.child(regionName).child("beaconMajor").getValue().toString());
                     IBeaconRegion region = new BeaconRegion.Builder()
                             .identifier(regionName)
                             .proximity(UUID.fromString(kontaktUUID))
                             .major(regionMajorValue).build();
 
                     beaconRegions.add(region);
-                    Log.i("BeaconFragment", "Region retrieved " + region.toString());
 
                     regionRssiMap.put(regionName, new HashMap<String, Double>());
                     regionRssiMap.get(regionName).put("sum", 0.0);

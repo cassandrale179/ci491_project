@@ -55,6 +55,7 @@ public class BeaconScanService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        // Input parameter is API Key
         KontaktSDK.initialize("clYwuEPnEpprKHUBKIwTudpdiEqMgMQq");
         setupProximityManager();
         createNotificationChannel();
@@ -201,7 +202,6 @@ public class BeaconScanService extends Service {
 
 
                     if (getTimeNow() - lastTimeInMillis >= thirtySecondsInMillis) {
-
 
                         final String[] maxRegion = new String[1];
                         final double[] minDist = new double[1];
