@@ -16,6 +16,18 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.caregiver.BeaconFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.kontakt.sdk.android.ble.configuration.ScanMode;
 import com.kontakt.sdk.android.ble.configuration.ScanPeriod;
 import com.kontakt.sdk.android.ble.connection.OnServiceReadyListener;
@@ -23,25 +35,28 @@ import com.kontakt.sdk.android.ble.device.BeaconRegion;
 import com.kontakt.sdk.android.ble.manager.ProximityManager;
 import com.kontakt.sdk.android.ble.manager.ProximityManagerFactory;
 import com.kontakt.sdk.android.ble.manager.listeners.IBeaconListener;
-import com.kontakt.sdk.android.ble.manager.listeners.SpaceListener;
 import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleIBeaconListener;
 import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleScanStatusListener;
-import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleSpaceListener;
 import com.kontakt.sdk.android.common.KontaktSDK;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.profile.IBeaconRegion;
-import com.kontakt.sdk.android.common.profile.IEddystoneNamespace;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
+
+import com.example.caregiver.BeaconFragment;
+
+import static com.example.caregiver.BeaconFragment.regionRssiMap;
 
 public class BeaconScanService extends Service {
 
@@ -52,10 +67,10 @@ public class BeaconScanService extends Service {
     private static final String DEFAULT_CHANNEL_ID = "Caregiver_Channel_ID";
     private Intent serviceIntent;
     private static String lastSeenRegionIdentifier = "";
-    private static final HashMap<String, HashMap<String, Double>> regionRssiMap = new HashMap<String, HashMap<String, Double>>();
 
     private long lastTimeInMillis = getTimeNow();
     private static final int thirtySecondsInMillis = 30000;
+
 
     public static Intent createIntent(final Context context) {
         return new Intent(context, BeaconScanService.class);
@@ -66,15 +81,17 @@ public class BeaconScanService extends Service {
     public void onCreate() {
         super.onCreate();
         KontaktSDK.initialize("clYwuEPnEpprKHUBKIwTudpdiEqMgMQq");
+        Log.i("AsyncFirebase","onCreate ScanService, beaconRegionsSize = "+ BeaconFragment.beaconRegions.size());
         setupProximityManager();
-        setupSpaces();
         createNotificationChannel();
-
         isRunning = false;
-        proximityManager.setScanStatusListener((createSimpleScanStatusListener()));
     }
 
+
+
     private void setupProximityManager() {
+        Log.i("Sample", "Setting up proximity manager");
+        Log.i("AsyncFirebase","Calling setupProximityManager");
         // Create proximity manager instance
         proximityManager = ProximityManagerFactory.create(this);
 
@@ -85,77 +102,12 @@ public class BeaconScanService extends Service {
                 // Using BALANCED for best performance/battery ratio
                 .scanMode(ScanMode.BALANCED);
 
-        // Set up iBeacon listener
+        // Set up spaces and iBeacon listener,
+//        Collection<IBeaconRegion> beaconRegions = getBeaconRegions();
+        proximityManager.spaces().iBeaconRegions(BeaconFragment.beaconRegions);
+        Log.i("Sample", proximityManager.spaces().getIBeaconRegions().toString());
         proximityManager.setIBeaconListener(createIBeaconListener());
-    }
-
-    // TODO: When user sets up the regions, send UUID and region as input here
-    private void setupSpaces() {
-        Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
-        IBeaconRegion region1 = new BeaconRegion.Builder().identifier("Mannika Bedroom")
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
-                .major(1).minor(2).build();
-        beaconRegions.add(region1);
-        regionRssiMap.put("Mannika Bedroom", new HashMap<String, Double>());
-        regionRssiMap.get("Mannika Bedroom").put("sum", 0.0);
-        regionRssiMap.get("Mannika Bedroom").put("count", 0.0);
-        regionRssiMap.get("Mannika Bedroom").put("dist", 0.0);
-
-
-        IBeaconRegion region2 = new BeaconRegion.Builder().identifier("Mannika Bathroom") // Region identifier is
-                // mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
-                // Optional major and minor values
-                .major(1).minor(1).build();
-        beaconRegions.add(region2);
-        regionRssiMap.put("Mannika Bathroom", new HashMap<String, Double>());
-        regionRssiMap.get("Mannika Bathroom").put("sum", 0.0);
-        regionRssiMap.get("Mannika Bathroom").put("count", 0.0);
-        regionRssiMap.get("Mannika Bathroom").put("dist", 0.0);
-
-        IBeaconRegion region3 = new BeaconRegion.Builder().identifier("Mannika Kitchen") // Region identifier is
-                // mandatory.
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
-                // Optional major and minor values
-                .major(1).minor(3).build();
-        beaconRegions.add(region3);
-        regionRssiMap.put("Mannika Kitchen", new HashMap<String, Double>());
-        regionRssiMap.get("Mannika Kitchen").put("sum", 0.0);
-        regionRssiMap.get("Mannika Kitchen").put("count", 0.0);
-        regionRssiMap.get("Mannika Kitchen").put("dist", 0.0);
-
-        IBeaconRegion region4 = new BeaconRegion.Builder().identifier("Jui Bedroom")
-                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
-                // Optional major and minor values
-                .major(2).build();
-        beaconRegions.add(region4);
-        regionRssiMap.put("Jui Bedroom", new HashMap<String, Double>());
-        regionRssiMap.get("Jui Bedroom").put("sum", 0.0);
-        regionRssiMap.get("Jui Bedroom").put("count", 0.0);
-        regionRssiMap.get("Jui Bedroom").put("dist", 0.0);
-
-//        IBeaconRegion region5 = new BeaconRegion.Builder().identifier("Jui Bathroom") // Region identifier is mandatory.
-//                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
-//                // Optional major and minor values
-//                .major(2).minor(1).build();
-//        beaconRegions.add(region5);
-//        regionRssiMap.put("Jui Bathroom", new HashMap<String, Double>());
-//        regionRssiMap.get("Jui Bathroom").put("sum", 0.0);
-//        regionRssiMap.get("Jui Bathroom").put("count", 0.0);
-//        regionRssiMap.get("Jui Bathroom").put("dist", 0.0);
-
-//        IBeaconRegion region6 = new BeaconRegion.Builder().identifier("Jui Kitchen") // Region identifier is mandatory.
-//                .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e")) // TODO: Add users UUID
-//                // Optional major and minor values
-//                .major(2).minor(3).build();
-//        regionRssiMap.put("Jui Kitchen", new HashMap<String, Double>());
-//        regionRssiMap.get("Jui Kitchen").put("sum", 0.0);
-//        regionRssiMap.get("Jui Kitchen").put("count", 0.0);
-//        regionRssiMap.get("Jui Kitchen").put("dist", 0.0);
-//
-//        beaconRegions.add(region6);
-
-        proximityManager.spaces().iBeaconRegions(beaconRegions);
+        proximityManager.setScanStatusListener((createSimpleScanStatusListener()));
     }
 
     @Override
@@ -246,15 +198,6 @@ public class BeaconScanService extends Service {
         };
     }
 
-    // lastTimestamp = 0
-    // onIBeaconDiscovered()
-    // check if currTimestamp - lastTimestamp < 30
-    // write to container
-    // else:
-    // Average RSSI for each region
-    // Send notification if curr region != last seen region
-    // empty container
-    // lastTimestamp = currTimestamp
 
     private void sendBeaconNotification(String contentText) {
         Log.i("Sample", "IBeacon discovered: " + contentText);
@@ -267,78 +210,79 @@ public class BeaconScanService extends Service {
     }
 
     private IBeaconListener createIBeaconListener() {
+        Log.i("Sample", "Calling Beacon listener");
         return new SimpleIBeaconListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onIBeaconDiscovered(IBeaconDevice ibeacon, IBeaconRegion region) {
 
-                Log.i("Sample", "discovering");
-
                 Log.i("Sample", "Beacon discovered " + region.getIdentifier() + " beacon address " + ibeacon.getAddress());
                 Log.i("Sample", "Current time = " + getTimeNow() + " Last time = " + lastTimeInMillis + " Difference = " + (getTimeNow() - lastTimeInMillis));
-
-
                 Log.i("Sample", "In if statement");
 
-                double oldSum = regionRssiMap.get(region.getIdentifier()).get("sum");
-                double oldCount = regionRssiMap.get(region.getIdentifier()).get("count");
-                double oldDistance = regionRssiMap.get(region.getIdentifier()).get("dist");
+                if (regionRssiMap.containsKey(region.getIdentifier())) {
 
-                Log.i("Sample", "old sum = " + oldSum + " old count = " + " old dist = " + oldDistance + oldCount + " region = " + region.getIdentifier());
 
-                double newSum = oldSum + ibeacon.getRssi();
-                double newCount = oldCount + 1;
-                double newDistance = oldDistance + ibeacon.getDistance();
+                    double oldSum = regionRssiMap.get(region.getIdentifier()).get("sum");
+                    double oldCount = regionRssiMap.get(region.getIdentifier()).get("count");
+                    double oldDistance = regionRssiMap.get(region.getIdentifier()).get("dist");
 
-                regionRssiMap.get(region.getIdentifier()).replace("sum", newSum);
-                regionRssiMap.get(region.getIdentifier()).replace("count", newCount);
-                regionRssiMap.get(region.getIdentifier()).replace("dist", newDistance);
+                    Log.i("Sample", "old sum = " + oldSum + " old count = " + " old dist = " + oldDistance + oldCount + " region = " + region.getIdentifier());
 
-                Log.i("Sample", "new sum = " + newSum + " new count = " + newCount + " new dist = " + oldDistance + " region = " + region.getIdentifier());
+                    double newSum = oldSum + ibeacon.getRssi();
+                    double newCount = oldCount + 1;
+                    double newDistance = oldDistance + ibeacon.getDistance();
 
-                if (getTimeNow() - lastTimeInMillis >= thirtySecondsInMillis) {
+                    regionRssiMap.get(region.getIdentifier()).replace("sum", newSum);
+                    regionRssiMap.get(region.getIdentifier()).replace("count", newCount);
+                    regionRssiMap.get(region.getIdentifier()).replace("dist", newDistance);
 
-                    Log.i("Sample", "in else statement");
+                    Log.i("Sample", "new sum = " + newSum + " new count = " + newCount + " new dist = " + oldDistance + " region = " + region.getIdentifier());
 
-                    final String[] maxRegion = new String[1];
-                    final double[] minDist = new double[1];
-                    final double[] maxRssi = {-1000.0};
+                    if (getTimeNow() - lastTimeInMillis >= thirtySecondsInMillis) {
 
-                    regionRssiMap.forEach(
-                            (regionKey, rssiData) -> {
-                                if (rssiData.get("count") != 0) {
+                        Log.i("Sample", "in else statement");
 
-                                    double avgRssi = (double) rssiData.get("sum") / rssiData.get("count");
-                                    double avgDist = (double) rssiData.get("dist") / rssiData.get("count");
-                                    Log.i("Sample", "region = " + regionKey + " avg rssi = " + avgRssi + " avg dist = " + avgDist + " max rssi = " + maxRssi[0]);
+                        final String[] maxRegion = new String[1];
+                        final double[] minDist = new double[1];
+                        final double[] maxRssi = {-1000.0};
 
-                                    if (avgRssi > maxRssi[0]) {
-                                        maxRssi[0] = avgRssi;
-                                        maxRegion[0] = regionKey;
-                                        minDist[0] = avgDist;
+                        regionRssiMap.forEach(
+                                (regionKey, rssiData) -> {
+                                    if (rssiData.get("count") != 0) {
+
+                                        double avgRssi = (double) rssiData.get("sum") / rssiData.get("count");
+                                        double avgDist = (double) rssiData.get("dist") / rssiData.get("count");
+                                        Log.i("Sample", "region = " + regionKey + " avg rssi = " + avgRssi + " avg dist = " + avgDist + " max rssi = " + maxRssi[0]);
+
+                                        if (avgRssi > maxRssi[0]) {
+                                            maxRssi[0] = avgRssi;
+                                            maxRegion[0] = regionKey;
+                                            minDist[0] = avgDist;
+                                        }
+
+                                        Log.i("Sample", "region = " + regionKey + " avg rssi = " + avgRssi + " max rssi = " + maxRssi[0] + " avg dist = " + avgDist + " max region = " + maxRegion[0]);
+
+                                        regionRssiMap.get(regionKey).replace("sum", 0.0);
+                                        regionRssiMap.get(regionKey).replace("count", 0.0);
+                                        regionRssiMap.get(regionKey).replace("dist", 0.0);
+
+                                        Log.i("Sample", "replace sum = " + regionRssiMap.get(regionKey).get("sum") + " replace count = " + regionRssiMap.get(regionKey).get("count") + " replace count = " + regionRssiMap.get(regionKey).get("dist"));
+
                                     }
+                                });
 
-                                    Log.i("Sample", "region = " + regionKey + " avg rssi = " + avgRssi + " max rssi = " + maxRssi[0] + " avg dist = " + avgDist + " max region = " + maxRegion[0]);
+                        if ((lastSeenRegionIdentifier != null) && (!maxRegion[0].equals(lastSeenRegionIdentifier)) && (minDist[0] < 1.0)) {
 
-                                    regionRssiMap.get(regionKey).replace("sum", 0.0);
-                                    regionRssiMap.get(regionKey).replace("count", 0.0);
-                                    regionRssiMap.get(regionKey).replace("dist", 0.0);
+                            String contentText = String.format("Region = %s, Distance = %f, RSSI = %f, Timestamp = %s",
+                                    maxRegion[0], minDist[0], maxRssi[0],
+                                    convertUnixToTimestamp(ibeacon.getTimestamp()));
+                            sendBeaconNotification(contentText);
+                            lastSeenRegionIdentifier = maxRegion[0];
+                        }
 
-                                    Log.i("Sample", "replace sum = " + regionRssiMap.get(regionKey).get("sum") + " replace count = " + regionRssiMap.get(regionKey).get("count") + " replace count = " + regionRssiMap.get(regionKey).get("dist"));
-
-                                }
-                            });
-
-                    if ((lastSeenRegionIdentifier != null) && (!maxRegion[0].equals(lastSeenRegionIdentifier)) && (minDist[0] < 1.0)) {
-
-                        String contentText = String.format("Region = %s, Distance = %f, RSSI = %f, Timestamp = %s",
-                                maxRegion[0], minDist[0], maxRssi[0],
-                                convertUnixToTimestamp(ibeacon.getTimestamp()));
-                        sendBeaconNotification(contentText);
-                        lastSeenRegionIdentifier = maxRegion[0];
+                        lastTimeInMillis = getTimeNow();
                     }
-
-                    lastTimeInMillis = getTimeNow();
                 }
             }
         };
