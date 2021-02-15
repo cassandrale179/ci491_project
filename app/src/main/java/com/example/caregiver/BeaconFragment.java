@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 public class BeaconFragment extends Fragment {
@@ -44,6 +45,7 @@ public class BeaconFragment extends Fragment {
     public EditText UUIDField; //check
     public EditText regionNameField;
     public EditText majorField;
+
 
     public BeaconFragment() {
         // Required empty public constructor
@@ -94,7 +96,12 @@ public class BeaconFragment extends Fragment {
                 kontaktUUID = "f7826da6-4fa2-4e98-8024-bc5b71e0893e";
                 for (DataSnapshot ds : newRegions) {
                     regionName = ds.getKey();
-                    regionMajorValue = Integer.parseUnsignedInt((String) ds.getValue());
+                    for (DataSnapshot child : ds.getChildren()){
+                        if (child.getKey().equals("beaconMajor")){
+                            regionMajorValue = Integer.parseUnsignedInt((String) child.getValue());
+                        }
+                    }
+
                     IBeaconRegion region = new BeaconRegion.Builder()
                             .identifier(regionName)
                             .proximity(UUID.fromString(kontaktUUID))
