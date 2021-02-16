@@ -28,7 +28,9 @@ public class MainActivity extends AppCompatActivity {
 //        i.putExtra("tag", tag);
 //        startActivity(i);
 
+
         Intent i = new Intent(MainActivity.this, ViewProgress.class);
         startActivity(i);
     }
+
 }
