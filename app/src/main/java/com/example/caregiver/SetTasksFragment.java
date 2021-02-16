@@ -45,6 +45,8 @@ public class SetTasksFragment extends Fragment {
     private String caregiveeID;
     private ArrayList<String> taskNames;
     private String caregiverName;
+    private int numTasks = 0;
+    private int tasksAssigned = 0;
 
     public SetTasksFragment(String caregiveeID) {
         // Required empty public constructor
@@ -78,8 +80,20 @@ public class SetTasksFragment extends Fragment {
         for (DataSnapshot task : roomSnapshot.child("tasks").getChildren())
         {
             tasks.add(task.child("name").getValue().toString());
+            numTasks++;
+            if (task.child("assignedStatus").getValue().equals("true"))
+            {
+                tasksAssigned++;
+            }
         }
         return tasks.toArray(new String[tasks.size()]);
+    }
+
+    private void updateNumSelectedText()
+    {
+        View view = getView();
+        TextView numSelectedText = view.findViewById(R.id.textView3);
+        numSelectedText.setText(tasksAssigned + " of " + numTasks + " tasks assigned");
     }
 
     private void getAllCaregiveeTasks(String caregiveeID, ArrayAdapter adapter)
@@ -88,6 +102,9 @@ public class SetTasksFragment extends Fragment {
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                numTasks = 0;
+                tasksAssigned = 0;
+                adapter.clear();
                 for (DataSnapshot roomSnapshot: snapshot.getChildren())
                 {
                     String[] tasks = getRoomTasks(roomSnapshot);
@@ -96,6 +113,7 @@ public class SetTasksFragment extends Fragment {
                         adapter.add(task);
                     }
                 }
+                updateNumSelectedText();
                 adapter.notifyDataSetChanged();
             }
 
