@@ -18,11 +18,6 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ExpandableListView;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -59,7 +54,8 @@ public class my_caregivee extends Fragment {
 
     public class my_caregiveeAdapter extends BaseExpandableListAdapter {
 
-        private ArrayList<String> groups;
+        private ArrayList<String> caregiveeIDs;
+        private HashMap<String, String> caregiveeIDtoNameMap;
 
         private String[][] children = {
                 { "    View Profile", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
@@ -68,7 +64,8 @@ public class my_caregivee extends Fragment {
 
         public my_caregiveeAdapter(String userID)
         {
-            groups = new ArrayList<>();
+            caregiveeIDs = new ArrayList<>();
+            caregiveeIDtoNameMap = new HashMap<>();
             final DatabaseReference user = database.child("/users/" + userID);
             final DatabaseReference caregivees = user.child("caregivees");
             ValueEventListener valueEventListener = new ValueEventListener()
@@ -76,7 +73,10 @@ public class my_caregivee extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot caregiveeSnapshot: snapshot.getChildren()) {
-                        groups.add(Objects.requireNonNull(caregiveeSnapshot.getValue()).toString());
+                        String id = Objects.requireNonNull(caregiveeSnapshot.getKey());
+                        String name = Objects.requireNonNull(caregiveeSnapshot.getValue()).toString();
+                        caregiveeIDs.add(id);
+                        caregiveeIDtoNameMap.put(id, name);
                     }
                     notifyDataSetChanged();
 
@@ -91,7 +91,7 @@ public class my_caregivee extends Fragment {
 
         @Override
         public int getGroupCount() {
-            return groups.size();
+            return caregiveeIDs.size();
         }
 
         @Override
@@ -101,7 +101,7 @@ public class my_caregivee extends Fragment {
 
         @Override
         public Object getGroup(int i) {
-            return groups.get(i);
+            return caregiveeIDtoNameMap.get(caregiveeIDs.get(i));
         }
 
         @Override
