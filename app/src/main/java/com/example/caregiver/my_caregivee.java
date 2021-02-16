@@ -1,5 +1,6 @@
 package com.example.caregiver;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -43,8 +44,8 @@ public class my_caregivee extends Fragment {
         private String[] groups = { "User1", "User2" };
 
         private String[][] children = {
-                { "    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
-                { "    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
+                { "    View Profile", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
+                { "    View Profile", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
         };
 
         @Override
@@ -116,6 +117,24 @@ public class my_caregivee extends Fragment {
             //textView.setTypeface(null, Typeface.BOLD);
             //Set text colour
             textView.setTextColor(Color.BLACK);
+            textView.setOnClickListener(v -> {
+                switch(i1) {
+                    case 0:
+                        ((Dashboard)getActivity()).replaceActiveFragment(new ProfileFragment());
+                        break;
+                    case 1:
+                        ((Dashboard)getActivity()).replaceActiveFragment(new SetTasksFragment());
+                        break;
+                    case 2:
+                        Intent intent = new Intent(getContext(), ViewProgress.class);
+                        startActivity(intent);
+                        break;
+                    case 3:
+                        intent = new Intent(getContext(), RemoveCaregivee.class);
+                        startActivity(intent);
+                        break;
+                }
+            });
             return textView;
         }
 

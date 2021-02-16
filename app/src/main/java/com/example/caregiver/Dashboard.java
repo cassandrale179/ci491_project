@@ -31,6 +31,12 @@ public class Dashboard extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
     }
 
+    public void replaceActiveFragment(Fragment newFragment)
+    {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, newFragment).commit();
+    }
+
+
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = new
@@ -44,7 +50,7 @@ public class Dashboard extends AppCompatActivity {
                 break;
             case R.id.task:
                 //fragment = new TaskFragment();
-                fragment = new SetTasksFragment(); // For testing.
+                fragment = new my_caregivee(); // For testing.
 
                 break;
             case R.id.beacon:

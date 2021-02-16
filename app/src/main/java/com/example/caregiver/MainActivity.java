@@ -24,13 +24,12 @@ public class MainActivity extends AppCompatActivity {
     /** Navigation function to move to Identification Screen **/
     public void openIdentification(View v){
         String tag = (String) v.getTag();
-//        Intent i = new Intent(MainActivity.this, Identification.class);
-//        i.putExtra("tag", tag);
-//        startActivity(i);
-
-
-        Intent i = new Intent(MainActivity.this, ViewProgress.class);
+        Intent i = new Intent(MainActivity.this, Identification.class);
+        i.putExtra("tag", tag);
         startActivity(i);
+
+
+
     }
 
 }
