@@ -31,12 +31,11 @@ public class Dashboard extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
     }
 
+
     public void replaceActiveFragment(Fragment newFragment)
     {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, newFragment).commit();
     }
-
-
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = new

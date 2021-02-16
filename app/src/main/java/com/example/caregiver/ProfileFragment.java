@@ -8,8 +8,10 @@ import androidx.fragment.app.Fragment;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +26,6 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
-
-    ViewPager viewPager;
-    TabLayout tabLayout;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -53,19 +52,20 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_profile, container, false);
 
-        tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
-        viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
         prepareViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         return view;
     }
+
 
     private void prepareViewPager(ViewPager viewPager){
         ProfileAdapter adapter = new ProfileAdapter(getFragmentManager());
         viewPager.setAdapter(adapter);
     }
 
-    private class ProfileAdapter extends FragmentPagerAdapter{
+    private class ProfileAdapter extends FragmentStatePagerAdapter {
         public ProfileAdapter(@NonNull FragmentManager fm){
             super(fm);
         }
@@ -73,15 +73,13 @@ public class ProfileFragment extends Fragment {
         @NonNull
         @Override
         public Fragment getItem(int position) {
+            ProfileInfo infoFragment = new ProfileInfo();
+            ProfileRequest requestFragment = new ProfileRequest();
             switch (position) {
-                case 0:
-                    ProfileInfo infoFragment = new ProfileInfo();
-                    return infoFragment;
                 case 1:
-                    ProfileRequest requestFragment = new ProfileRequest();
                     return requestFragment;
                 default:
-                    return null;
+                    return infoFragment;
             }
         }
 
@@ -94,12 +92,10 @@ public class ProfileFragment extends Fragment {
         @Override
         public CharSequence getPageTitle(int position){
             switch (position) {
-                case 0:
-                    return "Profile";
                 case 1:
                     return "Requests";
                 default:
-                    return null;
+                    return "Profile";
             }
         }
     }
