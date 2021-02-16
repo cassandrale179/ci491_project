@@ -1,129 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".BeaconFragment">
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".BeaconFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
-    <ScrollView
+    <com.google.android.material.appbar.MaterialToolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="317dp"
-        android:layout_marginBottom="20dp">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/black"
+        app:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+        app:title="Beacon"
+        android:gravity="center"
+        />
 
-        <TableLayout
-            android:id="@+id/tableLayout1"
-            android:layout_width="fill_parent"
-            android:layout_height="317dp"
-            android:isScrollContainer="true"
-            android:padding="10dip"></TableLayout>
-    </ScrollView>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/UUIDText"
-            android:layout_width="296dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/uuid_prompt"
-            android:inputType="textShortMessage" />
-
-        <Button
-            android:id="@+id/uuidUpdateButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/teal_700"
-            android:textSize="14sp"
-            android:textAllCaps="true"
-            android:text="Update" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-
-        <EditText
-            android:id="@+id/regionName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/region_prompt"
-            android:inputType="textShortMessage" />
-
-        <EditText
-            android:id="@+id/major"
-            android:layout_width="84dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/major_prompt"
-            android:inputType="number" />
-
-        <EditText
-            android:id="@+id/minor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/minor_prompt"
-            android:inputType="number" />
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/add_region"
+    <com.google.android.material.tabs.TabLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/teal_700"
-        android:textSize="14sp"
-        android:textAllCaps="true"
-        android:text="@string/add_region" />
+        android:id="@+id/tab_layout"
+        app:tabTextColor="@android:color/white"
+        app:tabSelectedTextColor="@android:color/white"
+        app:tabIndicatorColor="@color/gray"
+        android:background="@color/black"
+        />
 
-    <TextView
-        android:id="@+id/addRegionMessage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:textStyle="italic"
-        android:layout_marginBottom="10dp"
-        android:textColor="@color/red" />
-
-    <LinearLayout
+    <androidx.viewpager.widget.ViewPager
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/start_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/teal_700"
-            android:text="@string/start_scanning"
-            android:textAllCaps="true"
-            android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/stop_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/teal_700"
-            android:text="@string/stop_scanning"
-            android:textAllCaps="true"
-            android:textSize="14sp" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/tab_layout"
+        android:id="@+id/view_pager" />
 
 </LinearLayout>
-</ScrollView>
+
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    tools:context=".BeaconFragment">-->
+
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:orientation="vertical">-->
+
+<!--    <ScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="317dp"-->
+<!--        android:layout_marginBottom="20dp">-->
+
+<!--        <TableLayout-->
+<!--            android:id="@+id/tableLayout1"-->
+<!--            android:layout_width="fill_parent"-->
+<!--            android:layout_height="317dp"-->
+<!--            android:isScrollContainer="true"-->
+<!--            android:padding="10dip"></TableLayout>-->
+<!--    </ScrollView>-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="fill_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal">-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/UUIDText"-->
+<!--            android:layout_width="296dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:ems="10"-->
+<!--            android:hint="@string/uuid_prompt"-->
+<!--            android:inputType="textShortMessage" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/uuidUpdateButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:backgroundTint="@color/teal_700"-->
+<!--            android:textSize="14sp"-->
+<!--            android:textAllCaps="true"-->
+<!--            android:text="Update" />-->
+<!--    </LinearLayout>-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="fill_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        >-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/regionName"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:ems="10"-->
+<!--            android:hint="@string/region_prompt"-->
+<!--            android:inputType="textShortMessage" />-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/major"-->
+<!--            android:layout_width="84dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:ems="10"-->
+<!--            android:hint="@string/major_prompt"-->
+<!--            android:inputType="number" />-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/minor"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:ems="10"-->
+<!--            android:hint="@string/minor_prompt"-->
+<!--            android:inputType="number" />-->
+<!--    </LinearLayout>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/add_region"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:backgroundTint="@color/teal_700"-->
+<!--        android:textSize="14sp"-->
+<!--        android:textAllCaps="true"-->
+<!--        android:text="@string/add_region" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/addRegionMessage"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:visibility="invisible"-->
+<!--        android:textStyle="italic"-->
+<!--        android:layout_marginBottom="10dp"-->
+<!--        android:textColor="@color/red" />-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:orientation="horizontal">-->
+
+<!--        <Button-->
+<!--            android:id="@+id/start_button"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:backgroundTint="@color/teal_700"-->
+<!--            android:text="@string/start_scanning"-->
+<!--            android:textAllCaps="true"-->
+<!--            android:textSize="14sp" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/stop_button"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:backgroundTint="@color/teal_700"-->
+<!--            android:text="@string/stop_scanning"-->
+<!--            android:textAllCaps="true"-->
+<!--            android:textSize="14sp" />-->
+
+<!--    </LinearLayout>-->
+
+<!--</LinearLayout>-->
+<!--</ScrollView>-->
