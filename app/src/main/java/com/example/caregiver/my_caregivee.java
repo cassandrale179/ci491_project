@@ -6,7 +6,11 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +23,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,26 +42,56 @@ import java.util.HashMap;
 
 public class my_caregivee extends Fragment {
 
+    final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Get user info
+        String userId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userId", "");
+
+
         View v = inflater.inflate(R.layout.fragment_my_caregivee, null);
         ExpandableListView elv = (ExpandableListView) v.findViewById(R.id.exp_list_view);
-        elv.setAdapter(new my_caregiveeAdapter());
+        elv.setAdapter(new my_caregiveeAdapter(userId));
+
         return v;
     }
 
     public class my_caregiveeAdapter extends BaseExpandableListAdapter {
 
-        private String[] groups = { "User1", "User2" };
+        private ArrayList<String> groups;
 
         private String[][] children = {
                 { "    View Profile", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
                 { "    View Profile", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
         };
 
+        public my_caregiveeAdapter(String userID)
+        {
+            groups = new ArrayList<>();
+            final DatabaseReference user = database.child("/users/" + userID);
+            final DatabaseReference caregivees = user.child("caregivees");
+            ValueEventListener valueEventListener = new ValueEventListener()
+            {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot caregiveeSnapshot: snapshot.getChildren()) {
+                        groups.add(Objects.requireNonNull(caregiveeSnapshot.getValue()).toString());
+                    }
+                    notifyDataSetChanged();
+
+                }@Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("FAIL", "getCaregivees:onCancelled", databaseError.toException());
+                }
+            };
+            caregivees.addValueEventListener(valueEventListener);
+        }
+
+
         @Override
         public int getGroupCount() {
-            return groups.length;
+            return groups.size();
         }
 
         @Override
@@ -60,7 +101,7 @@ public class my_caregivee extends Fragment {
 
         @Override
         public Object getGroup(int i) {
-            return groups[i];
+            return groups.get(i);
         }
 
         @Override
