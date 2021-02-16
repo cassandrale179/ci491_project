@@ -62,11 +62,12 @@ public class my_caregivee extends Fragment {
                 { "    View Profile", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
         };
 
-        public my_caregiveeAdapter(String userID)
+        public my_caregiveeAdapter(String caregiverID)
         {
             caregiveeIDs = new ArrayList<>();
             caregiveeIDtoNameMap = new HashMap<>();
-            final DatabaseReference user = database.child("/users/" + userID);
+
+            final DatabaseReference user = database.child("/users/" + caregiverID);
             final DatabaseReference caregivees = user.child("caregivees");
             ValueEventListener valueEventListener = new ValueEventListener()
             {
@@ -164,7 +165,7 @@ public class my_caregivee extends Fragment {
                         ((Dashboard)getActivity()).replaceActiveFragment(new ProfileFragment());
                         break;
                     case 1:
-                        ((Dashboard)getActivity()).replaceActiveFragment(new SetTasksFragment());
+                        ((Dashboard)getActivity()).replaceActiveFragment(new SetTasksFragment(caregiveeIDs.get(i)));
                         break;
                     case 2:
                         Intent intent = new Intent(getContext(), ViewProgress.class);

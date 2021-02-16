@@ -11,12 +11,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
 
     private ArrayList<Integer> selectedPositions;
 
-    public ArrayCheckboxAdapter(Context context, int layout, T[] array)
+    public ArrayCheckboxAdapter(Context context, int layout, List<T> array)
     {
         super(context, layout, array);
         selectedPositions = new ArrayList<>();
