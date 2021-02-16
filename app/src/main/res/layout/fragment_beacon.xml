@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".BeaconFragment"
-    android:background="@color/white">
+    tools:context=".BeaconFragment">
 
     <ScrollView
         android:layout_width="match_parent"

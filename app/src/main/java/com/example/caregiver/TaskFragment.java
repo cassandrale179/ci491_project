@@ -59,6 +59,7 @@ public class TaskFragment extends Fragment {
             listGroup.add(fakeNames.get(g));
             ArrayList<String> arrayList = new ArrayList<>();
             for (int c = 0; c < fakeTasks.size(); c++){
+
                 // TODO: this is a brute force attempt to set left margin to child text
                 // for some reason I can't set it in MainAdapter.
                 // If someone can fix this, that would be great.

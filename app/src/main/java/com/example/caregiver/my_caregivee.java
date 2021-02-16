@@ -1,49 +1,25 @@
 package com.example.caregiver;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
-import android.content.SharedPreferences;
-
-import android.preference.PreferenceManager;
-
-import androidx.annotation.RequiresApi;
-import androidx.annotation.NonNull;
 
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.view.LayoutInflater;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,118 +30,21 @@ import com.google.gson.annotations.SerializedName;
 
 public class my_caregivee extends Fragment {
 
-    // Global reference to Firebase
-    DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-
-    // This hashmap store the caregivee id (key) and their name (value)
-    HashMap<String, String> caregiveeInfo = new HashMap<>();
-
-//    public void replaceFragment(Fragment someFragment) {
-//        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-//        transaction.replace(R.id.my_caregivee_fragment, someFragment);
-//        //transaction.addToBackStack(null);
-//        transaction.commit();
-//    }
-
-    /**
-     * Return list of caregivees associated with the caregiver.
-     */
-//    public void queryCaregivees() {
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-//        String userId = preferences.getString("userId", "");
-//        DatabaseReference ref = database.child("users/" + userId);
-//
-//        ref.addValueEventListener(new ValueEventListener() {@Override
-//        public void onDataChange(@NonNull DataSnapshot snapshot) {
-//            String value = snapshot.child("caregivees").getValue().toString();
-//            List < String > caregivees = Arrays.asList(value.split("\\s*,\\s*"));
-//            for (int i = 0; i < caregivees.size(); i++) {
-//                getCaregiveeNameAndTask(caregivees.get(i), caregivees.size());
-//            }
-//        }@Override
-//        public void onCancelled(@NonNull DatabaseError error) {
-//            Log.d("error", "Can't query caregivees for this caregiver");
-//        }
-//        });
-//    }
-//
-//    /**
-//     * Query data for each caregivee.
-//     * @param caregiveeId the id of the caregivee
-//     * @param size the size of the caregivees list
-//     */
-//    protected void getCaregiveeNameAndTask(String caregiveeId, int size) {
-//        DatabaseReference ref = database.child("users/" + caregiveeId);
-//        ref.addValueEventListener(new ValueEventListener() {
-//            @RequiresApi(api = Build.VERSION_CODES.N)
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                String name = dataSnapshot.child("name").getValue().toString();
-//                Object taskObject = dataSnapshot.child("rooms").getValue();
-//                if (taskObject != null) {
-//                    Gson gson = new Gson();
-//                    String tasksJson = gson.toJson(taskObject);
-//                    List<Task> tasks = createRoomAndTaskObject(caregiveeId, tasksJson);
-//                    taskList.put(caregiveeId, tasks);
-//                }
-//                caregiveeInfo.put(caregiveeId, name);
-//
-//                // TODO: hacky way of display the list. Need to use async.
-//                if (caregiveeInfo.size() == size){
-//                    displayCaregivee();
-//                }
-//            }@Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                Log.d("failure", "Unable to obtain data for this caregivee " + caregiveeId);
-//            }
-//        });
-//    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_my_caregivee, null);
         ExpandableListView elv = (ExpandableListView) v.findViewById(R.id.exp_list_view);
         elv.setAdapter(new my_caregiveeAdapter());
-
-        elv.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick (ExpandableListView elv, View view,
-                                         int i, int i1, long id){
-                if (i1 == 0) { //View Profile
-                    Fragment fragment = new ProfileFragment();
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.popBackStack();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.my_caregivee_fragment, fragment)
-                            .commit();
-                } else if (i1 == 1) { // Change Role
-                    Fragment fragment = new BeaconFragment(); //Change this later
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.popBackStack();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.my_caregivee_fragment, fragment)
-                            .commit();
-                } else if (i1 == 2) { //Set Task
-                    Intent intent = new Intent(view.getContext(), AddTask.class);
-                    startActivity(intent);
-                } else if (i1 == 3) {//See Progress
-                    startActivity(new Intent(view.getContext(), ProfileFragment.class));
-                } else if (i1 == 4) {//Remove Caregivee
-                    startActivity(new Intent(view.getContext(), ProfileFragment.class));
-                }
-                return false;
-            }
-        });
         return v;
     }
 
-
     public class my_caregiveeAdapter extends BaseExpandableListAdapter {
 
-        private String[] groups = {"User1", "User2"};
+        private String[] groups = { "User1", "User2" };
 
         private String[][] children = {
-                {"    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
-                {"    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
+                { "    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
+                { "    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
         };
 
         @Override
@@ -205,6 +84,7 @@ public class my_caregivee extends Fragment {
 
         @Override
         public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
+
             TextView textView = new TextView(my_caregivee.this.getActivity());
             //Initialize and assign
             textView.setText(getGroup(i).toString());
@@ -212,8 +92,12 @@ public class my_caregivee extends Fragment {
             String sGroup = String.valueOf(getGroup(i));
             //Set text on text view
             textView.setText(sGroup);
-            textView.setTextSize(25);
-            textView.setPadding(0, 30, 0, 30);
+            textView.setTextSize(30);
+            //Set text style Bold
+            textView.setTypeface(null, Typeface.BOLD);
+            //Set text colour
+            textView.setTextColor(Color.BLACK);
+            //Return View
             return textView;
 
         }
@@ -227,36 +111,20 @@ public class my_caregivee extends Fragment {
             String sChild = String.valueOf(getChild(i, i1));
             //Set text on text view
             textView.setText(sChild);
-            textView.setTextSize(15);
-            textView.setPadding(0, 30, 0, 30);
-
-            //view.setOnClickListener(new View.OnClickListener() {
-
+            textView.setTextSize(20);
+            //Set text style Bold
+            //textView.setTypeface(null, Typeface.BOLD);
+            //Set text colour
+            textView.setTextColor(Color.BLACK);
             return textView;
         }
-
-
-
-//                @Override
-//                public void onClick(View view) {
-//
-//
-//                }
-
-//            @Override
-////            public boolean OnCLick(ExpandableListView elv, View view, int groupPosition, int childPosition, long id)
-//            public boolean OnCLick(ExpandableListView parent, View view, int i, int i1, long id){
-////                View v = inflater.inflate(R.layout.fragment_my_caregivee, null);
-//                ExpandableListView elv = (ExpandableListView) view.findViewById(R.id.exp_list_view);
-//            }
-
 
         @Override
         public boolean isChildSelectable(int i, int i1) {
             return true;
         }
-    }
 
+    }
 
 }
 
