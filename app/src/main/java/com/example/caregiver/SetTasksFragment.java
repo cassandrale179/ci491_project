@@ -24,7 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,6 +44,7 @@ public class SetTasksFragment extends Fragment {
     private String mParam2;
     private String caregiveeID;
     private ArrayList<String> taskNames;
+    private String caregiverName;
 
     public SetTasksFragment(String caregiveeID) {
         // Required empty public constructor
@@ -107,6 +107,27 @@ public class SetTasksFragment extends Fragment {
         rooms.addValueEventListener(valueEventListener);
     }
 
+    private void updateViewWithCorrectCaregiveeName(View rootView)
+    {
+        final DatabaseReference name = database.child("/users/" + caregiveeID + "/name");
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                caregiverName = snapshot.getValue().toString();
+                // Set the text correctly
+                TextView assignedTasksText = rootView.findViewById(R.id.textView);
+                assignedTasksText.setText("Assigned tasks for " + caregiverName);
+                TextView nameText = rootView.findViewById(R.id.textView2);
+                nameText.setText(caregiverName);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("FAIL", "getCaregiverName:onCancelled", error.toException());
+            }
+        };
+        name.addValueEventListener(valueEventListener);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -114,6 +135,7 @@ public class SetTasksFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_set_tasks, container, false);
 
+        updateViewWithCorrectCaregiveeName(view);
 
         // Set the content of the ListView
         ListView listView = (ListView)view.findViewById(R.id.setTasksListView);

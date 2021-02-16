@@ -61,6 +61,7 @@ public class my_caregivee extends Fragment {
                 { "    View Profile", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
                 { "    View Profile", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
         };
+        private String caregiverID;
 
         public my_caregiveeAdapter(String caregiverID)
         {
@@ -87,6 +88,7 @@ public class my_caregivee extends Fragment {
                 }
             };
             caregivees.addValueEventListener(valueEventListener);
+            this.caregiverID = caregiverID;
         }
 
 
