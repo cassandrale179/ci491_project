@@ -96,7 +96,8 @@ public class Task_Caregivee extends Fragment {
         }
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference ref = database.child("users/" + caregiveeId);
-        ref.addValueEventListener(new ValueEventListener() {@RequiresApi(api = Build.VERSION_CODES.N)@Override
+        ref.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)@Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
             Object roomObject = snapshot.child("rooms").getValue();
             if (roomObject != null) {
@@ -138,6 +139,7 @@ public class Task_Caregivee extends Fragment {
 
                 // For each task, put them in the Task object.
                 for (String taskId: tasksIds) {
+                    Log.d("taskId", taskId);
                     JsonObject task = tasksPerRoom.getAsJsonObject(taskId);
                     String caregiverId = task.get("caregiverID").toString();
                     String taskName = task.get("name").toString();

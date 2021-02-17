@@ -86,6 +86,7 @@ public class Login extends AppCompatActivity {
                 editor.putString("name", dataSnapshot.child("name").getValue().toString());
                 editor.putString("email", dataSnapshot.child("email").getValue().toString());
                 editor.putString("tag", dataSnapshot.child("role").getValue().toString());
+                editor.putString("userId", userId);
                 editor.apply();
             }
             @Override
