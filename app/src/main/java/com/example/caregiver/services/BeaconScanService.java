@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.caregiver.BeaconFragment;
+import com.example.caregiver.BeaconRegionList;
 import com.kontakt.sdk.android.ble.configuration.ScanMode;
 import com.kontakt.sdk.android.ble.configuration.ScanPeriod;
 import com.kontakt.sdk.android.ble.connection.OnServiceReadyListener;
@@ -34,7 +35,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import static com.example.caregiver.BeaconFragment.regionRssiMap;
+import static com.example.caregiver.BeaconRegionList.regionRssiMap;
 
 public class BeaconScanService extends Service {
 
@@ -75,7 +76,7 @@ public class BeaconScanService extends Service {
                 .scanMode(ScanMode.BALANCED);
 
         // Set up spaces and iBeacon listener,
-        proximityManager.spaces().iBeaconRegions(BeaconFragment.beaconRegions);
+        proximityManager.spaces().iBeaconRegions(BeaconRegionList.beaconRegions);
         proximityManager.setIBeaconListener(createIBeaconListener());
         proximityManager.setScanStatusListener((createSimpleScanStatusListener()));
     }
