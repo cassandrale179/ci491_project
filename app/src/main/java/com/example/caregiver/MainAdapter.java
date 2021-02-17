@@ -1,13 +1,11 @@
 package com.example.caregiver;
 
-import android.app.Activity;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,18 +20,10 @@ public class MainAdapter extends BaseExpandableListAdapter {
 
     ArrayList<String> listGroup;
     HashMap<String,ArrayList<String>> listChild;
-    Activity childActivityNav;
 
     public MainAdapter(ArrayList<String> listGroup, HashMap<String,ArrayList<String>> listChild){
         this.listGroup = listGroup;
         this.listChild = listChild;
-    }
-
-    public MainAdapter(ArrayList<String> listGroup, HashMap<String,ArrayList<String>> listChild,
-                       Activity childActivityNav){
-        this.listGroup = listGroup;
-        this.listChild = listChild;
-        this.childActivityNav = childActivityNav;
     }
 
     @Override
@@ -103,22 +93,11 @@ public class MainAdapter extends BaseExpandableListAdapter {
         textView.setText(sChild);
         textView.setTypeface(null, Typeface.NORMAL);
 
-
-//        // Set onclick listener on child items
-//        textView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(viewGroup.getContext(), sChild, Toast.LENGTH_SHORT).show();
-//                if(childActivityNav != null){
-//
-//                }
-//            }
-//        });
         return view;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return true;
+        return true; // updated to true for selecting tasks in TaskFragment - by SP
     }
 }

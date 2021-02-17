@@ -55,7 +55,9 @@ import org.json.JSONObject;
  */
 public class TaskFragment extends Fragment {
 
-    /** This represent a single task object */
+    /** This represents a single task object
+     *  Is Parcelable in order to serialize Task object and pass to new intent
+     *  */
     public static class Task implements Parcelable{
         String caregiveeId; /* the caregivee associated with the task */
         String caregiverId; /* the caregiver who assigned the task */
@@ -281,62 +283,35 @@ public class TaskFragment extends Fragment {
             Task myTask = null;
             String currTask = listChild.get(listGroup.get(groupPosition)).get(childPosition);
             currTask = currTask.trim();
-            String room = "", cid = "";
             for(String caregiveeId : taskList.keySet()){
                 if(caregiveeInfo.get(caregiveeId).equals(listGroup.get(groupPosition))
                         && taskList.containsKey(caregiveeId)){
                     List<Task> tasks = taskList.get(caregiveeId);
                     for(Task t : tasks){
                         if(t.taskName.equals(currTask)){
-                            room = t.room;
-                            cid = caregiveeId;
                             myTask = t;
+                            break;
                         }
                     }
                 }
             }
-//            for(Task task : Objects.requireNonNull(taskList.get(listGroup.get(groupPosition)))){
-//                if(task.taskName.equals(currTask)){
-//                    room = task.room;
-//                }
-//            }
-//            for(Task task : taskList.get(listChild.get(groupPosition))){
-
-//            }
-////            String[] task = taskName.split("\n"); // separate task name & room
-////            for(int i = 0; i < task.length; i++){ // remove spaces
-////                task[i] = task[i].trim();
-////            }
-////            if(task.length == 2) {
                 Intent intent = new Intent(getContext(), EditTask.class);
-                intent.putExtra("task", currTask);
-                intent.putExtra("room", room);
-                intent.putExtra("caregiveeid", cid);
-                intent.putExtra("currtask", (Parcelable) myTask);
+                intent.putExtra("currtask", myTask);
                 if(myTask == null){ return false; }
                 List<String> currRooms = caregiveeRooms.get(myTask.caregiveeId);
                 if(currRooms == null){ return false; }
+                String carevigeeName = caregiveeInfo.get(myTask.caregiveeId);
                 String[] currCaregiveeRooms = currRooms.toArray(new String[currRooms.size()]);
                 intent.putExtra("rooms", currCaregiveeRooms);
+                intent.putExtra("caregiveeName", carevigeeName);
                 startActivity(intent);
-                Log.i("INFO", "task = " + currTask + " room = " + room);
                 return true;
-//            }
+
 //            return false;
         }));
 
         // Store caregivee + their name, and caregivee + their rooms for the Add Task page
         shareDataWithAddTask();
-
-
-
-    }
-
-    public void selectTask(){
-        caregiveeList.setOnItemClickListener(((parent, view1, position, id) ->
-        {
-            Log.i("INFO", "parent, position, id = " + parent.toString() + position + id);
-        }));
     }
 
     /** Sent the data of the caregivee, their name, and their rooms to the Add Task page. */
