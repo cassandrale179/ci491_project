@@ -83,7 +83,8 @@ public class SetTasksFragment extends Fragment {
             String name = task.child("name").getValue().toString();
             String id = task.getKey();
             boolean status = task.child("assignedStatus").getValue().equals("true");
-            Task t = new Task(id, name, status);
+            String room = roomSnapshot.getKey();
+            Task t = new Task(id, name, status, room);
             tasks.add(t);
             numTasks++;
             if (status)
@@ -157,8 +158,9 @@ public class SetTasksFragment extends Fragment {
         private String taskID;
         private String name;
         private boolean assignedStatus;
+        private String room;
 
-        public Task(String id, String name, boolean assignedStatus)
+        public Task(String id, String name, boolean assignedStatus, String room)
         {
             this.taskID = id;
             this.name = name;
@@ -171,6 +173,10 @@ public class SetTasksFragment extends Fragment {
 
         public String getName() {
             return name;
+        }
+
+        public String getRoom() {
+            return room;
         }
 
         public boolean getAssignedStatus() {
@@ -211,17 +217,12 @@ public class SetTasksFragment extends Fragment {
         button.setOnClickListener(v -> {
             ArrayList<Task> selVals = listAdapter.getSelectedObjects();
 
-            // Add a TextView so we can see if it worked
-            LinearLayout vert = (LinearLayout)view.findViewById(R.id.setTasksVertLayout);
-            TextView text = new TextView(getContext());
-            String displayText = "You selected: ";
-            for (Task t : selVals)
+            for (Task task : selVals)
             {
-                displayText += t + ", ";
+                DatabaseReference statusRef = database.child("/users/" + caregiveeID + "/name/rooms/" + task.getRoom()
+                        + "/tasks/" + task.getTaskID() + "/assignedStatus");
+                statusRef.setValue(task.getAssignedStatus() ? "true" : "false");
             }
-            displayText = displayText.substring(0, displayText.length()-2);
-            text.setText(displayText);
-            vert.addView(text);
         });
 
         return view;
