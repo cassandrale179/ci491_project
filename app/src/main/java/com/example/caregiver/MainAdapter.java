@@ -1,5 +1,6 @@
 package com.example.caregiver;
 
+import android.app.Activity;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +22,18 @@ public class MainAdapter extends BaseExpandableListAdapter {
 
     ArrayList<String> listGroup;
     HashMap<String,ArrayList<String>> listChild;
+    Activity childActivityNav;
 
     public MainAdapter(ArrayList<String> listGroup, HashMap<String,ArrayList<String>> listChild){
         this.listGroup = listGroup;
         this.listChild = listChild;
+    }
+
+    public MainAdapter(ArrayList<String> listGroup, HashMap<String,ArrayList<String>> listChild,
+                       Activity childActivityNav){
+        this.listGroup = listGroup;
+        this.listChild = listChild;
+        this.childActivityNav = childActivityNav;
     }
 
     @Override
@@ -95,18 +104,21 @@ public class MainAdapter extends BaseExpandableListAdapter {
         textView.setTypeface(null, Typeface.NORMAL);
 
 
-        // Set onclick listener on child items
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(viewGroup.getContext(), sChild, Toast.LENGTH_SHORT).show();
-            }
-        });
+//        // Set onclick listener on child items
+//        textView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(viewGroup.getContext(), sChild, Toast.LENGTH_SHORT).show();
+//                if(childActivityNav != null){
+//
+//                }
+//            }
+//        });
         return view;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        return true;
     }
 }
