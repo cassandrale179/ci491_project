@@ -35,6 +35,10 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
         checkbox.setScaleX(1.5f);
         checkbox.setScaleY(1.5f);
         checkbox.setHeight((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getContext().getResources().getDisplayMetrics()));
+        if (selectedPositions.contains(position))
+        {
+            checkbox.setChecked(true);
+        }
         checkbox.setOnClickListener(view -> {
             if (selectedPositions.contains(position))
             {
@@ -54,6 +58,12 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
         row.addView(text);
 
         return row;
+    }
+
+    public void add(T object, boolean isSelected)
+    {
+        super.add(object);
+        selectedPositions.add(getPosition(object));
     }
 
     public ArrayList<T> getSelectedObjects()

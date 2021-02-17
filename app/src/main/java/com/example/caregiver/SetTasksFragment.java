@@ -43,10 +43,11 @@ public class SetTasksFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private String caregiveeID;
-    private ArrayList<String> taskNames;
+    private ArrayList<Task> tasks;
     private String caregiverName;
     private int numTasks = 0;
     private int tasksAssigned = 0;
+    private ArrayCheckboxAdapter<Task> listAdapter;
 
     public SetTasksFragment(String caregiveeID) {
         // Required empty public constructor
@@ -74,19 +75,23 @@ public class SetTasksFragment extends Fragment {
 
     }
 
-    private String[] getRoomTasks(DataSnapshot roomSnapshot)
+    private Task[] getRoomTasks(DataSnapshot roomSnapshot)
     {
-        ArrayList<String> tasks = new ArrayList<>();
+        ArrayList<Task> tasks = new ArrayList<>();
         for (DataSnapshot task : roomSnapshot.child("tasks").getChildren())
         {
-            tasks.add(task.child("name").getValue().toString());
+            String name = task.child("name").getValue().toString();
+            String id = task.getKey();
+            boolean status = task.child("assignedStatus").getValue().equals("true");
+            Task t = new Task(id, name, status);
+            tasks.add(t);
             numTasks++;
-            if (task.child("assignedStatus").getValue().equals("true"))
+            if (status)
             {
                 tasksAssigned++;
             }
         }
-        return tasks.toArray(new String[tasks.size()]);
+        return tasks.toArray(new Task[tasks.size()]);
     }
 
     private void updateNumSelectedText()
@@ -96,7 +101,7 @@ public class SetTasksFragment extends Fragment {
         numSelectedText.setText(tasksAssigned + " of " + numTasks + " tasks assigned");
     }
 
-    private void getAllCaregiveeTasks(String caregiveeID, ArrayAdapter adapter)
+    private void getAllCaregiveeTasks(String caregiveeID)
     {
         final DatabaseReference rooms = database.child("/users/" + caregiveeID + "/rooms");
         ValueEventListener valueEventListener = new ValueEventListener() {
@@ -104,17 +109,17 @@ public class SetTasksFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 numTasks = 0;
                 tasksAssigned = 0;
-                adapter.clear();
+                listAdapter.clear();
                 for (DataSnapshot roomSnapshot: snapshot.getChildren())
                 {
-                    String[] tasks = getRoomTasks(roomSnapshot);
-                    for (String task : tasks)
+                    Task[] tasks = getRoomTasks(roomSnapshot);
+                    for (Task task : tasks)
                     {
-                        adapter.add(task);
+                        listAdapter.add(task, task.getAssignedStatus());
                     }
                 }
                 updateNumSelectedText();
-                adapter.notifyDataSetChanged();
+                listAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -147,6 +152,43 @@ public class SetTasksFragment extends Fragment {
         name.addValueEventListener(valueEventListener);
     }
 
+    public class Task {
+
+        private String taskID;
+        private String name;
+        private boolean assignedStatus;
+
+        public Task(String id, String name, boolean assignedStatus)
+        {
+            this.taskID = id;
+            this.name = name;
+            this.assignedStatus = assignedStatus;
+        }
+
+        public String getTaskID() {
+            return taskID;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean getAssignedStatus() {
+            return assignedStatus;
+        }
+
+        public void toggleAssignedStatus()
+        {
+            assignedStatus = !assignedStatus;
+        }
+
+        @Override
+        public String toString()
+        {
+            return name;
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -157,30 +199,25 @@ public class SetTasksFragment extends Fragment {
 
         // Set the content of the ListView
         ListView listView = (ListView)view.findViewById(R.id.setTasksListView);
-        taskNames = new ArrayList<>();
-        ArrayCheckboxAdapter<String> testAdapter = new ArrayCheckboxAdapter<String>(getContext(),
-                android.R.layout.simple_list_item_1, taskNames);
-        getAllCaregiveeTasks(caregiveeID, testAdapter);
-        listView.setAdapter(testAdapter);
+        tasks = new ArrayList<>();
+        listAdapter = new ArrayCheckboxAdapter<Task>(getContext(),
+                android.R.layout.simple_list_item_1, tasks);
+        getAllCaregiveeTasks(caregiveeID);
+        listView.setAdapter(listAdapter);
 
 
         // Make the button do something.
         Button button = view.findViewById(R.id.assignTasksButton);
         button.setOnClickListener(v -> {
-            ListAdapter adapter = listView.getAdapter();
-            if (adapter instanceof WrapperListAdapter)
-            {
-                adapter = ((WrapperListAdapter) adapter).getWrappedAdapter();
-            }
-            ArrayList<String> selVals = ((ArrayCheckboxAdapter<String>)adapter).getSelectedObjects();
+            ArrayList<Task> selVals = listAdapter.getSelectedObjects();
 
             // Add a TextView so we can see if it worked
             LinearLayout vert = (LinearLayout)view.findViewById(R.id.setTasksVertLayout);
             TextView text = new TextView(getContext());
             String displayText = "You selected: ";
-            for (String s : selVals)
+            for (Task t : selVals)
             {
-                displayText += s + ", ";
+                displayText += t + ", ";
             }
             displayText = displayText.substring(0, displayText.length()-2);
             text.setText(displayText);
