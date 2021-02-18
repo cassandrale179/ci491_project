@@ -37,11 +37,11 @@ public class EditTask extends AppCompatActivity {
 
         // retrieve info from TaskFragment page intent
         Intent intent = getIntent();
-        currTask = intent.getParcelableExtra("currtask");
+        currTask = intent.getParcelableExtra("currTask");
         String[] caregiveeRooms = intent.getStringArrayExtra("rooms");
         String caregiveeName = intent.getStringExtra("caregiveeName");
 
-        /* TODO handle error */
+        /* TODO better error handling */
         // if task is not found, do not display
         if(currTask == null) return;
 

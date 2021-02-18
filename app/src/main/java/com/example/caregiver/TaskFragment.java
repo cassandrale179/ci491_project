@@ -260,6 +260,56 @@ public class TaskFragment extends Fragment {
         return tasks;
     }
 
+    /**
+     * Finds the selected task in list of tasks
+     * @param currCaregiveeName, selected caregivee's name
+     * @param currTaskName, selected task for selected caregivee
+     * @return selected task object, null if no such object exists
+     */
+    private Task getSelectedTask(String currCaregiveeName, String currTaskName){
+        // loop thru tasklist keys to find current caregivee Id
+        for(String caregiveeId : taskList.keySet()){
+            // if we find the current caregivee
+            String caregiveeName = caregiveeInfo.get(caregiveeId);
+            if(caregiveeName != null && caregiveeName.equals(currCaregiveeName)
+                    && taskList.containsKey(caregiveeId)){
+                // loop thru all current caregivee tasks
+                List<Task> allTasks = taskList.get(caregiveeId);
+                for(Task task : allTasks){
+                    // for the current one, set it to our currTask to pass into the intent
+                    if(task.taskName.equals(currTaskName)){
+                        return task;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Extracts task room & caregiveeId info & passes to new EditTask intent
+     * @param selectedTask, task to pass into intent
+     * @return true if successful retrieval of info
+     */
+    private boolean createEditTaskIntent(Task selectedTask){
+        // get caregivee rooms & name
+        List<String> currRooms = caregiveeRooms.get(selectedTask.caregiveeId);
+        if(currRooms == null) return false;
+        String[] currCaregiveeRooms = new String[currRooms.size()];
+        currCaregiveeRooms = currRooms.toArray(currCaregiveeRooms);
+
+        String carevigeeName = caregiveeInfo.get(selectedTask.caregiveeId);
+
+        // create new intent, pass curr task, caregivee name & rooms
+        Intent intent = new Intent(getContext(), EditTask.class);
+        intent.putExtra("currTask", selectedTask);
+        intent.putExtra("rooms", currCaregiveeRooms);
+        intent.putExtra("caregiveeName", carevigeeName);
+
+        startActivity(intent);
+        return true;
+    }
+
     /** Display caregivee on the main screen. */
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void displayCaregivee(){
@@ -280,34 +330,17 @@ public class TaskFragment extends Fragment {
 
         caregiveeList.setAdapter(adapter);
         caregiveeList.setOnChildClickListener(((parent, v, groupPosition, childPosition, id) -> {
-            Task myTask = null;
-            String currTask = listChild.get(listGroup.get(groupPosition)).get(childPosition);
-            currTask = currTask.trim();
-            for(String caregiveeId : taskList.keySet()){
-                if(caregiveeInfo.get(caregiveeId).equals(listGroup.get(groupPosition))
-                        && taskList.containsKey(caregiveeId)){
-                    List<Task> tasks = taskList.get(caregiveeId);
-                    for(Task t : tasks){
-                        if(t.taskName.equals(currTask)){
-                            myTask = t;
-                            break;
-                        }
-                    }
-                }
-            }
-                Intent intent = new Intent(getContext(), EditTask.class);
-                intent.putExtra("currtask", myTask);
-                if(myTask == null){ return false; }
-                List<String> currRooms = caregiveeRooms.get(myTask.caregiveeId);
-                if(currRooms == null){ return false; }
-                String carevigeeName = caregiveeInfo.get(myTask.caregiveeId);
-                String[] currCaregiveeRooms = currRooms.toArray(new String[currRooms.size()]);
-                intent.putExtra("rooms", currCaregiveeRooms);
-                intent.putExtra("caregiveeName", carevigeeName);
-                startActivity(intent);
-                return true;
 
-//            return false;
+            // get selected task info
+            String currCaregiveeName = listGroup.get(groupPosition);
+            String currTaskName = listChild.get(currCaregiveeName).get(childPosition);
+            currTaskName = currTaskName.trim(); // remove whitespaces
+
+            Task selectedTask = getSelectedTask(currCaregiveeName, currTaskName);
+            if(selectedTask == null) return false;
+
+            // create edit task intent with selected task
+            return createEditTaskIntent(selectedTask);
         }));
 
         // Store caregivee + their name, and caregivee + their rooms for the Add Task page
