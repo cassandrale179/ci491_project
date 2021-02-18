@@ -76,8 +76,7 @@ public class Login extends AppCompatActivity {
     private void navigateToDashboard(String userId){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference ref = database.child("users/" + userId);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users/" + userId);
 
         // Attach a listener to read name , email of user
         ref.addListenerForSingleValueEvent(new ValueEventListener() {

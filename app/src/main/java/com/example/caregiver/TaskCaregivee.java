@@ -35,10 +35,10 @@ import java.util.stream.Collectors;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link Task_Caregivee#newInstance} factory method to
+ * Use the {@link TaskCaregivee#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Task_Caregivee extends Fragment {
+public class TaskCaregivee extends Fragment {
 
     // Global object to store the task list
     List < Task > taskList = new ArrayList < >();
@@ -72,13 +72,13 @@ public class Task_Caregivee extends Fragment {
         }
     }
 
-    public Task_Caregivee() {
+    public TaskCaregivee() {
         // Required empty public constructor
     }
 
     // TODO: Rename and change types and number of parameters
-    public static Task_Caregivee newInstance(String param1, String param2) {
-        Task_Caregivee fragment = new Task_Caregivee();
+    public static TaskCaregivee newInstance(String param1, String param2) {
+        TaskCaregivee fragment = new TaskCaregivee();
         return fragment;
     }
 

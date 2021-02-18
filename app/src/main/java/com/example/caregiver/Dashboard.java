@@ -48,7 +48,7 @@ public class Dashboard extends AppCompatActivity {
                 break;
             case R.id.task:
                 if (role.equals("caregivee")){
-                    fragment = new Task_Caregivee();
+                    fragment = new TaskCaregivee();
                 } else {
                     fragment = new TaskFragment();
                 }
