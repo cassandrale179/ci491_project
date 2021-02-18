@@ -4,11 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.Set;
 
 public class Dashboard extends AppCompatActivity {
 
@@ -24,6 +31,13 @@ public class Dashboard extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
     }
 
+
+    public void replaceActiveFragment(Fragment newFragment)
+    {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, newFragment).commit();
+    }
+
+
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = new
             BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -35,7 +49,9 @@ public class Dashboard extends AppCompatActivity {
                 fragment = new my_caregivee();
                 break;
             case R.id.task:
-                fragment = new TaskFragment();
+                //fragment = new TaskFragment();
+                fragment = new my_caregivee(); // For testing.
+
                 break;
             case R.id.beacon:
                 fragment = new BeaconFragment();

@@ -22,4 +22,9 @@
     <string name="name">Name</string>
     <string name="email_confirmation_subtitle">Sign up below to receive an email confirmation.</string>
     <string name="sign_up_title">SIGN UP</string>
+    <string name="plus">+</string>
+    <string name="request_approval_directions">Click on a row to approve an email request.</string>
+    <string name="add_a_caregivee">ADD A CAREGIVEE</string>
+    <string name="skip">Skip</string>
+    <string name="add_caregivee_msg">Add a new Caregivee by clicking the round button below.</string>
 </resources>

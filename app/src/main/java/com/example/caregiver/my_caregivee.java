@@ -6,8 +6,14 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
+
+
+import android.preference.PreferenceManager;
+import android.util.Log;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,16 +22,18 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ExpandableListView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,17 +45,18 @@ import java.util.HashMap;
 public class my_caregivee extends Fragment {
 
 
+
     // Global reference to Firebase
-    DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    //DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
     // This hashmap store the caregivee id (key) and their name (value)
     HashMap<String, String> caregiveeInfo = new HashMap<>();
-    String[] groups = {"User1", "User2"};
-
-    String[][] children = {
-            {"    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
-            {"    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
-    };
+//    String[] groups = {"User1", "User2"};
+//
+//    String[][] children = {
+//            {"    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
+//            {"    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
+//    };
 
     //    /**
 //     * Return list of caregivees associated with the caregiver.
@@ -103,41 +112,52 @@ public class my_caregivee extends Fragment {
 //        });
 //    }
 
+    final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Get user info
+        String userId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userId", "");
+
+
         View v = inflater.inflate(R.layout.fragment_my_caregivee, null);
         ExpandableListView elv = (ExpandableListView) v.findViewById(R.id.exp_list_view);
-        elv.setAdapter(new my_caregiveeAdapter());
 
-        elv.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView elv, View view,
-                                        int i, int i1, long id) {
-                if (i1 == 0) { //View Profile
-                    Fragment fragment = new ProfileFragment();
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.popBackStack();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.my_caregivee_fragment, fragment)
-                            .commit();
-                } else if (i1 == 1) { // Change Role
-                    Fragment fragment = new BeaconFragment(); //Change this later
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.popBackStack();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.my_caregivee_fragment, fragment)
-                            .commit();
-                } else if (i1 == 2) { //Set Task
-                    Intent intent = new Intent(view.getContext(), AddTask.class);
-                    startActivity(intent);
-                } else if (i1 == 3) {//See Progress
-                    startActivity(new Intent(view.getContext(), ProfileFragment.class));
-                } else if (i1 == 4) {//Remove Caregivee
-                    startActivity(new Intent(view.getContext(), ProfileFragment.class));
-                }
-                return false;
-            }
-        });
+//        elv.setAdapter(new my_caregiveeAdapter());
+//
+//        elv.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+//            @Override
+//            public boolean onChildClick(ExpandableListView elv, View view,
+//                                        int i, int i1, long id) {
+//                if (i1 == 0) { //View Profile
+//                    Fragment fragment = new ProfileFragment();
+//                    FragmentManager fragmentManager = getFragmentManager();
+//                    fragmentManager.popBackStack();
+//                    fragmentManager.beginTransaction()
+//                            .replace(R.id.my_caregivee_fragment, fragment)
+//                            .commit();
+//                } else if (i1 == 1) { // Change Role
+//                    Fragment fragment = new BeaconFragment(); //Change this later
+//                    FragmentManager fragmentManager = getFragmentManager();
+//                    fragmentManager.popBackStack();
+//                    fragmentManager.beginTransaction()
+//                            .replace(R.id.my_caregivee_fragment, fragment)
+//                            .commit();
+//                } else if (i1 == 2) { //Set Task
+//                    Intent intent = new Intent(view.getContext(), AddTask.class);
+//                    startActivity(intent);
+//                } else if (i1 == 3) {//See Progress
+//                    startActivity(new Intent(view.getContext(), ProfileFragment.class));
+//                } else if (i1 == 4) {//Remove Caregivee
+//                    startActivity(new Intent(view.getContext(), ProfileFragment.class));
+//                }
+//                return false;
+//            }
+//        });
+
+        elv.setAdapter(new my_caregiveeAdapter(userId));
+
 
         return v;
     }
@@ -145,16 +165,50 @@ public class my_caregivee extends Fragment {
     public class my_caregiveeAdapter extends BaseExpandableListAdapter {
 
 
-        private String[] groups = { "User1", "User2" };
+
+//        private String[] groups = { "User1", "User2" };
+        private ArrayList<String> caregiveeIDs;
+        private HashMap<String, String> caregiveeIDtoNameMap;
+
 
         private String[][] children = {
-                { "    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
-                { "    View Profile", "    Change Role", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
+                { "    View Profile", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
+                { "    View Profile", "    Set Tasks", "    See Progress", "    Remove Caregivee"},
         };
+        private String caregiverID;
+
+        public my_caregiveeAdapter(String caregiverID)
+        {
+            caregiveeIDs = new ArrayList<>();
+            caregiveeIDtoNameMap = new HashMap<>();
+
+            final DatabaseReference user = database.child("/users/" + caregiverID);
+            final DatabaseReference caregivees = user.child("caregivees");
+            ValueEventListener valueEventListener = new ValueEventListener()
+            {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot caregiveeSnapshot: snapshot.getChildren()) {
+                        String id = Objects.requireNonNull(caregiveeSnapshot.getKey());
+                        String name = Objects.requireNonNull(caregiveeSnapshot.getValue()).toString();
+                        caregiveeIDs.add(id);
+                        caregiveeIDtoNameMap.put(id, name);
+                    }
+                    notifyDataSetChanged();
+
+                }@Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("FAIL", "getCaregivees:onCancelled", databaseError.toException());
+                }
+            };
+            caregivees.addValueEventListener(valueEventListener);
+            this.caregiverID = caregiverID;
+        }
+
 
         @Override
         public int getGroupCount() {
-            return groups.length;
+            return caregiveeIDs.size();
         }
 
         @Override
@@ -164,7 +218,7 @@ public class my_caregivee extends Fragment {
 
         @Override
         public Object getGroup(int i) {
-            return groups[i];
+            return caregiveeIDtoNameMap.get(caregiveeIDs.get(i));
         }
 
         @Override
@@ -200,6 +254,12 @@ public class my_caregivee extends Fragment {
             textView.setTextSize(30);
             textView.setPadding(0,15,0,15);
 
+            //Set text style Bold
+//            textView.setTypeface(null, Typeface.BOLD);
+//            //Set text colour
+//            textView.setTextColor(Color.BLACK);
+            //Return View
+
             return textView;
 
         }
@@ -213,12 +273,34 @@ public class my_caregivee extends Fragment {
             String sChild = String.valueOf(getChild(i, i1));
             //Set text on text view
             textView.setText(sChild);
+            textView.setPadding(0,10,0,10);
             textView.setTextSize(20);
             textView.setPadding(0,10,0,10);
             //Set text style Bold
             //textView.setTypeface(null, Typeface.BOLD);
+
             //Set text colour
             //textView.setTextColor(Color.BLACK);
+
+            textView.setOnClickListener(v -> {
+                switch(i1) {
+                    case 0:
+                        ((Dashboard)getActivity()).replaceActiveFragment(new ProfileFragment());
+                        break;
+                    case 1:
+                        ((Dashboard)getActivity()).replaceActiveFragment(new SetTasksFragment(caregiveeIDs.get(i)));
+                        break;
+                    case 2:
+                        Intent intent = new Intent(getContext(), ViewProgress.class);
+                        startActivity(intent);
+                        break;
+                    case 3:
+                        intent = new Intent(getContext(), RemoveCaregivee.class);
+                        startActivity(intent);
+                        break;
+                }
+            });
+
             return textView;
         }
 
