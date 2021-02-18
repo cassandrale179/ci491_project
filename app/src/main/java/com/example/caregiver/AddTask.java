@@ -91,14 +91,9 @@ public class AddTask extends AppCompatActivity {
         // Handling create spinner options
         createSpinners();
 
-        // TODO: for some reason this crash the app after it return to the Tasks page
+        // navigate back to dashboard
         Button backButton = findViewById(R.id.taskBackButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(view.getContext(), TaskFragment.class));
-            }
-        });
+        backButton.setOnClickListener(view -> startActivity(new Intent(view.getContext(), Dashboard.class)));
     }
 
     protected void createSpinners(){
@@ -193,6 +188,8 @@ public class AddTask extends AppCompatActivity {
                     displayMessage(databaseError.getMessage(), red);
                 } else {
                    displayMessage("Data saved successfully.", green);
+                   // navigate back to Dashboard
+                   startActivity(new Intent(view.getContext(), Dashboard.class));
                 }
             }
         });

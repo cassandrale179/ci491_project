@@ -82,9 +82,9 @@ public class Login extends AppCompatActivity {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                editor.putString("name", dataSnapshot.child("name").getValue().toString());
-                editor.putString("email", dataSnapshot.child("email").getValue().toString());
-                editor.putString("tag", dataSnapshot.child("role").getValue().toString());
+                editor.putString("userName", dataSnapshot.child("name").getValue().toString());
+                editor.putString("userEmail", dataSnapshot.child("email").getValue().toString());
+                editor.putString("userRole", dataSnapshot.child("role").getValue().toString());
                 editor.putString("userId", userId);
                 editor.apply();
             }

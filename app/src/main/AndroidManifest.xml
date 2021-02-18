@@ -30,7 +30,11 @@
             android:name=".services.BeaconScanService"
             android:exported="false" />
 
+
+        android:theme="@style/Theme.Caregiver"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
         <activity android:name=".AddTask" />
+        <activity android:name=".EditTask" />
         <activity android:name=".Dashboard" />
         <activity android:name=".Request" />
         <activity android:name=".Identification" />

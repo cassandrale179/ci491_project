@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,19 +93,11 @@ public class MainAdapter extends BaseExpandableListAdapter {
         textView.setText(sChild);
         textView.setTypeface(null, Typeface.NORMAL);
 
-
-        // Set onclick listener on child items
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(viewGroup.getContext(), sChild, Toast.LENGTH_SHORT).show();
-            }
-        });
         return view;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        return true;
     }
 }
