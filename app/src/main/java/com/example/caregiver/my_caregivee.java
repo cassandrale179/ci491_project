@@ -138,10 +138,11 @@ public class my_caregivee extends Fragment {
             //Set text on text view
             textView.setText(sGroup);
             textView.setTextSize(30);
+            textView.setPadding(0,15,0,15);
             //Set text style Bold
-            textView.setTypeface(null, Typeface.BOLD);
-            //Set text colour
-            textView.setTextColor(Color.BLACK);
+//            textView.setTypeface(null, Typeface.BOLD);
+//            //Set text colour
+//            textView.setTextColor(Color.BLACK);
             //Return View
             return textView;
 
@@ -156,11 +157,10 @@ public class my_caregivee extends Fragment {
             String sChild = String.valueOf(getChild(i, i1));
             //Set text on text view
             textView.setText(sChild);
+            textView.setPadding(0,10,0,10);
             textView.setTextSize(20);
             //Set text style Bold
             //textView.setTypeface(null, Typeface.BOLD);
-            //Set text colour
-            textView.setTextColor(Color.BLACK);
             textView.setOnClickListener(v -> {
                 switch(i1) {
                     case 0:

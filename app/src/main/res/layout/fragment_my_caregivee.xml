@@ -48,9 +48,11 @@
 
     <ExpandableListView
         android:layout_width="match_parent"
-        android:layout_height="330dp"
+        android:layout_height="wrap_content"
         android:id="@+id/exp_list_view"
-        android:layout_below="@id/text_manageyourcaregivee"/>
+        android:layout_below="@id/text_manageyourcaregivee"
+        android:divider="@null"
+        />
     <!--CHANGE THE NAME of the id-->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
