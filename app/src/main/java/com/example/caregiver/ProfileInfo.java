@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
@@ -83,26 +84,13 @@ public class ProfileInfo extends Fragment {
      * @param userId the user id of the currently logged in user
      */
     public void displayUserInfo(View view, String userId) {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference ref = database.child("users/" + userId);
-
-        // Attach a listener to read data of user (name, email, id)
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                currentName = dataSnapshot.child("name").getValue().toString();
-                currentEmail = dataSnapshot.child("email").getValue().toString();
-                EditText nameField = (EditText) view.findViewById(R.id.profileName);
-                EditText emailField = (EditText) view.findViewById(R.id.profileEmail);
-                nameField.setHint(currentName);
-                emailField.setHint(currentEmail);
-
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("failure", "Unable to obtain user information");
-            }
-        });
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        currentName = preferences.getString("userName", "");
+        currentEmail = preferences.getString("userEmail", "");
+        EditText nameField = (EditText) view.findViewById(R.id.profileName);
+        EditText emailField = (EditText) view.findViewById(R.id.profileEmail);
+        nameField.setHint(currentName);
+        emailField.setHint(currentEmail);
     }
 
     @Override
@@ -152,7 +140,7 @@ public class ProfileInfo extends Fragment {
     public void changePassword(
             FirebaseUser user, @NonNull String newPassword, @NonNull String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
-            displayMessage("Your new and confirm password must be the same.", red);
+            displayMessage("Password do not match.", red);
             return;
         }
         if (newPassword.length() < 6 || confirmPassword.length() < 6) {
@@ -262,4 +250,13 @@ public class ProfileInfo extends Fragment {
             askForOldPassword();
         }
     };
+
+    public static class MainActivity extends AppCompatActivity {
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+        }
+    }
 }

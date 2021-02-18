@@ -3,7 +3,9 @@ package com.example.caregiver;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -46,7 +48,6 @@ public class Identification extends AppCompatActivity {
     /** Navigation function to move to login page **/
     public void openLogIn(View v){
         Intent i = new Intent(Identification.this, Login.class);
-        i.putExtra("tag", tag);
         startActivity(i);
     }
 }
