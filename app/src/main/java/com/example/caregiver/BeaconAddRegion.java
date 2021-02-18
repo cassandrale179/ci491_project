@@ -91,7 +91,7 @@ public class BeaconAddRegion extends Fragment {
         majorField = (EditText) rootView.findViewById(R.id.major);
         String majorValue = majorField.getText().toString();
 
-        if (UUIDValue.isEmpty() || regionName.isEmpty() || majorValue.isEmpty()) {
+        if (regionName.isEmpty() || majorValue.isEmpty()) {
             displayErrorMessage("One or more fields are empty.", rootView);
         } else {
             displayErrorMessage("", rootView);
