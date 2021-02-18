@@ -29,6 +29,7 @@ public class Dashboard extends AppCompatActivity {
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         role = preferences.getString("userRole", "");
+        String userId = preferences.getString("userId", "");
 
         // Set bottom navigation bar
         bottomNavigationView = findViewById(R.id.bottomNavigation);
