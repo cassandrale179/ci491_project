@@ -98,6 +98,6 @@ public class MainAdapter extends BaseExpandableListAdapter {
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return true; // updated to true for selecting tasks in TaskFragment - by SP
+        return true;
     }
 }

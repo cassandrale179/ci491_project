@@ -337,7 +337,10 @@ public class TaskFragment extends Fragment {
             currTaskName = currTaskName.trim(); // remove whitespaces
 
             Task selectedTask = getSelectedTask(currCaregiveeName, currTaskName);
-            if(selectedTask == null) return false;
+            if(selectedTask == null) {
+                Log.e("FAIL", "TaskFragment:displayCaregivee could not get selectedTask.");
+                return false;
+            }
 
             // create edit task intent with selected task
             return createEditTaskIntent(selectedTask);

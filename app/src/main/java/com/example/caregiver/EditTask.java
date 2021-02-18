@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -12,10 +13,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +31,7 @@ public class EditTask extends AppCompatActivity {
     private EditText taskNotesField;
     private EditText caregiveeField;
     private Spinner roomSpinner;
+    private TextView errorMessage;
 
     private TaskFragment.Task currTask; // current task being edited
     final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
@@ -43,13 +49,17 @@ public class EditTask extends AppCompatActivity {
 
         /* TODO better error handling */
         // if task is not found, do not display
-        if(currTask == null) return;
+        if(currTask == null){
+            Log.e("FAIL", "EditTask:onCreate could not get selectedTask from TaskFragment.");
+            return;
+        }
 
         // get all field/spinners
         taskNameField = findViewById(R.id.taskName);
         taskNotesField = findViewById(R.id.taskNotes);
         roomSpinner = findViewById(R.id.taskRoom);
         caregiveeField = findViewById(R.id.taskCaregivee);
+        errorMessage = findViewById(R.id.taskMessage);
 
         // populate all fields with task info & create spinner
         taskNameField.setText(currTask.taskName, TextView.BufferType.EDITABLE);
@@ -57,7 +67,6 @@ public class EditTask extends AppCompatActivity {
         caregiveeField.setText(caregiveeName, TextView.BufferType.NORMAL);
         createSpinner(caregiveeRooms, currTask.room);
 
-        Log.i("INFO", "EditTask:onCreate displayed all task details successfully.");
 
         /* TODO handle task removal */
     }
@@ -68,16 +77,12 @@ public class EditTask extends AppCompatActivity {
      * @param currRoom, room of current task
      */
     protected void createSpinner(String[] allCaregiveeRooms, String currRoom){
-        // set curr room to first entry
-        for(int i = 0; i < allCaregiveeRooms.length; i++){
-            // swap first with curr room
-            if(allCaregiveeRooms[i].equals(currRoom)){
-                String temp = allCaregiveeRooms[i];
-                allCaregiveeRooms[i] = allCaregiveeRooms[0];
-                allCaregiveeRooms[0] = temp;
-                break;
-            }
-        }
+        // swap first with curr room
+        int currentRoomIndex = Arrays.asList(allCaregiveeRooms).indexOf(currRoom);
+        String temp = allCaregiveeRooms[currentRoomIndex];
+        allCaregiveeRooms[currentRoomIndex] = allCaregiveeRooms[0];
+        allCaregiveeRooms[0] = temp;
+
         // Render list on the caregivee spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<String> (
                 this, android.R.layout.simple_spinner_item,  allCaregiveeRooms);
@@ -106,9 +111,8 @@ public class EditTask extends AppCompatActivity {
         String path;
         String updatedRoom = roomSpinner.getSelectedItem().toString();
 
-        // if room changed, remove previous task
+        // if room changed, remove the old task from its room
         if(!updatedRoom.equals(currTask.room)){
-            // if room is changed, remove the old task from its room
             path = createPath(currTask.caregiveeId, currTask.room, currTask.taskId);
             removeTaskInFirebase(path);
         }
@@ -142,6 +146,19 @@ public class EditTask extends AppCompatActivity {
     }
 
     /**
+     * Render the error and success message field.
+     * @param sourceString The text message to be displayed.
+     * @param color The color for the text message (red for error, green for success).
+     */
+    public void displayMessage(String sourceString, int color) {
+
+
+        errorMessage.setText(Html.fromHtml(sourceString));
+        errorMessage.setVisibility(View.VISIBLE);
+        errorMessage.setTextColor(color);
+    }
+
+    /**
      * In the case of a room change, this removes the task from the previous room
      * @param path, path to task that needs to be removed
      */
@@ -157,11 +174,20 @@ public class EditTask extends AppCompatActivity {
      *                     Name, Notes
      */
     private void updateTaskInFirebase(String path, Map<String, Object> updatedTask){
-        DatabaseReference ref = database.child(path);
-        ref.updateChildren(updatedTask);
+        // Set color for success/error messages
+        int red = ContextCompat.getColor(getApplicationContext(), R.color.red);
+        int green = ContextCompat.getColor(getApplicationContext(), R.color.green);
 
-        // navigate to dashboard after update
-        Intent intent = new Intent(this, Dashboard.class);
-        startActivity(intent);
+        DatabaseReference ref = database.child(path);
+        ref.updateChildren(updatedTask, (databaseError, databaseReference) -> {
+            if (databaseError == null) {
+                displayMessage("Your task is updated", green);
+                // navigate to dashboard after update
+                Intent intent = new Intent(this, Dashboard.class);
+                startActivity(intent);
+            } else {
+                displayMessage("Your task cannot be updated", red);
+            }
+        });
     }
 }
