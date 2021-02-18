@@ -141,11 +141,11 @@ public class TaskCaregivee extends Fragment {
                 for (String taskId: tasksIds) {
                     Log.d("taskId", taskId);
                     JsonObject task = tasksPerRoom.getAsJsonObject(taskId);
-                    String caregiverId = task.get("caregiverID").toString();
-                    String taskName = task.get("name").toString();
-                    String taskNote = task.get("notes").toString();
-                    String assignedStatus = task.get("assignedStatus").toString();
-                    String completionStatus = task.get("completionStatus").toString();
+                    String caregiverId = task.get("caregiverID").getAsString();
+                    String taskName = task.get("name").getAsString();
+                    String taskNote = task.get("notes").getAsString();
+                    String assignedStatus = task.get("assignedStatus").getAsString();
+                    String completionStatus = task.get("completionStatus").getAsString();
 
                     // Only assigned task where assignedStatus is equal to true
                     if (assignedStatus.equals("true")){
@@ -165,8 +165,8 @@ public class TaskCaregivee extends Fragment {
             Map < String,
                     String > room = new HashMap < String,
                     String > (2);
-            room.put("title", t.taskName.replace("\"", " "));
-            room.put("subtitle", " " + t.room);
+            room.put("title", t.taskName);
+            room.put("subtitle", t.room);
             data.add(room);
         }
         final ListView list = view.findViewById(R.id.caregiveeTaskList);
