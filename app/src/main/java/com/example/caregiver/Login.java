@@ -74,10 +74,9 @@ public class Login extends AppCompatActivity {
      * Navigates to Dashboard after successful sign in through Firebase
      */
     private void navigateToDashboard(String userId){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users/" + userId);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("userId", userId);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users/" + userId);
 
         // Attach a listener to read name , email of user
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -86,8 +85,8 @@ public class Login extends AppCompatActivity {
                 editor.putString("name", dataSnapshot.child("name").getValue().toString());
                 editor.putString("email", dataSnapshot.child("email").getValue().toString());
                 editor.putString("tag", dataSnapshot.child("role").getValue().toString());
+                editor.putString("userId", userId);
                 editor.apply();
-                Log.i("INFO", "navToDashboard: Added user info ");
             }
             @Override
             public void onCancelled(@NotNull DatabaseError databaseError) {
