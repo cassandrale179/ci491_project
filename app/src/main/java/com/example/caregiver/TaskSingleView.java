@@ -49,10 +49,10 @@ public class TaskSingleView extends AppCompatActivity {
         }
 
         // Set task message and title
-        String taskTitle = task.get("taskName").toString().replace("\"", "");
-        String taskNotes = task.get("taskNote").toString().replace("\"", "");
-        taskTitleField.setText(taskTitle.replace("\\", ""));
-        taskNoteField.setText(taskNotes.replace("\\", ""));
+        String taskTitle = task.get("taskName").getAsString();
+        String taskNotes = task.get("taskNote").getAsString();
+        taskTitleField.setText(taskTitle);
+        taskNoteField.setText(taskNotes);
     }
 
     /**
