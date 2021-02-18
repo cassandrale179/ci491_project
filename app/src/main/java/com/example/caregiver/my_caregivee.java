@@ -291,7 +291,7 @@ public class my_caregivee extends Fragment {
                         ((Dashboard)getActivity()).replaceActiveFragment(new SetTasksFragment(caregiveeIDs.get(i)));
                         break;
                     case 2:
-                        Intent intent = new Intent(getContext(), ViewProgress.class);
+                        Intent intent = new Intent(getContext(), UploadMedia.class);
                         startActivity(intent);
                         break;
                     case 3:
