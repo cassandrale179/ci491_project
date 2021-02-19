@@ -1,6 +1,7 @@
 package com.example.caregiver;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -26,11 +27,8 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,10 +43,12 @@ public class ProfileInfo extends Fragment {
     public EditText newPasswordField;
     public EditText confirmPasswordField;
     public TextView errorMessage;
+    public TextView notesField;
 
     // Variables pointing to the user
     public String currentEmail;
     public String currentName;
+    public String currentNotes;
 
     // Color for error and success message
     int red;
@@ -85,12 +85,12 @@ public class ProfileInfo extends Fragment {
      */
     public void displayUserInfo(View view, String userId) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        currentName = preferences.getString("userName", "");
-        currentEmail = preferences.getString("userEmail", "");
-        EditText nameField = (EditText) view.findViewById(R.id.profileName);
-        EditText emailField = (EditText) view.findViewById(R.id.profileEmail);
+        currentName = preferences.getString("userName", "N/A");
+        currentEmail = preferences.getString("userEmail", "N/A");
+        currentNotes = preferences.getString("userNotes", "N/A");
         nameField.setHint(currentName);
         emailField.setHint(currentEmail);
+        notesField.setHint(currentNotes);
     }
 
     @Override
@@ -102,13 +102,15 @@ public class ProfileInfo extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
-        displayUserInfo(view, userId);
 
         // Get button id, text fields id and set listeners
         Button updateButton = (Button) view.findViewById(R.id.profileUpdateButton);
+        Button logoutButton = (Button) view.findViewById(R.id.logOutButton);
         updateButton.setOnClickListener(updateUserInfoListener);
+        logoutButton.setOnClickListener(logOutListener);
         nameField = (EditText) view.findViewById(R.id.profileName);
         emailField = (EditText) view.findViewById(R.id.profileEmail);
+        notesField = (EditText) view.findViewById(R.id.profileNotes);
         newPasswordField = (EditText) view.findViewById(R.id.profileNewPassword);
         confirmPasswordField = (EditText) view.findViewById(R.id.profileNewPassword2);
         errorMessage = (TextView) view.findViewById(R.id.profileInfoMessage);
@@ -116,6 +118,9 @@ public class ProfileInfo extends Fragment {
         // Set color
         red = view.getResources().getColor(R.color.red);
         green = view.getResources().getColor(R.color.green);
+
+        // Display user info
+        displayUserInfo(view, userId);
 
         return view;
     }
@@ -221,14 +226,15 @@ public class ProfileInfo extends Fragment {
      * @param user The current logged in Firebase user
      */
     public void updateUserInformation(@NonNull FirebaseUser user) {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
         String name = nameField.getText().toString();
         String email = emailField.getText().toString();
         String newPassword = newPasswordField.getText().toString();
         String confirmPassword = confirmPasswordField.getText().toString();
+        String notes = notesField.getText().toString();
 
         if (name != null && !name.isEmpty()) {
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.child("users").child(user.getUid()).child("name").setValue(name);
             currentName = name;
             nameField.setHint(currentName);
@@ -238,6 +244,12 @@ public class ProfileInfo extends Fragment {
         }
         if (!newPassword.isEmpty() && !confirmPassword.isEmpty()) {
             changePassword(user, newPassword, confirmPassword);
+        }
+
+        if (!notes.isEmpty()){
+            rootRef.child("users").child(user.getUid()).child("notes").setValue(notes);
+            currentNotes = notes;
+            notesField.setHint(notes);
         }
     }
 
@@ -250,6 +262,17 @@ public class ProfileInfo extends Fragment {
             askForOldPassword();
         }
     };
+
+    private View.OnClickListener logOutListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext(), Login.class);
+            startActivity(i);
+        }
+    };
+
+
+
 
     public static class MainActivity extends AppCompatActivity {
 
