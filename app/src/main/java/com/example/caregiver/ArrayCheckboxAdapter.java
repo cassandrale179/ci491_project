@@ -44,7 +44,7 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
         checkbox.setOnClickListener(view -> {
             if (selectedPositions.contains(position))
             {
-                selectedPositions.remove(selectedPositions.indexOf(position));
+                selectedPositions.remove((Integer)position);
             }
             else
             {
@@ -69,6 +69,14 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
             selectedPositions.add(getPosition(object));
         }
     }
+
+    @Override
+    public void clear()
+    {
+        super.clear();
+        selectedPositions = new ArrayList<Integer>();
+    }
+
 
     public List<T> getSelectedObjects()
     {

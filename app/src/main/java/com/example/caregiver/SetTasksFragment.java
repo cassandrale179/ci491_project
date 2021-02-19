@@ -51,6 +51,7 @@ public class SetTasksFragment extends Fragment {
     private int numTasks = 0;
     private int tasksAssigned = 0;
     private ArrayCheckboxAdapter<Task> listAdapter;
+    private View fragmentView;
 
     public SetTasksFragment(String caregiveeID) {
         // Required empty public constructor
@@ -100,8 +101,7 @@ public class SetTasksFragment extends Fragment {
 
     private void updateNumSelectedText()
     {
-        View view = getView();
-        TextView numSelectedText = view.findViewById(R.id.textView3);
+        TextView numSelectedText = fragmentView.findViewById(R.id.textView3);
         numSelectedText.setText(tasksAssigned + " of " + numTasks + " tasks assigned");
     }
 
@@ -225,10 +225,16 @@ public class SetTasksFragment extends Fragment {
             {
                 DatabaseReference taskRef = database.child("users").child(caregiveeID).child("rooms").child(task.getRoom())
                         .child("tasks").child(task.getTaskID());
-                taskRef.updateChildren(Collections.singletonMap("assignedStatus", listAdapter.getSelectedObjects().contains(task)));
+                boolean isSelected = listAdapter.getSelectedObjects().contains(task);
+                taskRef.updateChildren(Collections.singletonMap("assignedStatus", isSelected));
+
+                if(isSelected != task.assignedStatus)
+                {
+                    task.toggleAssignedStatus();
+                }
             }
         });
-
+        fragmentView = view;
         return view;
     }
 }
