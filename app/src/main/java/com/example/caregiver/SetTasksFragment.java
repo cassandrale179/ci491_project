@@ -24,6 +24,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -82,7 +85,7 @@ public class SetTasksFragment extends Fragment {
         {
             String name = task.child("name").getValue().toString();
             String id = task.getKey();
-            boolean status = task.child("assignedStatus").getValue().equals("true");
+            boolean status = task.child("assignedStatus").getValue().equals(true);
             String room = roomSnapshot.getKey();
             Task t = new Task(id, name, status, room);
             tasks.add(t);
@@ -165,6 +168,7 @@ public class SetTasksFragment extends Fragment {
             this.taskID = id;
             this.name = name;
             this.assignedStatus = assignedStatus;
+            this.room = room;
         }
 
         public String getTaskID() {
@@ -215,13 +219,13 @@ public class SetTasksFragment extends Fragment {
         // Make the button do something.
         Button button = view.findViewById(R.id.assignTasksButton);
         button.setOnClickListener(v -> {
-            ArrayList<Task> selVals = listAdapter.getSelectedObjects();
+            List<Task> tasks = listAdapter.getObjects();
 
-            for (Task task : selVals)
+            for (Task task : tasks)
             {
-                DatabaseReference statusRef = database.child("/users/" + caregiveeID + "/name/rooms/" + task.getRoom()
-                        + "/tasks/" + task.getTaskID() + "/assignedStatus");
-                statusRef.setValue(task.getAssignedStatus() ? "true" : "false");
+                DatabaseReference taskRef = database.child("users").child(caregiveeID).child("rooms").child(task.getRoom())
+                        .child("tasks").child(task.getTaskID());
+                taskRef.updateChildren(Collections.singletonMap("assignedStatus", listAdapter.getSelectedObjects().contains(task)));
             }
         });
 
