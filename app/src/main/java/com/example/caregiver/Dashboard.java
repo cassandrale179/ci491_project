@@ -28,7 +28,7 @@ public class Dashboard extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, new my_caregivee()).commit();
     }
 
 
@@ -45,11 +45,10 @@ public class Dashboard extends AppCompatActivity {
             Fragment fragment = null;
             switch(menuItem.getItemId()){
             case R.id.home:
-                fragment = new HomeFragment();
+                fragment = new my_caregivee();
                 break;
             case R.id.task:
-                //fragment = new TaskFragment();
-                fragment = new my_caregivee(); // For testing.
+                fragment = new TaskFragment();
 
                 break;
             case R.id.beacon:
