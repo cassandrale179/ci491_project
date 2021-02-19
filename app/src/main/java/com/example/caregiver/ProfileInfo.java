@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -263,6 +262,9 @@ public class ProfileInfo extends Fragment {
         }
     };
 
+    /**
+     * Function to logout
+     */
     private View.OnClickListener logOutListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -271,11 +273,7 @@ public class ProfileInfo extends Fragment {
         }
     };
 
-
-
-
     public static class MainActivity extends AppCompatActivity {
-
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
