@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RemoveCaregivee">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CHANGE YOUR ROLE"
+            android:textSize = "40sp" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="75dp" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Warning: removing John Smith from your care means you will no longer be \
+able to edit or add tasks. You will have to ask for authorization again to add John as \
+a caregivee. Remove?"
+            android:textColor = "@color/red"
+            android:layout_marginHorizontal="20dp"
+            android:gravity="center"
+            android:textSize="17dp"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="75dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:layout_weight=".5"
+                android:layout_marginHorizontal="20dp"
+                android:text="Cancel"
+                android:textSize="20sp"
+                android:textAllCaps="false"/>
+
+            <Button
+                android:id="@+id/confirm_button"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:layout_weight=".5"
+                android:layout_marginHorizontal="20dp"
+                android:text="Confirm"
+                android:textSize="20sp"
+                android:backgroundTint="@color/teal_700"
+                android:textAllCaps="false"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

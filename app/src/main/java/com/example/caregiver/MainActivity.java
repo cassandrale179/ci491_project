@@ -35,5 +35,9 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(MainActivity.this, Identification.class);
         i.putExtra("tag", tag);
         startActivity(i);
+
+
+
     }
+
 }
