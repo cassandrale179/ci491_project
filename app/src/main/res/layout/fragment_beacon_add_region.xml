@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BeaconAddRegion">
+
+    <LinearLayout
+        android:id="@+id/addRegionScreen"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="30dp"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+
+        <EditText
+            android:id="@+id/UUIDText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/uuid_prompt"
+            android:inputType="textShortMessage" />
+
+        <Button
+            android:id="@+id/uuidUpdateButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/teal_700"
+            android:text="Update"
+            android:textAllCaps="true"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/regionName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/region_prompt"
+            android:inputType="textShortMessage" />
+
+        <EditText
+            android:id="@+id/major"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/major_prompt"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/add_region"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/teal_700"
+            android:text="@string/add_region"
+            android:textAllCaps="true"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/addRegionMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/red"
+            android:textStyle="italic"
+            android:visibility="invisible" />
+
+
+    </LinearLayout>
+</ScrollView>
