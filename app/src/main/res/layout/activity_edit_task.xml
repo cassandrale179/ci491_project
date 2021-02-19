@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddTask">
+    tools:context=".EditTask">
 
     <LinearLayout
-        android:id="@+id/addTaskScreen"
+        android:id="@+id/editTaskScreen"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -19,20 +19,20 @@
         >
 
         <TextView
-            android:id="@+id/signupTitle"
+            android:id="@+id/editTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ADD TASK"
+            android:text="EDIT TASK"
             android:textSize="40dp"
             android:gravity="center"
             android:textColor="@color/black"
             android:layout_marginBottom="10dp"/>
 
         <TextView
-            android:id="@+id/signupSubtitle"
+            android:id="@+id/edittaskSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="You can create a task below or click cancel to go back."
+            android:text="Edit your task below."
             android:textSize="20dp"
             android:gravity="center"
             android:textColor="@color/black"
@@ -67,12 +67,13 @@
             android:padding="10dp"
             android:layout_marginBottom="10dp"/>
 
-        <Spinner
+        <EditText
             android:id="@+id/taskCaregivee"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:ems="10"
-            android:inputType="textPassword"
+            android:inputType="none"
+            android:enabled="false"
             android:background="@color/gray"
             android:padding="10dp"
             android:layout_marginBottom="10dp"/>
@@ -105,7 +106,7 @@
             android:gravity="center">
 
             <Button
-                android:id="@+id/taskAddButton"
+                android:id="@+id/taskUpdateButton"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
                 android:text="Update"
@@ -115,7 +116,7 @@
                 android:backgroundTint="@color/teal_700"
                 android:layout_marginRight="10dp"
                 android:layout_weight="0.5"
-                android:onClick="CreateTask"/>
+                android:onClick="UpdateTask"/>
 
             <Button
                 android:id="@+id/taskBackButton"
@@ -125,7 +126,8 @@
                 android:textAllCaps="false"
                 android:layout_marginTop="10dp"
                 android:textSize="20dp"
-                android:layout_weight="0.5"/>
+                android:layout_weight="0.5"
+                android:onClick="NavigateToDashboard"/>
 
         </LinearLayout>
     </LinearLayout>
