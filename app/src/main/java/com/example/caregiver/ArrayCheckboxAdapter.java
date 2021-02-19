@@ -65,7 +65,9 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
     public void add(T object, boolean isSelected)
     {
         super.add(object);
-        selectedPositions.add(getPosition(object));
+        if (isSelected) {
+            selectedPositions.add(getPosition(object));
+        }
     }
 
     public List<T> getSelectedObjects()
