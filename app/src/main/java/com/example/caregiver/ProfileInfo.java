@@ -96,6 +96,18 @@ public class ProfileInfo extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Bundle args = this.getArguments();
+        if (args != null){
+            String myString = args.getString("caregiveeName");
+            String myString2 = args.getString("caregiveeNotes");
+            String myString3 = args.getString("caregiveeEmail");
+            Log.d("hm", myString + myString2 + myString3);
+        } else {
+            Log.d("nah", "hmmmdfmdkfjlsdfsf");
+        }
+
+
         // Get current userId
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String userId = preferences.getString("userId", "");
@@ -256,6 +268,7 @@ public class ProfileInfo extends Fragment {
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+
             setContentView(R.layout.activity_main);
         }
     }

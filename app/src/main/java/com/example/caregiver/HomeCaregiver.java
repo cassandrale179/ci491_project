@@ -1,5 +1,6 @@
 package com.example.caregiver;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -81,7 +82,7 @@ public class HomeCaregiver extends Fragment {
         HashMap<String, ArrayList<String>> listChild = new HashMap<>();
         caregiveeNames.forEach(caregivee -> {
             ArrayList<String> listChildValues = new ArrayList<String>(
-                    Arrays.asList("View Profile", "See Progress", "Set Tasks", "Delete Caregivee"));
+                    Arrays.asList("View Profile", "Set Tasks", "See Progress", "Delete Caregivee"));
             listChild.put(caregivee, listChildValues);
         });
         adapter = new MainAdapter(caregiveeNames, listChild);
@@ -89,11 +90,50 @@ public class HomeCaregiver extends Fragment {
         setOnChildListener();
     }
 
+    /**
+     * Helper function to view the caregivee profile
+     * @param groupPosition the position of the caregivee in the group
+     */
+    public void viewCaregiveeProfile(int groupPosition){
+        String caregiveeName = caregiveeNames.get(groupPosition);
+        String caregiveeId = caregiveeIds.get(groupPosition);
+        DatabaseReference ref = database.child("users/" + caregiveeId);
+        ProfileInfo fragment = new ProfileInfo();
+        Bundle args = new Bundle();
+
+
+        ref.addValueEventListener(new ValueEventListener() {@Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            String caregiveeEmail = snapshot.child("email").getValue().toString();
+            String caregiveeNotes = snapshot.child("notes").getValue().toString();
+            args.putString("caregiveeEmail", caregiveeEmail);
+            args.putString("caregiveeNotes", caregiveeNotes);
+            args.putString("caregiveeName", caregiveeName);
+            fragment.setArguments(args);
+            ((Dashboard)getActivity()).replaceActiveFragment(fragment);
+        }@Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            Log.d("error", "Can't query caregivees for this caregiver");
+        }
+        });
+    }
+
     public void setOnChildListener(){
         caregiveeList.setOnChildClickListener((parent, view, groupPosition, childPosition, id) -> {
-            Log.d("parent", String.valueOf(parent));
-            Log.d("groupPosition", String.valueOf(groupPosition));
-            Log.d("childPosition", String.valueOf(childPosition));
+            switch(childPosition) {
+                case 0:
+                    viewCaregiveeProfile(groupPosition);
+                    break;
+                case 1:
+                    ((Dashboard)getActivity()).replaceActiveFragment(new SetTasksFragment(caregiveeIds.get(groupPosition)));
+                    break;
+                case 2:
+                    startActivity(new Intent(getContext(), ViewProgress.class));
+                    break;
+                case 3:
+                    startActivity(new Intent(getContext(), RemoveCaregivee.class));
+                    break;
+            }
             return true;
         });
     }
