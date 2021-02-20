@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -98,6 +97,7 @@ public class ProfileInfo extends Fragment {
 
         // Get button id, text fields id and set listeners
         Button updateButton = (Button) view.findViewById(R.id.profileUpdateButton);
+        Button logoutButton = (Button) view.findViewById(R.id.logOutButton);
         updateButton.setOnClickListener(updateUserInfoListener);
         nameField = (EditText) view.findViewById(R.id.profileName);
         emailField = (EditText) view.findViewById(R.id.profileEmail);
@@ -117,10 +117,12 @@ public class ProfileInfo extends Fragment {
             nameField.setHint(caregiveeName);
             emailField.setHint(caregiveeEmail);
 
-            Toolbar toolbar = view.findViewById(R.id.profile_toolbar);
-            toolbar.setVisibility(View.VISIBLE);
-            TextView textView = view.findViewById(R.id.HomeCaregiverTitle);
-            textView.setText(caregiveeName);
+            // Hide the update and logout button
+            updateButton.setVisibility(view.GONE);
+            logoutButton.setVisibility(view.GONE);
+            TextView caregiveeTitle = (TextView) view.findViewById(R.id.profileTitle);
+            caregiveeTitle.setText(caregiveeName);
+            caregiveeTitle.setVisibility(view.VISIBLE);
         }
 
         // Else, it means user clicked on the Profile tab on the bottom navigation bar
