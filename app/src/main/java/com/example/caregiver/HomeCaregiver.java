@@ -4,9 +4,16 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,10 +22,12 @@ import android.view.ViewGroup;
  */
 public class HomeCaregiver extends Fragment {
 
+    // Set global variables
+    ExpandableListView caregiveeList;
+    MainAdapter adapter;
 
-    public HomeCaregiver() {
-        // Required empty public constructor
-    }
+
+    public HomeCaregiver() { }
 
 
     public static HomeCaregiver newInstance() {
@@ -31,10 +40,33 @@ public class HomeCaregiver extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    public void displayCaregiveeList(){
+        ArrayList<String> listGroup = new ArrayList<>();
+        HashMap<String, ArrayList<String>> listChild = new HashMap<>();
+        listGroup.add("Britney Spears");
+        listGroup.add("Hannah Montana");
+        listGroup.add("Alex Russo");
+
+        listGroup.forEach(caregivee -> {
+            ArrayList<String> listChildValues = new ArrayList<String>(
+                    Arrays.asList("View Profile", "See Progress", "Set Tasks", "Delete Caregivee"));
+            listChild.put(caregivee, listChildValues);
+        });
+        adapter = new MainAdapter(listGroup, listChild);
+        caregiveeList.setAdapter(adapter);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_caregiver, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_home_caregiver, container, false);
+
+        caregiveeList = (ExpandableListView) view.findViewById(R.id.caregiveeHomelist);
+
+        displayCaregiveeList();
+
+        return view;
     }
 }
