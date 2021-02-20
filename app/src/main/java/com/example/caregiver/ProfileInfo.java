@@ -1,6 +1,7 @@
 package com.example.caregiver;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -98,6 +99,7 @@ public class ProfileInfo extends Fragment {
         // Get button id, text fields id and set listeners
         Button updateButton = (Button) view.findViewById(R.id.profileUpdateButton);
         Button logoutButton = (Button) view.findViewById(R.id.logOutButton);
+        Button backButton = (Button) view.findViewById(R.id.backButton);
         updateButton.setOnClickListener(updateUserInfoListener);
         nameField = (EditText) view.findViewById(R.id.profileName);
         emailField = (EditText) view.findViewById(R.id.profileEmail);
@@ -117,12 +119,19 @@ public class ProfileInfo extends Fragment {
             nameField.setHint(caregiveeName);
             emailField.setHint(caregiveeEmail);
 
-            // Hide the update and logout button
+            // Hide the update and logout button but show the back button
             updateButton.setVisibility(view.GONE);
             logoutButton.setVisibility(view.GONE);
+            backButton.setVisibility(view.VISIBLE);
+            backButton.setOnClickListener(backtoHomePage);
+
+
+            // Set title and subtitle on profil einfo page
             TextView caregiveeTitle = (TextView) view.findViewById(R.id.profileTitle);
             caregiveeTitle.setText(caregiveeName);
             caregiveeTitle.setVisibility(view.VISIBLE);
+            TextView caregiveeLabel = (TextView) view.findViewById(R.id.profileTextLabel);
+            caregiveeLabel.setText("View your caregivee profile below");
         }
 
         // Else, it means user clicked on the Profile tab on the bottom navigation bar
@@ -262,6 +271,17 @@ public class ProfileInfo extends Fragment {
         @Override
         public void onClick(View v) {
             askForOldPassword();
+        }
+    };
+
+    /**
+     * Function to go back. It is called when clicked on the Back button.
+     */
+    private View.OnClickListener backtoHomePage = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext(), Dashboard.class);
+            startActivity(i);
         }
     };
 
