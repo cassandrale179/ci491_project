@@ -42,6 +42,7 @@ public class ProfileInfo extends Fragment {
     public EditText newPasswordField;
     public EditText confirmPasswordField;
     public TextView errorMessage;
+    public TextView caregiveeLabel;
 
     // Variables pointing to the user
     public String currentEmail;
@@ -105,12 +106,12 @@ public class ProfileInfo extends Fragment {
         emailField = (EditText) view.findViewById(R.id.profileEmail);
         newPasswordField = (EditText) view.findViewById(R.id.profileNewPassword);
         confirmPasswordField = (EditText) view.findViewById(R.id.profileNewPassword2);
+        caregiveeLabel = (TextView) view.findViewById(R.id.profileTextLabel);
         errorMessage = (TextView) view.findViewById(R.id.profileInfoMessage);
         red = view.getResources().getColor(R.color.red);
         green = view.getResources().getColor(R.color.green);
 
-        // If there is arguments, this page is opened when user clicked on "View Profile"
-        // from the homepage.
+        // This page is opened when user clicked on "View Profile" from the homepage.
         Bundle args = this.getArguments();
         if (args != null){
             String caregiveeName = args.getString("caregiveeName");
@@ -130,12 +131,13 @@ public class ProfileInfo extends Fragment {
             TextView caregiveeTitle = (TextView) view.findViewById(R.id.profileTitle);
             caregiveeTitle.setText(caregiveeName);
             caregiveeTitle.setVisibility(view.VISIBLE);
-            TextView caregiveeLabel = (TextView) view.findViewById(R.id.profileTextLabel);
-            caregiveeLabel.setText("View your caregivee profile below");
+
+            caregiveeLabel.setText("View your caregivee profile below.");
         }
 
-        // Else, it means user clicked on the Profile tab on the bottom navigation bar
+        // Called this when user open page from the navigation bar
         else {
+            caregiveeLabel.setText("View or edit your profile below.");
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             String userId = preferences.getString("userId", "");
             displayUserInfo(view, userId);

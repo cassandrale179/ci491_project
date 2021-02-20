@@ -2,9 +2,11 @@ package com.example.caregiver;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -61,7 +64,9 @@ public class HomeCaregiver extends Fragment {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String userId = preferences.getString("userId", "");
         userRef = database.child("users/" + userId);
-        userRef.addValueEventListener(new ValueEventListener() {@Override
+        userRef.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
             for (DataSnapshot caregivee :  snapshot.child("caregivees").getChildren()) {
                 String caregiveeId = caregivee.getKey();
@@ -80,6 +85,7 @@ public class HomeCaregiver extends Fragment {
     /**
      * Call after we query all caregivee and display functionality associated with them.
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void displayCaregiveeList(){
         HashMap<String, ArrayList<String>> listChild = new HashMap<>();
         caregiveeNames.forEach(caregivee -> {
@@ -156,6 +162,19 @@ public class HomeCaregiver extends Fragment {
         });
     }
 
+
+    /**
+     * Redirect caregiver to request page if they want to add more caregivee
+     */
+    private View.OnClickListener redirectToRequestPageListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext(), Request.class);
+            startActivity(i);
+        }
+    };
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -167,6 +186,10 @@ public class HomeCaregiver extends Fragment {
 
         // Call firebase to query the caregivees
         queryCaregivees();
+
+        // Set the floating action button to redirect to match request page
+        FloatingActionButton plusButton = view.findViewById(R.id.addCaregiveeButton);
+        plusButton.setOnClickListener(redirectToRequestPageListener);
 
         return view;
     }
