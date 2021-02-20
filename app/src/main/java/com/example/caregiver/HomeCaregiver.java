@@ -86,6 +86,16 @@ public class HomeCaregiver extends Fragment {
         });
         adapter = new MainAdapter(caregiveeNames, listChild);
         caregiveeList.setAdapter(adapter);
+        setOnChildListener();
+    }
+
+    public void setOnChildListener(){
+        caregiveeList.setOnChildClickListener((parent, view, groupPosition, childPosition, id) -> {
+            Log.d("parent", String.valueOf(parent));
+            Log.d("groupPosition", String.valueOf(groupPosition));
+            Log.d("childPosition", String.valueOf(childPosition));
+            return true;
+        });
     }
 
     @Override
