@@ -105,9 +105,11 @@ public class HomeCaregiver extends Fragment {
         ref.addValueEventListener(new ValueEventListener() {@Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
             String caregiveeEmail = snapshot.child("email").getValue().toString();
-            String caregiveeNotes = snapshot.child("notes").getValue().toString();
+            if (snapshot.child("notes").getValue() != null){
+                String caregiveeNotes = snapshot.child("notes").getValue().toString();
+                args.putString("caregiveeNotes", caregiveeNotes);
+            }
             args.putString("caregiveeEmail", caregiveeEmail);
-            args.putString("caregiveeNotes", caregiveeNotes);
             args.putString("caregiveeName", caregiveeName);
             fragment.setArguments(args);
             ((Dashboard)getActivity()).replaceActiveFragment(fragment);

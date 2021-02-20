@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -97,24 +98,7 @@ public class ProfileInfo extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Bundle args = this.getArguments();
-        if (args != null){
-            String myString = args.getString("caregiveeName");
-            String myString2 = args.getString("caregiveeNotes");
-            String myString3 = args.getString("caregiveeEmail");
-            Log.d("hm", myString + myString2 + myString3);
-        } else {
-            Log.d("nah", "hmmmdfmdkfjlsdfsf");
-        }
-
-
-        // Get current userId
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String userId = preferences.getString("userId", "");
-
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
-        displayUserInfo(view, userId);
 
         // Get button id, text fields id and set listeners
         Button updateButton = (Button) view.findViewById(R.id.profileUpdateButton);
@@ -124,10 +108,31 @@ public class ProfileInfo extends Fragment {
         newPasswordField = (EditText) view.findViewById(R.id.profileNewPassword);
         confirmPasswordField = (EditText) view.findViewById(R.id.profileNewPassword2);
         errorMessage = (TextView) view.findViewById(R.id.profileInfoMessage);
-
-        // Set color
         red = view.getResources().getColor(R.color.red);
         green = view.getResources().getColor(R.color.green);
+
+        // If there is arguments, this page is opened when user clicked on "View Profile"
+        // from the homepage.
+        Bundle args = this.getArguments();
+        if (args != null){
+            String caregiveeName = args.getString("caregiveeName");
+            String caregiveeNotes = args.getString("caregiveeNotes");
+            String caregiveeEmail = args.getString("caregiveeEmail");
+            nameField.setHint(caregiveeName);
+            emailField.setHint(caregiveeEmail);
+            Toolbar toolbar = view.findViewById(R.id.profile_toolbar);
+            toolbar.setVisibility(View.VISIBLE);
+
+            TextView textView = view.findViewById(R.id.HomeCaregiverTitle);
+            textView.setText(caregiveeName);
+        }
+
+        // Else, it means user clicked on the Profile tab on the bottom navigation bar
+        else {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String userId = preferences.getString("userId", "");
+            displayUserInfo(view, userId);
+        }
 
         return view;
     }

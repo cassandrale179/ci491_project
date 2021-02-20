@@ -7,6 +7,27 @@
     tools:context=".ProfileInfo">
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/profile_toolbar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/black"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/HomeCaregiverTitle"
+            android:textColor="@color/white"
+            android:textSize="20dp"/>
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
         android:id="@+id/requestScreen"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -17,6 +38,7 @@
         android:layout_marginTop="30dp"
         android:gravity="center"
         >
+
 
         <ImageView
             android:id="@+id/profileImage"
@@ -125,6 +147,7 @@
             android:textSize="20dp"
             android:layout_weight="0.5"/>
 
+    </LinearLayout>
     </LinearLayout>
     </LinearLayout>
 </ScrollView>
