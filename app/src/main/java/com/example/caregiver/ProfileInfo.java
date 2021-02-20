@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +26,8 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -120,9 +116,9 @@ public class ProfileInfo extends Fragment {
             String caregiveeEmail = args.getString("caregiveeEmail");
             nameField.setHint(caregiveeName);
             emailField.setHint(caregiveeEmail);
+
             Toolbar toolbar = view.findViewById(R.id.profile_toolbar);
             toolbar.setVisibility(View.VISIBLE);
-
             TextView textView = view.findViewById(R.id.HomeCaregiverTitle);
             textView.setText(caregiveeName);
         }
@@ -133,7 +129,6 @@ public class ProfileInfo extends Fragment {
             String userId = preferences.getString("userId", "");
             displayUserInfo(view, userId);
         }
-
         return view;
     }
 
