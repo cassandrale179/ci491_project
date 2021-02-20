@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
@@ -38,6 +39,8 @@ public class HomeCaregiver extends Fragment {
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     ArrayList<String> caregiveeNames  = new ArrayList<>();
     ArrayList<String> caregiveeIds = new ArrayList<>();
+    DatabaseReference userRef;
+
 
     public HomeCaregiver() { }
 
@@ -57,9 +60,8 @@ public class HomeCaregiver extends Fragment {
     public void queryCaregivees() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String userId = preferences.getString("userId", "");
-        DatabaseReference ref = database.child("users/" + userId);
-
-        ref.addValueEventListener(new ValueEventListener() {@Override
+        userRef = database.child("users/" + userId);
+        userRef.addValueEventListener(new ValueEventListener() {@Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
             for (DataSnapshot caregivee :  snapshot.child("caregivees").getChildren()) {
                 String caregiveeId = caregivee.getKey();
@@ -92,7 +94,7 @@ public class HomeCaregiver extends Fragment {
 
     /**
      * Helper function to view the caregivee profile
-     * @param groupPosition the position of the caregivee in the group
+     * @param groupPosition index of the caregivee in the list
      */
     public void viewCaregiveeProfile(int groupPosition){
         String caregiveeName = caregiveeNames.get(groupPosition);
@@ -120,6 +122,20 @@ public class HomeCaregiver extends Fragment {
         });
     }
 
+    /**
+     * Function to remove a caregivee under a caregiver's care
+     * @param groupPosition index of the caregivee in the list
+     */
+    public void removeCaregiveePopUp(int groupPosition){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Want to remove " + caregiveeNames.get(groupPosition) + " from your care?")
+                .setPositiveButton("Yes", (dialog, which) ->{
+                    String caregiveeId = caregiveeIds.get(groupPosition);
+                    userRef.child("caregivees").child(caregiveeId).removeValue();
+                }).setNegativeButton("No", null);
+        builder.create().show();
+    }
+
     public void setOnChildListener(){
         caregiveeList.setOnChildClickListener((parent, view, groupPosition, childPosition, id) -> {
             switch(childPosition) {
@@ -133,7 +149,7 @@ public class HomeCaregiver extends Fragment {
                     startActivity(new Intent(getContext(), ViewProgress.class));
                     break;
                 case 3:
-                    startActivity(new Intent(getContext(), RemoveCaregivee.class));
+                    removeCaregiveePopUp(groupPosition);
                     break;
             }
             return true;
