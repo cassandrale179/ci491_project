@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,17 +80,20 @@ public class ProfileInfo extends Fragment {
 
     /**
      * This function populate the text fields on the profile info page
-     * @param view the view of the profile info page
-     * @param userId the user id of the currently logged in user
      */
-    public void displayUserInfo(View view, String userId) {
+    public void displayUserInfo() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
         currentName = preferences.getString("userName", "N/A");
-        currentEmail = preferences.getString("userEmail", "N/A");
-        currentNotes = preferences.getString("userNotes", "N/A");
         nameField.setHint(currentName);
+
+        currentEmail = preferences.getString("userEmail", "N/A");
         emailField.setHint(currentEmail);
+
+        currentNotes = preferences.getString("userNotes", "N/A");
+        Log.d("hmmm", currentNotes);
         notesField.setHint(currentNotes);
+
     }
 
     @Override
@@ -119,7 +123,7 @@ public class ProfileInfo extends Fragment {
         green = view.getResources().getColor(R.color.green);
 
         // Display user info
-        displayUserInfo(view, userId);
+        displayUserInfo();
 
         return view;
     }
@@ -205,6 +209,7 @@ public class ProfileInfo extends Fragment {
                         if (task.isSuccessful()) {
                             updateUserInformation(user);
                             displayMessage("Your profile is updated!", green);
+                            displayUserInfo();
                         } else {
                             displayMessage("Your old password is not correct.", red);
                         }
@@ -225,7 +230,9 @@ public class ProfileInfo extends Fragment {
      * @param user The current logged in Firebase user
      */
     public void updateUserInformation(@NonNull FirebaseUser user) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        SharedPreferences.Editor editor = preferences.edit();
 
         String name = nameField.getText().toString();
         String email = emailField.getText().toString();
@@ -235,11 +242,11 @@ public class ProfileInfo extends Fragment {
 
         if (name != null && !name.isEmpty()) {
             rootRef.child("users").child(user.getUid()).child("name").setValue(name);
-            currentName = name;
-            nameField.setHint(currentName);
+            editor.putString("userName", name);
         }
         if (!email.isEmpty()) {
             changeEmail(user, email);
+            editor.putString("userEmail", email);
         }
         if (!newPassword.isEmpty() && !confirmPassword.isEmpty()) {
             changePassword(user, newPassword, confirmPassword);
@@ -247,9 +254,9 @@ public class ProfileInfo extends Fragment {
 
         if (!notes.isEmpty()){
             rootRef.child("users").child(user.getUid()).child("notes").setValue(notes);
-            currentNotes = notes;
-            notesField.setHint(notes);
+            editor.putString("userNotes", notes);
         }
+        editor.commit();
     }
 
     /**
