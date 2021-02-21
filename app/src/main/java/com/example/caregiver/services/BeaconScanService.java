@@ -7,10 +7,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -20,7 +18,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.caregiver.BeaconRegionList;
-import com.example.caregiver.TaskNotification;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -57,8 +54,6 @@ public class BeaconScanService extends Service {
     private ProximityManager proximityManager;
     private boolean isRunning; // Flag indicating if service is already running.
     private long lastTimeInMillis = getTimeNow();
-
-    TaskNotification taskNotification = new TaskNotification();
 
     public static Intent createIntent(final Context context) {
         return new Intent(context, BeaconScanService.class);
@@ -198,7 +193,6 @@ public class BeaconScanService extends Service {
             public void onIBeaconDiscovered(IBeaconDevice ibeacon, IBeaconRegion region) {
 
                 Log.i("BeaconService", "Beacon discovered " + region.getIdentifier() + " beacon address " + ibeacon.getAddress());
-                Log.i("TaskNotif", regionRssiMap.toString());
                 if (regionRssiMap.containsKey(region.getIdentifier())) {
 
                     double oldSum = regionRssiMap.get(region.getIdentifier()).get("sum");
@@ -277,18 +271,15 @@ public class BeaconScanService extends Service {
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference rooms = database.child("/users/" + userId + "/rooms");
 
-        ValueEventListener valueEventListener = new ValueEventListener() {
+        rooms.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                 for (DataSnapshot roomSnapShot : snapshot.getChildren()) {
                     if (roomSnapShot.getKey().equals(roomName)) {
                         for (DataSnapshot task : roomSnapShot.child("tasks").getChildren()) {
-                            Log.i("TaskNotif", "Room = " + roomName + " Task = "+ task.getKey());
                             String assignedStatus = (String) task.child("assignedStatus").getValue();
                             if (assignedStatus.equals("true") || assignedStatus.equals("True")) {
-                                String contentText = String.format("You have tasks in Room %s", roomName);
-                                Log.i("TaskNotif", "Room = " + roomName + " Task = "+ task.getKey() + "assigned = " + assignedStatus);
+                                String contentText = String.format("You have tasks in the %s", roomName);
                                 sendBeaconNotification(contentText);
                                 return;
                             }
@@ -300,9 +291,9 @@ public class BeaconScanService extends Service {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("TaskNotification", "doesRoomHavePendingTasks failed", error.toException());
+                Log.e("TaskNotification", "sendTaskNotifications failed", error.toException());
             }
-        };
+        });
     }
 
 }
