@@ -54,6 +54,7 @@ public class BeaconScanService extends Service {
     private ProximityManager proximityManager;
     private boolean isRunning; // Flag indicating if service is already running.
     private long lastTimeInMillis = getTimeNow();
+    private double distanceThreshold = 1.5;
 
     public static Intent createIntent(final Context context) {
         return new Intent(context, BeaconScanService.class);
@@ -237,7 +238,7 @@ public class BeaconScanService extends Service {
 
                         Log.i("TaskNotif", "Max Region = " + maxRegion[0] + " Distance = "+ minDist[0]);
 
-                        if ((lastSeenRegionIdentifier != null) && (!maxRegion[0].equals(lastSeenRegionIdentifier)) && (minDist[0] < 1.0)) {
+                        if ((lastSeenRegionIdentifier != null) && (!maxRegion[0].equals(lastSeenRegionIdentifier)) && (minDist[0] < distanceThreshold)) {
 
                             String contentText = String.format("Region = %s, Distance = %f, RSSI = %f, Timestamp = %s",
                                     maxRegion[0], minDist[0], maxRssi[0],
