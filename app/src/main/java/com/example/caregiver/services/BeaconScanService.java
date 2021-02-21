@@ -7,16 +7,27 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.caregiver.BeaconRegionList;
+import com.example.caregiver.TaskNotification;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.kontakt.sdk.android.ble.configuration.ScanMode;
 import com.kontakt.sdk.android.ble.configuration.ScanPeriod;
 import com.kontakt.sdk.android.ble.connection.OnServiceReadyListener;
@@ -46,6 +57,8 @@ public class BeaconScanService extends Service {
     private ProximityManager proximityManager;
     private boolean isRunning; // Flag indicating if service is already running.
     private long lastTimeInMillis = getTimeNow();
+
+    TaskNotification taskNotification = new TaskNotification();
 
     public static Intent createIntent(final Context context) {
         return new Intent(context, BeaconScanService.class);
@@ -185,6 +198,7 @@ public class BeaconScanService extends Service {
             public void onIBeaconDiscovered(IBeaconDevice ibeacon, IBeaconRegion region) {
 
                 Log.i("BeaconService", "Beacon discovered " + region.getIdentifier() + " beacon address " + ibeacon.getAddress());
+                Log.i("TaskNotif", regionRssiMap.toString());
                 if (regionRssiMap.containsKey(region.getIdentifier())) {
 
                     double oldSum = regionRssiMap.get(region.getIdentifier()).get("sum");
@@ -227,12 +241,16 @@ public class BeaconScanService extends Service {
                                     }
                                 });
 
+                        Log.i("TaskNotif", "Max Region = " + maxRegion[0] + " Distance = "+ minDist[0]);
+
                         if ((lastSeenRegionIdentifier != null) && (!maxRegion[0].equals(lastSeenRegionIdentifier)) && (minDist[0] < 1.0)) {
 
                             String contentText = String.format("Region = %s, Distance = %f, RSSI = %f, Timestamp = %s",
                                     maxRegion[0], minDist[0], maxRssi[0],
                                     convertUnixToTimestamp(ibeacon.getTimestamp()));
                             sendBeaconNotification(contentText);
+
+                            sendTaskNotification(maxRegion[0]);
                             lastSeenRegionIdentifier = maxRegion[0];
                         }
 
@@ -252,4 +270,39 @@ public class BeaconScanService extends Service {
     private long getTimeNow() {
         return Calendar.getInstance().getTimeInMillis();
     }
+
+    private void sendTaskNotification(String roomName) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = user.getUid();
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference rooms = database.child("/users/" + userId + "/rooms");
+
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot roomSnapShot : snapshot.getChildren()) {
+                    if (roomSnapShot.getKey().equals(roomName)) {
+                        for (DataSnapshot task : roomSnapShot.child("tasks").getChildren()) {
+                            Log.i("TaskNotif", "Room = " + roomName + " Task = "+ task.getKey());
+                            String assignedStatus = (String) task.child("assignedStatus").getValue();
+                            if (assignedStatus.equals("true") || assignedStatus.equals("True")) {
+                                String contentText = String.format("You have tasks in Room %s", roomName);
+                                Log.i("TaskNotif", "Room = " + roomName + " Task = "+ task.getKey() + "assigned = " + assignedStatus);
+                                sendBeaconNotification(contentText);
+                                return;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TaskNotification", "doesRoomHavePendingTasks failed", error.toException());
+            }
+        };
+    }
+
 }
