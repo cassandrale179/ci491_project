@@ -81,7 +81,11 @@ public class TaskSingleView extends AppCompatActivity {
                 // Pop up open dialog-box to check if they actually finished task.
                 builder.setMessage("Finish your task?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {@Override
                 public void onClick(DialogInterface dialog, int which) {
-                    // Redirect to Finish Task page
+                    Intent i = new Intent(TaskSingleView.this, TaskFinish.class);
+                    long elapsedMillis = (SystemClock.elapsedRealtime() - timer.getBase()) / 1000;
+                    i.putExtra("finishTime", String.valueOf(elapsedMillis));
+                    i.putExtra("finishTask", taskStr);
+                    startActivity(i);
                 }
                 }).setNegativeButton("No", null);
                 AlertDialog alert = builder.create();
