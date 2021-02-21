@@ -18,6 +18,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.caregiver.BeaconRegionList;
+import com.example.caregiver.Dashboard;
+import com.example.caregiver.TaskCaregivee;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -54,7 +56,7 @@ public class BeaconScanService extends Service {
     private ProximityManager proximityManager;
     private boolean isRunning; // Flag indicating if service is already running.
     private long lastTimeInMillis = getTimeNow();
-    private double distanceThreshold = 1.5;
+    private final double distanceThreshold = 1.5;
 
     public static Intent createIntent(final Context context) {
         return new Intent(context, BeaconScanService.class);
@@ -70,7 +72,6 @@ public class BeaconScanService extends Service {
         createNotificationChannel();
         isRunning = false;
     }
-
 
     private void setupProximityManager() {
         // Create proximity manager instance
@@ -142,18 +143,6 @@ public class BeaconScanService extends Service {
         startForeground(1, notification);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void createNotificationChannel() {
-        final NotificationManager notificationManager = (NotificationManager) getSystemService(
-                Context.NOTIFICATION_SERVICE);
-        if (notificationManager == null)
-            return;
-
-        final NotificationChannel channel = new NotificationChannel(DEFAULT_CHANNEL_ID, NOTIFICATION_CHANEL_NAME,
-                NotificationManager.IMPORTANCE_DEFAULT);
-        notificationManager.createNotificationChannel(channel);
-    }
-
     private void startScanning() {
         proximityManager.connect(new OnServiceReadyListener() {
             @Override
@@ -178,17 +167,6 @@ public class BeaconScanService extends Service {
         };
     }
 
-
-    // sends notification to the user with specified "contentText"
-    private void sendBeaconNotification(String contentText) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.alert_dark_frame).setContentTitle("Beacon Discovered")
-                .setContentText(contentText);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
-        notificationManager.notify(2, builder.build());
-    }
-
     // Listener for beacons
     private IBeaconListener createIBeaconListener() {
         return new SimpleIBeaconListener() {
@@ -198,11 +176,11 @@ public class BeaconScanService extends Service {
 
                 Log.i("BeaconService", "Beacon discovered " + region.getIdentifier() + " beacon address " + ibeacon.getAddress());
                 /* Logic to determine whether user is in a room
-                * Beacons are scanned continuously for 30 seconds
-                * At the end of the 30 second window, the RSSI and Distance values are averaged out
-                * The region with the max RSSI or min distance is probably where the user is
-                * If the min distance is less than the threshold (1.5m), the user is said to be in that room
-                */
+                 * Beacons are scanned continuously for 30 seconds
+                 * At the end of the 30 second window, the RSSI and Distance values are averaged out
+                 * The region with the max RSSI or min distance is probably where the user is
+                 * If the min distance is less than the threshold (1.5m), the user is said to be in that room
+                 */
 
                 // Checking if region identified is a user defined room
                 if (regionRssiMap.containsKey(region.getIdentifier())) {
@@ -250,7 +228,7 @@ public class BeaconScanService extends Service {
                                     }
                                 });
 
-                        Log.i("TaskNotif", "Max Region = " + maxRegion[0] + " Distance = "+ minDist[0]);
+                        Log.i("TaskNotif", "Max Region = " + maxRegion[0] + " Distance = " + minDist[0]);
 
                         // if the user enters a new region and it's distance is below the distanceThreshold
                         if ((lastSeenRegionIdentifier != null) && (!maxRegion[0].equals(lastSeenRegionIdentifier)) && (minDist[0] < distanceThreshold)) {
@@ -275,11 +253,29 @@ public class BeaconScanService extends Service {
         return Calendar.getInstance().getTimeInMillis();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+        final NotificationManager notificationManager = (NotificationManager) getSystemService(
+                Context.NOTIFICATION_SERVICE);
+        if (notificationManager == null)
+            return;
+
+        final NotificationChannel channel = new NotificationChannel(DEFAULT_CHANNEL_ID, NOTIFICATION_CHANEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT);
+        notificationManager.createNotificationChannel(channel);
+    }
+
     private void sendTaskNotification(String roomName) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String userId = user.getUid();
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference rooms = database.child("/users/" + userId + "/rooms");
+
+        // Open TaskCaregivee page when user clicks on notification
+        Intent intent = new Intent(this, Dashboard.class);
+        intent.putExtra("fragment", "TaskCaregivee");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         // query tasks for the room the user is in
         rooms.addValueEventListener(new ValueEventListener() {
@@ -293,7 +289,7 @@ public class BeaconScanService extends Service {
                             if (assignedStatus.equals("true") || assignedStatus.equals("True")) {
                                 String contentText = String.format("You have tasks in the %s", roomName);
                                 // send notification
-                                sendBeaconNotification(contentText);
+                                createAndSendNotification(contentText, pendingIntent);
                                 return;
                             }
                         }
@@ -307,6 +303,18 @@ public class BeaconScanService extends Service {
                 Log.e("TaskNotification", "sendTaskNotifications failed", error.toException());
             }
         });
+    }
+
+    // sends notification to the user with specified "contentText"
+    private void createAndSendNotification(String contentText, PendingIntent pendingIntent) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.alert_dark_frame)
+                .setContentTitle("Pending Tasks")
+                .setContentText(contentText)
+                .setContentIntent(pendingIntent);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
+        notificationManager.notify(2, builder.build());
     }
 
 }
