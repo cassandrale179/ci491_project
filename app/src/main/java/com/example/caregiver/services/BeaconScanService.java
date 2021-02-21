@@ -163,6 +163,7 @@ public class BeaconScanService extends Service {
         });
     }
 
+    // Checks if scanning has been started or stopped
     private SimpleScanStatusListener createSimpleScanStatusListener() {
         return new SimpleScanStatusListener() {
             @Override
@@ -178,6 +179,7 @@ public class BeaconScanService extends Service {
     }
 
 
+    // sends notification to the user with specified "contentText"
     private void sendBeaconNotification(String contentText) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.alert_dark_frame).setContentTitle("Beacon Discovered")
@@ -187,6 +189,7 @@ public class BeaconScanService extends Service {
         notificationManager.notify(2, builder.build());
     }
 
+    // Listener for beacons
     private IBeaconListener createIBeaconListener() {
         return new SimpleIBeaconListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -194,41 +197,52 @@ public class BeaconScanService extends Service {
             public void onIBeaconDiscovered(IBeaconDevice ibeacon, IBeaconRegion region) {
 
                 Log.i("BeaconService", "Beacon discovered " + region.getIdentifier() + " beacon address " + ibeacon.getAddress());
+                /* Logic to determine whether user is in a room
+                * Beacons are scanned continuously for 30 seconds
+                * At the end of the 30 second window, the RSSI and Distance values are averaged out
+                * The region with the max RSSI or min distance is probably where the user is
+                * If the min distance is less than the threshold (1.5m), the user is said to be in that room
+                */
+
+                // Checking if region identified is a user defined room
                 if (regionRssiMap.containsKey(region.getIdentifier())) {
 
                     double oldSum = regionRssiMap.get(region.getIdentifier()).get("sum");
                     double oldCount = regionRssiMap.get(region.getIdentifier()).get("count");
                     double oldDistance = regionRssiMap.get(region.getIdentifier()).get("dist");
 
-
+                    // summing up RSSI and distance values
                     double newSum = oldSum + ibeacon.getRssi();
                     double newCount = oldCount + 1;
                     double newDistance = oldDistance + ibeacon.getDistance();
 
+                    // updating map with new values
                     regionRssiMap.get(region.getIdentifier()).replace("sum", newSum);
                     regionRssiMap.get(region.getIdentifier()).replace("count", newCount);
                     regionRssiMap.get(region.getIdentifier()).replace("dist", newDistance);
 
-
+                    // if 30 second window has been completed
                     if (getTimeNow() - lastTimeInMillis >= thirtySecondsInMillis) {
 
                         final String[] maxRegion = new String[1];
                         final double[] minDist = new double[1];
                         final double[] maxRssi = {-1000.0};
 
+
                         regionRssiMap.forEach(
                                 (regionKey, rssiData) -> {
                                     if (rssiData.get("count") != 0) {
-
+                                        // take average of rssi and distance
                                         double avgRssi = (double) rssiData.get("sum") / rssiData.get("count");
                                         double avgDist = (double) rssiData.get("dist") / rssiData.get("count");
 
+                                        // determine region with highest rssi i.e. least distance
                                         if (avgRssi > maxRssi[0]) {
                                             maxRssi[0] = avgRssi;
                                             maxRegion[0] = regionKey;
                                             minDist[0] = avgDist;
                                         }
-
+                                        // reset map values
                                         regionRssiMap.get(regionKey).replace("sum", 0.0);
                                         regionRssiMap.get(regionKey).replace("count", 0.0);
                                         regionRssiMap.get(regionKey).replace("dist", 0.0);
@@ -238,17 +252,12 @@ public class BeaconScanService extends Service {
 
                         Log.i("TaskNotif", "Max Region = " + maxRegion[0] + " Distance = "+ minDist[0]);
 
+                        // if the user enters a new region and it's distance is below the distanceThreshold
                         if ((lastSeenRegionIdentifier != null) && (!maxRegion[0].equals(lastSeenRegionIdentifier)) && (minDist[0] < distanceThreshold)) {
-
-                            String contentText = String.format("Region = %s, Distance = %f, RSSI = %f, Timestamp = %s",
-                                    maxRegion[0], minDist[0], maxRssi[0],
-                                    convertUnixToTimestamp(ibeacon.getTimestamp()));
-                            sendBeaconNotification(contentText);
 
                             sendTaskNotification(maxRegion[0]);
                             lastSeenRegionIdentifier = maxRegion[0];
                         }
-
                         lastTimeInMillis = getTimeNow();
                     }
                 }
@@ -272,15 +281,18 @@ public class BeaconScanService extends Service {
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference rooms = database.child("/users/" + userId + "/rooms");
 
+        // query tasks for the room the user is in
         rooms.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot roomSnapShot : snapshot.getChildren()) {
                     if (roomSnapShot.getKey().equals(roomName)) {
                         for (DataSnapshot task : roomSnapShot.child("tasks").getChildren()) {
+                            // if the user has pending tasks in this room, send them notification
                             String assignedStatus = (String) task.child("assignedStatus").getValue();
                             if (assignedStatus.equals("true") || assignedStatus.equals("True")) {
                                 String contentText = String.format("You have tasks in the %s", roomName);
+                                // send notification
                                 sendBeaconNotification(contentText);
                                 return;
                             }
