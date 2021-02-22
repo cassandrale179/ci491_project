@@ -90,7 +90,7 @@ public class MainAdapter extends BaseExpandableListAdapter {
                 android.R.layout.simple_selectable_list_item, viewGroup, false);
         TextView textView = view.findViewById(android.R.id.text1);
         String sChild = String.valueOf(getChild(groupPosition, childPosition));
-        textView.setText(sChild);
+        textView.setText("    " + sChild);
         textView.setTypeface(null, Typeface.NORMAL);
 
         return view;
