@@ -65,7 +65,8 @@
                 android:backgroundTint="@color/teal_700"
                 android:text="@string/start_scanning"
                 android:textAllCaps="true"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:clickable="false"/>
 
             <Button
                 android:id="@+id/stop_button"
@@ -75,7 +76,8 @@
                 android:backgroundTint="@color/teal_700"
                 android:text="@string/stop_scanning"
                 android:textAllCaps="true"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:clickable="false"/>
         </LinearLayout>
     </LinearLayout>
 
