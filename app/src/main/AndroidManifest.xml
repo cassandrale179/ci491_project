@@ -18,7 +18,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Caregiver">
         <activity android:name=".ViewProgress"></activity>
-        <activity android:name=".RemoveCaregivee" />
         <activity android:name=".ProfileInfo$MainActivity" />
         <meta-data
             android:name="kontakt.io.API_KEY"

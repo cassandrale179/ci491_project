@@ -6,8 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".ProfileInfo">
 
+    <!-- All fields with invisibility = gone means that it is only displayed if the
+    user click "View Profile" from the Home page. Else, it renders items when user
+    click on "Profile" tab on the bottom navigation bar -->
+
     <LinearLayout
-        android:id="@+id/requestScreen"
+        android:id="@+id/profileInfoScreen"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -18,20 +22,33 @@
         android:gravity="center"
         >
 
+        <TextView
+            android:id="@+id/profileTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteX="174dp"
+            tools:layout_editor_absoluteY="130dp"
+            android:gravity="center"
+            android:textSize="25dp"
+            android:visibility="gone"
+            android:textColor="@color/black"
+            android:layout_marginTop="50dp"
+            />
+
         <ImageView
             android:id="@+id/profileImage"
             android:layout_width="150dp"
             android:layout_height="150dp"
             app:srcCompat="@drawable/identification_screen_logo" />
+
         <TextView
             android:id="@+id/profileTextLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="View or edit your profile below."
             tools:layout_editor_absoluteX="174dp"
             tools:layout_editor_absoluteY="130dp"
             android:gravity="center"
-            android:textSize="15dp"
+            android:textSize="17dp"
             />
 
         <TextView
@@ -136,7 +153,17 @@
             android:layout_marginTop="10dp"
             android:textSize="20dp"
             android:layout_weight="0.5"/>
-
     </LinearLayout>
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:text="Back"
+            android:textAllCaps="false"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            android:layout_weight="0.5"
+            android:visibility="gone"/>
     </LinearLayout>
 </ScrollView>

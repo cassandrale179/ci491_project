@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +43,7 @@ public class ProfileInfo extends Fragment {
     public EditText confirmPasswordField;
     public TextView errorMessage;
     public TextView notesField;
+    public TextView caregiveeLabel;
 
     // Variables pointing to the user
     public String currentEmail;
@@ -91,7 +91,6 @@ public class ProfileInfo extends Fragment {
         emailField.setHint(currentEmail);
 
         currentNotes = preferences.getString("userNotes", "N/A");
-        Log.d("hmmm", currentNotes);
         notesField.setHint(currentNotes);
 
     }
@@ -99,16 +98,13 @@ public class ProfileInfo extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Get current userId
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String userId = preferences.getString("userId", "");
 
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
 
         // Get button id, text fields id and set listeners
         Button updateButton = (Button) view.findViewById(R.id.profileUpdateButton);
         Button logoutButton = (Button) view.findViewById(R.id.logOutButton);
+        Button backButton = (Button) view.findViewById(R.id.backButton);
         updateButton.setOnClickListener(updateUserInfoListener);
         logoutButton.setOnClickListener(logOutListener);
         nameField = (EditText) view.findViewById(R.id.profileName);
@@ -116,15 +112,42 @@ public class ProfileInfo extends Fragment {
         notesField = (EditText) view.findViewById(R.id.profileNotes);
         newPasswordField = (EditText) view.findViewById(R.id.profileNewPassword);
         confirmPasswordField = (EditText) view.findViewById(R.id.profileNewPassword2);
+        caregiveeLabel = (TextView) view.findViewById(R.id.profileTextLabel);
         errorMessage = (TextView) view.findViewById(R.id.profileInfoMessage);
-
-        // Set color
         red = view.getResources().getColor(R.color.red);
         green = view.getResources().getColor(R.color.green);
 
-        // Display user info
-        displayUserInfo();
+        // This page is opened when user clicked on "View Profile" from the homepage.
+        Bundle args = this.getArguments();
+        if (args != null){
+            String caregiveeName = args.getString("caregiveeName");
+            String caregiveeNotes = args.getString("caregiveeNotes");
+            String caregiveeEmail = args.getString("caregiveeEmail");
+            nameField.setHint(caregiveeName);
+            emailField.setHint(caregiveeEmail);
 
+            // Hide the update and logout button but show the back button
+            updateButton.setVisibility(view.GONE);
+            logoutButton.setVisibility(view.GONE);
+            backButton.setVisibility(view.VISIBLE);
+            backButton.setOnClickListener(backtoHomePage);
+
+
+            // Set title and subtitle on profil einfo page
+            TextView caregiveeTitle = (TextView) view.findViewById(R.id.profileTitle);
+            caregiveeTitle.setText(caregiveeName);
+            caregiveeTitle.setVisibility(view.VISIBLE);
+
+            caregiveeLabel.setText("View your caregivee profile below.");
+        }
+
+        // Called this when user open page from the navigation bar
+        else {
+            caregiveeLabel.setText("View or edit your profile below.");
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String userId = preferences.getString("userId", "");
+            displayUserInfo(view, userId);
+        }
         return view;
     }
 
@@ -279,11 +302,23 @@ public class ProfileInfo extends Fragment {
             startActivity(i);
         }
     };
+  
+    /*
+     * Function to go back. It is called when clicked on the Back button.
+     */
+    private View.OnClickListener backtoHomePage = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext(), Dashboard.class);
+            startActivity(i);
+        }
+    };
 
     public static class MainActivity extends AppCompatActivity {
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+
             setContentView(R.layout.activity_main);
         }
     }
