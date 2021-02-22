@@ -14,6 +14,26 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import com.google.android.material.tabs.TabLayout;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,10 +42,8 @@ import com.google.android.material.tabs.TabLayout;
  */
 public class BeaconFragment extends Fragment {
 
-
-    ViewPager viewPager;
-    TabLayout tabLayout;
-
+//    ViewPager viewPager;
+//    TabLayout tabLayout;
 
     public BeaconFragment() {
         // Required empty public constructor
@@ -44,7 +62,6 @@ public class BeaconFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
     }
 
@@ -55,8 +72,8 @@ public class BeaconFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_beacon, container, false);
 
-        tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
-        viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
         prepareViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         return view;
@@ -67,7 +84,7 @@ public class BeaconFragment extends Fragment {
         viewPager.setAdapter(adapter);
     }
 
-    private class BeaconAdapter extends FragmentPagerAdapter {
+    private class BeaconAdapter extends FragmentStatePagerAdapter {
         public BeaconAdapter(@NonNull FragmentManager fm) {
             super(fm);
         }
@@ -75,15 +92,13 @@ public class BeaconFragment extends Fragment {
         @NonNull
         @Override
         public Fragment getItem(int position) {
+            BeaconRegionList regionListFragment = new BeaconRegionList();
+            BeaconAddRegion addRegionFragment = new BeaconAddRegion();
             switch (position) {
-                case 0:
-                    BeaconRegionList regionListFragment = new BeaconRegionList();
-                    return regionListFragment;
                 case 1:
-                    BeaconAddRegion addRegionFragment = new BeaconAddRegion();
                     return addRegionFragment;
                 default:
-                    return null;
+                    return regionListFragment;
             }
         }
 
@@ -96,12 +111,10 @@ public class BeaconFragment extends Fragment {
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case 0:
-                    return "Regions";
                 case 1:
                     return "Add Region";
                 default:
-                    return null;
+                    return "Regions";
             }
         }
     }

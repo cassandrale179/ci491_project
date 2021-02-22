@@ -99,7 +99,8 @@ public class BeaconAddRegion extends Fragment {
             updateRegionInfoInBackend(user, newRegionInfo);
             Log.i("Sample", "region Info = " + newRegionInfo.toString());
         }
-
+        // If major and room is valid add to beaconRegions list
+        // Setup spaces again
     }
 
 //    public void startBeaconScanService(Intent scanServiceIntent) {
