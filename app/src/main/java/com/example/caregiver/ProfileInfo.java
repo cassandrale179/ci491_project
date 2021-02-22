@@ -144,9 +144,7 @@ public class ProfileInfo extends Fragment {
         // Called this when user open page from the navigation bar
         else {
             caregiveeLabel.setText("View or edit your profile below.");
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String userId = preferences.getString("userId", "");
-            displayUserInfo(view, userId);
+            displayUserInfo();
         }
         return view;
     }
@@ -300,6 +298,7 @@ public class ProfileInfo extends Fragment {
         public void onClick(View v) {
             Intent i = new Intent(v.getContext(), Login.class);
             startActivity(i);
+            getActivity().finish();
         }
     };
   
@@ -313,13 +312,4 @@ public class ProfileInfo extends Fragment {
             startActivity(i);
         }
     };
-
-    public static class MainActivity extends AppCompatActivity {
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            setContentView(R.layout.activity_main);
-        }
-    }
 }
