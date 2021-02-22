@@ -78,13 +78,16 @@ public class Login extends AppCompatActivity {
         SharedPreferences.Editor editor = preferences.edit();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users/" + userId);
 
-        // Attach a listener to read name , email of user
+        // Attach a listener to read name , email and notes of user profile.
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 editor.putString("userName", dataSnapshot.child("name").getValue().toString());
                 editor.putString("userEmail", dataSnapshot.child("email").getValue().toString());
                 editor.putString("userRole", dataSnapshot.child("role").getValue().toString());
+                if (dataSnapshot.child("notes").getValue() != null){
+                    editor.putString("userNotes", dataSnapshot.child("notes").getValue().toString());
+                }
                 editor.putString("userId", userId);
                 editor.apply();
             }
