@@ -171,6 +171,8 @@ public class my_caregivee extends Fragment {
                         break;
                     case 2:
                         Intent intent = new Intent(getContext(), ViewProgress.class);
+                        intent.putExtra("caregiveeName", caregiveeIDtoNameMap.get(caregiveeIDs.get(i)));
+                        intent.putExtra("caregiveeID", caregiveeIDs.get(i));
                         startActivity(intent);
                         break;
                     case 3:

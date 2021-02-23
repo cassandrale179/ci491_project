@@ -15,10 +15,11 @@ import androidx.recyclerview.widget.ListAdapter;
 
 import java.time.Duration;
 import java.time.Period;
+import java.util.List;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
 
-    public TaskAdapter(Context context, int layout, Task[] array)
+    public TaskAdapter(Context context, int layout, List<Task> array)
     {
         super(context, layout, array);
     }
@@ -123,4 +124,5 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
         return s;
     }
+
 }
