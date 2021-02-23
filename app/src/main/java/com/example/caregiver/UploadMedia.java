@@ -3,6 +3,7 @@ package com.example.caregiver;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -12,6 +13,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -30,8 +32,11 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.BitSet;
+import java.util.Date;
 
 import kotlin.Result;
 
@@ -41,6 +46,7 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
     private static final int CAPTURED_IMAGE_REQUEST = 1024;
     private ImageView imageView;
     private Button buttonChoose, buttonUpload, buttonClick;
+    String currentPhotoPath;
 
     private Uri filePath;
 
@@ -71,8 +77,9 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
     }
 
     private void func_click() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, CAPTURED_IMAGE_REQUEST);
+        dispatchTakePictureIntent();
+//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        startActivityForResult(intent, CAPTURED_IMAGE_REQUEST);
     }
 
     private void showFileChooser() {
@@ -82,12 +89,11 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
         startActivityForResult(Intent.createChooser(intent, "Select an Image"), PICK_IMAGE_REQUEST);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        filePath = data.getData();
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            filePath = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
                 imageView.setImageBitmap(bitmap);
@@ -95,9 +101,52 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
                 e.printStackTrace();
             }
         } else if (requestCode == CAPTURED_IMAGE_REQUEST) {
-            if (&&resultCode == Activity.RESULT_OK){
-                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                imageView.setImageBitmap(bitmap);
+//            if (resultCode == Activity.RESULT_OK){
+                File f = new File(currentPhotoPath);
+                imageView.setImageURI(Uri.fromFile(f));
+                Log.d("FILEPATH URI","Absolute URL of the image is " + Uri.fromFile(f));
+
+//                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//                imageView.setImageBitmap(bitmap);
+//            }
+        }
+    }
+
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) { //check if
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File...
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, CAPTURED_IMAGE_REQUEST);
             }
         }
     }
