@@ -9,30 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
-import com.google.android.material.tabs.TabLayout;
-
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import com.google.android.material.tabs.TabLayout;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -41,9 +21,6 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class BeaconFragment extends Fragment {
-
-//    ViewPager viewPager;
-//    TabLayout tabLayout;
 
     public BeaconFragment() {
         // Required empty public constructor
@@ -72,8 +49,8 @@ public class BeaconFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_beacon, container, false);
 
-        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        TabLayout tabLayout = view.findViewById(R.id.tab_layout);
+        ViewPager viewPager = view.findViewById(R.id.view_pager);
         prepareViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         return view;

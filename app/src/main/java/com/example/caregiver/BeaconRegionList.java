@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -33,6 +34,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 
 /**
@@ -44,12 +47,16 @@ import java.util.UUID;
 public class BeaconRegionList extends Fragment {
 
     public static final HashMap<String, HashMap<String, Double>> regionRssiMap = new HashMap<>();
-    public static HashMap<String, Integer> regionMajorMap = new HashMap<String, Integer>();
+    public static HashMap<String, String> regionMajorMap = new HashMap<String, String>();
     public static String regionName;
-    public static int regionMajorValue;
+    public static String regionMajorValue;
+    public static Intent scanServiceIntent;
     public static String kontaktUUID;
+    public static Boolean isAlreadyScanning = false;
     public static Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
+    private static BeaconRegionList instance = null;
     public TableLayout regionTable;
+    private ProgressBar regionLoadingSpinner;
 
     public BeaconRegionList() {
         // Required empty public constructor
@@ -60,25 +67,34 @@ public class BeaconRegionList extends Fragment {
         return fragment;
     }
 
+    public static BeaconRegionList getInstance() {
+        return instance;
+    }
+
     /**
      * Default onCreate function
+     *
      * @param savedInstanceState
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getKontaktUUID();
         super.onCreate(savedInstanceState);
+        instance = this;
     }
 
     /**
      * Populates the table view with the region names and the major value
+     *
      * @param regionMajorMap - Map of region names and their major value
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void populateTable(HashMap regionMajorMap) {
-        float spTextSize = 14;
-        float textSize = spTextSize * getResources().getDisplayMetrics().scaledDensity;
-        regionMajorMap.forEach((regionName, majorValue) -> {
+        int dipPaddingValue = 3;
+        int paddingValue = (int) (dipPaddingValue * getResources().getDisplayMetrics().density);
+        SortedSet<String> keys = new TreeSet<>(regionMajorMap.keySet());
+        for (String regionName : keys) {
+            String majorValue = (String) regionMajorMap.get(regionName);
             TableRow row = new TableRow(getActivity());
             row.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             TextView regionField = new TextView(getActivity());
@@ -86,21 +102,21 @@ public class BeaconRegionList extends Fragment {
             regionField.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
             majorField.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
             regionField.setGravity(Gravity.CENTER);
-            regionField.setTextSize(textSize);
-            regionField.setText(regionName.toString());
+            regionField.setPadding(paddingValue, paddingValue, paddingValue, paddingValue);
+            regionField.setText(regionName);
             row.addView(regionField);
             majorField.setGravity(Gravity.CENTER);
-            majorField.setTextSize(textSize);
-            majorField.setText(majorValue.toString());
+            majorField.setPadding(paddingValue, paddingValue, paddingValue, paddingValue);
+            majorField.setText(majorValue);
             row.addView(majorField);
             regionTable.addView(row);
-        });
+        }
     }
 
     /**
      * Gets the current user's UUID from the database
      */
-    private void getKontaktUUID() {
+    public void getKontaktUUID() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference ref = database.child("users/" + user.getUid());
@@ -121,6 +137,7 @@ public class BeaconRegionList extends Fragment {
 
     /**
      * Default onCreateView function
+     *
      * @param inflater
      * @param container
      * @param savedInstanceState
@@ -131,7 +148,7 @@ public class BeaconRegionList extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_beacon_region_list, container, false);
-        Intent scanServiceIntent = new Intent(getActivity(), BeaconScanService.class);
+        scanServiceIntent = new Intent(getActivity(), BeaconScanService.class);
 
         Button startScanButton = view.findViewById(R.id.start_button);
         startScanButton.setOnClickListener(v -> startBeaconScanService(scanServiceIntent));
@@ -139,19 +156,15 @@ public class BeaconRegionList extends Fragment {
         Button stopScanButton = view.findViewById(R.id.stop_button);
         stopScanButton.setOnClickListener(v -> stopBeaconScanService(scanServiceIntent));
 
-        regionTable = (TableLayout) view.findViewById(R.id.regionTable);
+        regionLoadingSpinner = view.findViewById(R.id.region_loading_spinner);
+
+        regionTable = view.findViewById(R.id.regionTable);
         // Once the firebase query is completed the table is populated and buttons are enabled
         getUsersRegions(new OnQueryCompleteListener() {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> newRegions = dataSnapshot.getChildren();
-                for (DataSnapshot ds : newRegions) {
-                    regionName = ds.getKey();
-                    if (regionName != null) {
-                        regionMajorValue = Integer.parseUnsignedInt(dataSnapshot.child(regionName).child("beaconMajor").getValue().toString());
-                        regionMajorMap.put(regionName, regionMajorValue);
-                    }
-                }
+                createRegionMajorMap(dataSnapshot);
+                regionLoadingSpinner.setVisibility(View.GONE);
                 populateTable(regionMajorMap);
                 startScanButton.setEnabled(true);
                 stopScanButton.setEnabled(true);
@@ -172,6 +185,7 @@ public class BeaconRegionList extends Fragment {
 
     /**
      * Queries the database to get currently setup rooms under the user
+     *
      * @param listener
      */
     public void getUsersRegions(final OnQueryCompleteListener listener) {
@@ -194,17 +208,32 @@ public class BeaconRegionList extends Fragment {
         });
     }
 
+    public void createRegionMajorMap(DataSnapshot dataSnapshot) {
+        Iterable<DataSnapshot> newRegions = dataSnapshot.getChildren();
+        for (DataSnapshot ds : newRegions) {
+            regionName = ds.getKey();
+            if (regionName != null) {
+                regionMajorValue = dataSnapshot.child(regionName).child("beaconMajor").getValue().toString();
+                regionMajorMap.put(regionName.toLowerCase(), regionMajorValue);
+            }
+        }
+    }
+
     /**
      * Sets up all the beacon regions for the user when the start scanning button is pressed
+     *
      * @param regionMajorMap
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void setupBeaconRegions(HashMap regionMajorMap) {
+    public void setupBeaconRegions(HashMap regionMajorMap, String... UUIDString) {
+        String UUIDValue = UUIDString.length > 0 ? UUIDString[0] : kontaktUUID;
+        Log.i("sample", "UUID: " + UUIDValue + " " + UUIDValue.getClass() + " kontaktUUID: " + kontaktUUID + " " + kontaktUUID.getClass());
         regionMajorMap.forEach((regionName, majorValue) -> {
+            Log.i("sample", "Major Value: " + majorValue + " " + majorValue.getClass());
             IBeaconRegion region = new BeaconRegion.Builder()
-                    .identifier(regionName.toString())
-                    .proximity(UUID.fromString(kontaktUUID))
-                    .major((Integer) majorValue).build();
+                    .identifier((String) regionName)
+                    .proximity(UUID.fromString(UUIDValue))
+                    .major(Integer.parseInt((String) majorValue)).build();
             beaconRegions.add(region);
             regionRssiMap.put(regionName.toString(), new HashMap<String, Double>());
             regionRssiMap.get(regionName).put("sum", 0.0);
@@ -215,19 +244,23 @@ public class BeaconRegionList extends Fragment {
 
     /**
      * Starts the scanning when the region have been setup on the beacon end
+     *
      * @param scanServiceIntent
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void startBeaconScanService(Intent scanServiceIntent) {
+        isAlreadyScanning = true;
         setupBeaconRegions(regionMajorMap);
         getActivity().startService(scanServiceIntent);
     }
 
     /**
      * Stops scanning for beacons
+     *
      * @param scanServiceIntent
      */
     public void stopBeaconScanService(Intent scanServiceIntent) {
+        isAlreadyScanning = false;
         getActivity().stopService(scanServiceIntent);
     }
 
