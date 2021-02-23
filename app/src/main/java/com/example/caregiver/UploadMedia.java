@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -12,6 +14,7 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -26,14 +29,18 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.BitSet;
+
+import kotlin.Result;
 
 public class UploadMedia extends AppCompatActivity implements View.OnClickListener {
 
     private static final int PICK_IMAGE_REQUEST = 234;
+    private static final int CAPTURED_IMAGE_REQUEST = 1024;
     private ImageView imageView;
-    private Button buttonChoose, buttonUpload;
+    private Button buttonChoose, buttonUpload, buttonClick;
 
     private Uri filePath;
 
@@ -41,23 +48,31 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
     private StorageReference storageReference;
 
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-    String userId = PreferenceManager.getDefaultSharedPreferences(UploadMedia()).getString("userId", "");
+    //String userId = PreferenceManager.getDefaultSharedPreferences(UploadMedia()).getString("userId", "");
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_media);
 
         //Initialized the storage reference
         storageReference = FirebaseStorage.getInstance().getReference();
 
-        imageView = (ImageView)findViewById(R.id.imageview12);
+        imageView = (ImageView) findViewById(R.id.imageview12);
         buttonChoose = (Button) findViewById(R.id.buttonChoose);
         buttonUpload = (Button) findViewById(R.id.buttonUpload);
+        buttonClick = (Button) findViewById(R.id.buttonClick);
 
         buttonChoose.setOnClickListener(this);
         buttonUpload.setOnClickListener(this);
+        buttonClick.setOnClickListener(this);
+    }
+
+    private void func_click() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, CAPTURED_IMAGE_REQUEST);
     }
 
     private void showFileChooser() {
@@ -67,21 +82,27 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
         startActivityForResult(Intent.createChooser(intent, "Select an Image"), PICK_IMAGE_REQUEST);
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data!=null && data.getData()!=null) {
-            filePath = data.getData();
+        filePath = data.getData();
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
                 imageView.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else if (requestCode == CAPTURED_IMAGE_REQUEST) {
+            if (&&resultCode == Activity.RESULT_OK){
+                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                imageView.setImageBitmap(bitmap);
+            }
         }
-
     }
+
+
     //this method will upload the file
     private void uploadFile() {
         //if there is a file to upload
@@ -110,7 +131,6 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
                             //if the upload is not successfull
                             //hiding the progress dialog
                             progressDialog.dismiss();
-
                             //and displaying error message
                             Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
                         }
@@ -128,6 +148,7 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
         }
         //if there is not any file
         else {
+            Toast.makeText(getApplicationContext(), "File Not Uploaded ", Toast.LENGTH_LONG).show();
             //you can display an error toast
         }
     }
@@ -142,6 +163,8 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
         } else if (view == buttonUpload) {
             //Upload
             uploadFile();
+        } else if (view == buttonClick) {
+            func_click();
         }
     }
 }
