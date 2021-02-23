@@ -114,8 +114,12 @@ public class BeaconAddRegion extends Fragment {
                     displayErrorMessage("One or more fields are empty.", rootView);
                 }
                 // check if region/major value has already been used
-                else if (BeaconRegionList.regionMajorMap.containsKey(regionName.toLowerCase()) || BeaconRegionList.regionMajorMap.containsValue(majorValue)) {
-                    displayErrorMessage("This region or major value has already been used.", rootView);
+                else if (BeaconRegionList.regionMajorMap.containsKey(regionName.toLowerCase()) && BeaconRegionList.regionMajorMap.containsValue(majorValue)) {
+                    displayErrorMessage("This region and major value has already been used.", rootView);
+                } else if (BeaconRegionList.regionMajorMap.containsKey(regionName.toLowerCase())) {
+                    displayErrorMessage("This region name has already been used.", rootView);
+                } else if (BeaconRegionList.regionMajorMap.containsValue(majorValue)) {
+                    displayErrorMessage("This major value has already been used.", rootView);
                 } else {
                     displayErrorMessage("", rootView);
                     regionInfo newRegionInfo = new regionInfo(UUIDValue, regionName, majorValue);
@@ -171,13 +175,16 @@ public class BeaconAddRegion extends Fragment {
             rootRef.child("users").child(user.getUid()).child("uuid").setValue(UUIDValue);
             currentUUID = UUIDValue;
             UUIDField.setHint(currentUUID);
+            if (BeaconRegionList.isAlreadyScanning)
+                BeaconRegionList.getInstance().stopBeaconScanService(scanServiceIntent);
+            // call setupSpaces() using updated map
+            BeaconRegionList.getInstance().setupBeaconRegions(BeaconRegionList.regionMajorMap, UUIDValue);
+            // call start scanning using same scanService intent used to stop it
+            BeaconRegionList.getInstance().startBeaconScanService(scanServiceIntent);
         }
-        if (BeaconRegionList.isAlreadyScanning)
-            BeaconRegionList.getInstance().stopBeaconScanService(scanServiceIntent);
-        // call setupSpaces() using updated map
-        BeaconRegionList.getInstance().setupBeaconRegions(BeaconRegionList.regionMajorMap, UUIDValue);
-        // call start scanning using same scanService intent used to stop it
-        BeaconRegionList.getInstance().startBeaconScanService(scanServiceIntent);
+        else {
+            displayErrorMessage("UUID Value is not provided.", rootView);
+        }
     }
 
     public void displayUuid(View view, String userId) {
