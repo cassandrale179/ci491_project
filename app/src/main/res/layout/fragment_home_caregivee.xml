@@ -4,25 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeCaregiver"
-    >
+    tools:context=".HomeCaregivee">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:id="@+id/addCaregiveeButton"
+        android:id="@+id/addCaregiverButton"
         app:fabSize="normal"
         app:elevation="6dp"
         android:backgroundTint="@color/black"
         android:src="@drawable/ic_baseline_add_24"
         app:useCompatPadding="true"
         android:layout_marginBottom="50dp"
-        app:tint="@android:color/white"/>
+        app:tint="@android:color/white" />
 
     <LinearLayout
-        android:id="@+id/caregiverHomeScreen"
+        android:id="@+id/caregiveeHomeScreen"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical">
@@ -52,22 +51,18 @@
             android:layout_gravity="center"/>
 
         <TextView
-            android:id="@+id/profileTextLabel"
+            android:id="@+id/caregiveeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="As a caregiver, you can view your caregivees below."
-            android:layout_marginRight="30dp"
-            android:layout_marginLeft="30dp"
             android:layout_marginBottom="30dp"
             android:layout_marginTop="30dp"
-            android:gravity="center"
-            android:textSize="17dp" />
+            android:text="View your caregivers below."
+            android:textSize="17dp"
+            android:layout_gravity="center"/>
 
-        <ExpandableListView
+        <ListView
+            android:id="@+id/caregiverHomeList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/caregiveeHomelist"
-            android:childDivider="#FFFFFF"/>
+            android:layout_height="match_parent" />
     </LinearLayout>
 </RelativeLayout>
-

@@ -17,8 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Caregiver">
-        <activity android:name=".ViewProgress"></activity>
+        <activity android:name=".ViewProgress" />
         <activity android:name=".ProfileInfo$MainActivity" />
+
         <meta-data
             android:name="kontakt.io.API_KEY"
             android:value="clYwuEPnEpprKHUBKIwTudpdiEqMgMQq" />
@@ -30,7 +31,6 @@
             android:name=".services.BeaconScanService"
             android:exported="false" />
 
-  
         <activity android:name=".AddTask" />
         <activity android:name=".EditTask" />
         <activity android:name=".Dashboard" />
