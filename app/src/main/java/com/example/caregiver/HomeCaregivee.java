@@ -1,5 +1,6 @@
 package com.example.caregiver;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,6 +55,10 @@ public class HomeCaregivee extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home_caregivee, container, false);
+
+        // Set the floating button to redirect to the add request button
+        FloatingActionButton plusButton = view.findViewById(R.id.addCaregiverButton);
+        plusButton.setOnClickListener(redirectToRequestPageListener);
 
         // Get the list view
         final ListView list = view.findViewById(R.id.caregiverHomeList);
@@ -126,4 +132,12 @@ public class HomeCaregivee extends Fragment {
             }
         });
     }
+
+    private View.OnClickListener redirectToRequestPageListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext(), Request.class);
+            startActivity(i);
+        }
+    };
 }
