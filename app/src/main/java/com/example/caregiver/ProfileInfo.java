@@ -120,11 +120,12 @@ public class ProfileInfo extends Fragment {
         // This page is opened when user clicked on "View Profile" from the homepage.
         Bundle args = this.getArguments();
         if (args != null){
-            String caregiveeName = args.getString("caregiveeName");
-            String caregiveeNotes = args.getString("caregiveeNotes");
-            String caregiveeEmail = args.getString("caregiveeEmail");
-            nameField.setHint(caregiveeName);
-            emailField.setHint(caregiveeEmail);
+            String otherName = args.getString("otherName");
+            String otherNotes = args.getString("otherNotes");
+            String otherEmail = args.getString("otherEmail");
+            nameField.setHint(otherName);
+            emailField.setHint(otherEmail);
+            notesField.setHint(otherNotes);
 
             // Hide the update and logout button but show the back button
             updateButton.setVisibility(view.GONE);
@@ -135,7 +136,7 @@ public class ProfileInfo extends Fragment {
 
             // Set title and subtitle on profil einfo page
             TextView caregiveeTitle = (TextView) view.findViewById(R.id.profileTitle);
-            caregiveeTitle.setText(caregiveeName);
+            caregiveeTitle.setText(otherName);
             caregiveeTitle.setVisibility(view.VISIBLE);
 
             caregiveeLabel.setText("View your caregivee profile below.");

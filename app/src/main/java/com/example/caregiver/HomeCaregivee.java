@@ -99,16 +99,31 @@ public class HomeCaregivee extends Fragment {
     }
 
     protected void displayCaregiver(String caregiverId){
+        // Create bundle object to send arguments to the profile page
+        Bundle args = new Bundle();
+        ProfileInfo fragment = new ProfileInfo();
+
         DatabaseReference caregiverRef = database.child("users/" + caregiverId);
         caregiverRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String caregiverName = snapshot.child("name").getValue().toString();
+                String caregiverEmail = snapshot.child("email").getValue().toString();
+                args.putString("otherName", caregiverName);
+                args.putString("otherEmail", caregiverEmail);
+                if (snapshot.child("notes").getValue() != null){
+                    String caregiverNotes = snapshot.child("notes").getValue().toString();
+                    args.putString("otherNotes", caregiverNotes);
+                } else {
+                    args.putString("otherNotes", "N/A");
+                }
+                fragment.setArguments(args);
+                ((Dashboard)getActivity()).replaceActiveFragment(fragment);
 
             }@Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("error", "Can't display caregiver profile");
             }
         });
-
     }
 }
