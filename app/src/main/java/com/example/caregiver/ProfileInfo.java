@@ -42,11 +42,13 @@ public class ProfileInfo extends Fragment {
     public EditText newPasswordField;
     public EditText confirmPasswordField;
     public TextView errorMessage;
+    public TextView notesField;
     public TextView caregiveeLabel;
 
     // Variables pointing to the user
     public String currentEmail;
     public String currentName;
+    public String currentNotes;
 
     // Color for error and success message
     int red;
@@ -78,17 +80,19 @@ public class ProfileInfo extends Fragment {
 
     /**
      * This function populate the text fields on the profile info page
-     * @param view the view of the profile info page
-     * @param userId the user id of the currently logged in user
      */
-    public void displayUserInfo(View view, String userId) {
+    public void displayUserInfo() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        currentName = preferences.getString("userName", "");
-        currentEmail = preferences.getString("userEmail", "");
-        EditText nameField = (EditText) view.findViewById(R.id.profileName);
-        EditText emailField = (EditText) view.findViewById(R.id.profileEmail);
+
+        currentName = preferences.getString("userName", "N/A");
         nameField.setHint(currentName);
+
+        currentEmail = preferences.getString("userEmail", "N/A");
         emailField.setHint(currentEmail);
+
+        currentNotes = preferences.getString("userNotes", "N/A");
+        notesField.setHint(currentNotes);
+
     }
 
     @Override
@@ -102,8 +106,10 @@ public class ProfileInfo extends Fragment {
         Button logoutButton = (Button) view.findViewById(R.id.logOutButton);
         Button backButton = (Button) view.findViewById(R.id.backButton);
         updateButton.setOnClickListener(updateUserInfoListener);
+        logoutButton.setOnClickListener(logOutListener);
         nameField = (EditText) view.findViewById(R.id.profileName);
         emailField = (EditText) view.findViewById(R.id.profileEmail);
+        notesField = (EditText) view.findViewById(R.id.profileNotes);
         newPasswordField = (EditText) view.findViewById(R.id.profileNewPassword);
         confirmPasswordField = (EditText) view.findViewById(R.id.profileNewPassword2);
         caregiveeLabel = (TextView) view.findViewById(R.id.profileTextLabel);
@@ -138,9 +144,7 @@ public class ProfileInfo extends Fragment {
         // Called this when user open page from the navigation bar
         else {
             caregiveeLabel.setText("View or edit your profile below.");
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String userId = preferences.getString("userId", "");
-            displayUserInfo(view, userId);
+            displayUserInfo();
         }
         return view;
     }
@@ -226,6 +230,7 @@ public class ProfileInfo extends Fragment {
                         if (task.isSuccessful()) {
                             updateUserInformation(user);
                             displayMessage("Your profile is updated!", green);
+                            displayUserInfo();
                         } else {
                             displayMessage("Your old password is not correct.", red);
                         }
@@ -246,24 +251,33 @@ public class ProfileInfo extends Fragment {
      * @param user The current logged in Firebase user
      */
     public void updateUserInformation(@NonNull FirebaseUser user) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        SharedPreferences.Editor editor = preferences.edit();
 
         String name = nameField.getText().toString();
         String email = emailField.getText().toString();
         String newPassword = newPasswordField.getText().toString();
         String confirmPassword = confirmPasswordField.getText().toString();
+        String notes = notesField.getText().toString();
 
         if (name != null && !name.isEmpty()) {
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.child("users").child(user.getUid()).child("name").setValue(name);
-            currentName = name;
-            nameField.setHint(currentName);
+            editor.putString("userName", name);
         }
         if (!email.isEmpty()) {
             changeEmail(user, email);
+            editor.putString("userEmail", email);
         }
         if (!newPassword.isEmpty() && !confirmPassword.isEmpty()) {
             changePassword(user, newPassword, confirmPassword);
         }
+
+        if (!notes.isEmpty()){
+            rootRef.child("users").child(user.getUid()).child("notes").setValue(notes);
+            editor.putString("userNotes", notes);
+        }
+        editor.commit();
     }
 
     /**
@@ -277,6 +291,18 @@ public class ProfileInfo extends Fragment {
     };
 
     /**
+     * Function to logout
+     */
+    private View.OnClickListener logOutListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext(), Login.class);
+            startActivity(i);
+            getActivity().finish();
+        }
+    };
+  
+    /*
      * Function to go back. It is called when clicked on the Back button.
      */
     private View.OnClickListener backtoHomePage = new View.OnClickListener() {
@@ -286,14 +312,4 @@ public class ProfileInfo extends Fragment {
             startActivity(i);
         }
     };
-
-    public static class MainActivity extends AppCompatActivity {
-
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            setContentView(R.layout.activity_main);
-        }
-    }
 }
