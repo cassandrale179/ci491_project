@@ -46,7 +46,7 @@ public class ProfileRequest extends Fragment {
         // Required empty public constructor
     }
 
-    public static ProfileRequest newInstance(String param1, String param2) {
+    public static ProfileRequest newInstance() {
         ProfileRequest fragment = new ProfileRequest();
         return fragment;
     }
@@ -80,7 +80,7 @@ public class ProfileRequest extends Fragment {
      */
     private void approveRequest(DataSnapshot requestSnapshot) {
         String userId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userId", "");
-        String name = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("name", "");
+        String name = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userName", "");
         final DatabaseReference ref = database.child("/users/" + userId);
 
         Map < String,
@@ -193,17 +193,20 @@ public class ProfileRequest extends Fragment {
 
         List < String > allRequests = new ArrayList < >();
         String userId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userId", "");
-        String role = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("tag", "");
+        String role = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userRole", "");
 
         DatabaseReference ref = database.child("users/" + userId + "/requests/");
         ValueEventListener valueEventListener = new ValueEventListener() {@Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
-            // If the user is caregivee, formulate list with requests & display.
+            // If the user is caregivee, remove addCaregivee button & formulate list with requests
             if (role.equals("caregivee")) {
                 allRequests.clear();
                 for (DataSnapshot postSnapshot: snapshot.getChildren()) {
                     allRequests.add(Objects.requireNonNull(postSnapshot.getValue()).toString());
                 }
+                FloatingActionButton addCaregivee = view.findViewById(R.id.plusButton);
+                addCaregivee.setVisibility(View.GONE);
+
                 displayRequestListCaregivee(view, allRequests, snapshot);
             }
             else {

@@ -126,9 +126,9 @@ public class Signup extends AppCompatActivity {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("userId", user.getUid());
-                editor.putString("name", name);
-                editor.putString("email", email);
-                editor.putString("tag", tag);
+                editor.putString("userName", name);
+                editor.putString("userEmail", email);
+                editor.putString("userRole", tag);
                 editor.apply();
 
                 Intent i = new Intent(Signup.this, Request.class);
