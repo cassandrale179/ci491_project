@@ -37,7 +37,7 @@
         android:src="@drawable/report" />
 
     <TextView
-        android:id="@+id/profileTextLabel"
+        android:id="@+id/taskCaregiveeTextLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"

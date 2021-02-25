@@ -180,6 +180,19 @@ public class TaskCaregivee extends Fragment {
                         android.R.id.text2
                 });
         list.setAdapter(adapter);
+
+        // Redirect to TaskSingleView page with the task data
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {@Override
+        public void onItemClick(AdapterView < ?>parent, View view, final int position, long id) {
+            Gson gson = new Gson();
+            if (taskList.get(position) != null){
+                String taskJson = gson.toJson(taskList.get(position));
+                Intent i = new Intent(view.getContext(), TaskSingleView.class);
+                i.putExtra("taskObject", taskJson);
+                startActivity(i);
+            }
+        }
+        });
     }
 
     @Override
