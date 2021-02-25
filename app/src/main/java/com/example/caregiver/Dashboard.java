@@ -27,7 +27,12 @@ public class Dashboard extends AppCompatActivity {
         // Set bottom navigation bar
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregiver()).commit();
+        if (role.equals("caregiver")){
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregiver()).commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregivee()).commit();
+        }
+
     }
 
 
@@ -44,7 +49,11 @@ public class Dashboard extends AppCompatActivity {
             Fragment fragment = null;
             switch(menuItem.getItemId()){
             case R.id.home:
-                fragment = new HomeCaregiver();
+                if (role.equals("caregiver")){
+                    fragment = new HomeCaregiver();
+                } else {
+                    fragment = new HomeCaregivee();
+                }
                 break;
             case R.id.task:
                 if (role.equals("caregivee")){

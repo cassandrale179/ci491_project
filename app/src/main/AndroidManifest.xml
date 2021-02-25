@@ -17,13 +17,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Caregiver">
-
         <activity android:name=".TaskFinish"></activity>
         <activity android:name=".TaskSingleView" />
         <activity android:name=".ViewProgress" />
         <activity android:name=".RemoveCaregivee" />
         <activity android:name=".ViewProgress"></activity>
-        <activity android:name=".ProfileInfo$MainActivity" />
 
         <meta-data
             android:name="kontakt.io.API_KEY"
