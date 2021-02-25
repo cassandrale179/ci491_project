@@ -56,10 +56,6 @@ public class HomeCaregivee extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home_caregivee, container, false);
 
-        // Set the floating button to redirect to the add request button
-        FloatingActionButton plusButton = view.findViewById(R.id.addCaregiverButton);
-        plusButton.setOnClickListener(redirectToRequestPageListener);
-
         // Get the list view
         final ListView list = view.findViewById(R.id.caregiverHomeList);
 
@@ -132,12 +128,4 @@ public class HomeCaregivee extends Fragment {
             }
         });
     }
-
-    private View.OnClickListener redirectToRequestPageListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent i = new Intent(v.getContext(), Request.class);
-            startActivity(i);
-        }
-    };
 }

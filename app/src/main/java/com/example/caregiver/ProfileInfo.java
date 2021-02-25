@@ -127,12 +127,13 @@ public class ProfileInfo extends Fragment {
             emailField.setHint(otherEmail);
             notesField.setHint(otherNotes);
 
-            // Hide the update and logout button but show the back button
+            // Hide buttons and password field
             updateButton.setVisibility(view.GONE);
             logoutButton.setVisibility(view.GONE);
             backButton.setVisibility(view.VISIBLE);
             backButton.setOnClickListener(backtoHomePage);
-
+            confirmPasswordField.setVisibility(view.GONE);
+            newPasswordField.setVisibility(view.GONE);
 
             // Set title and subtitle on profil einfo page
             TextView caregiveeTitle = (TextView) view.findViewById(R.id.profileTitle);
