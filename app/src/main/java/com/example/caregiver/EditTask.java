@@ -12,15 +12,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,8 +66,6 @@ public class EditTask extends AppCompatActivity {
         caregiveeField.setText(caregiveeName, TextView.BufferType.NORMAL);
         createSpinner(caregiveeRooms, currTask.room);
 
-
-        /* TODO handle task removal */
     }
 
     /**
@@ -91,10 +88,10 @@ public class EditTask extends AppCompatActivity {
     }
 
     /**
-     * Cancel Button onClick function - navigates back to dashboard
+     * Back Button onClick function - navigates back to dashboard
      * @param view
      */
-    public void NavigateToDashboard(View view){
+    public void navigateToDashboard(View view){
         // navigate to dashboard after update
         Intent intent = new Intent(this, Dashboard.class);
         startActivity(intent);
@@ -106,7 +103,7 @@ public class EditTask extends AppCompatActivity {
      * The updated task is written to the DB
      * @param view
      */
-    public void UpdateTask(View view) {
+    public void updateTask(View view) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String path;
         String updatedRoom = roomSpinner.getSelectedItem().toString();
@@ -132,6 +129,26 @@ public class EditTask extends AppCompatActivity {
 
         // post updated task to path in Firebase
         updateTaskInFirebase(path, updatedTask);
+    }
+
+    /**
+     * Removes Task from Firebase after alerting user to confirm action
+     * @param view,
+     */
+    public void deleteTask(View view){
+        Log.d("error", "we made it here!");
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+                alertDialog.setMessage("Would you like to delete this task?");
+                alertDialog.setNegativeButton("Cancel", null);
+                alertDialog.setPositiveButton("Delete Task", (dialog, which) -> {
+                    String path = createPath(currTask.caregiveeId, currTask.room, currTask.taskId);
+                    removeTaskInFirebase(path);
+                    int green = ContextCompat.getColor(getApplicationContext(), R.color.green);
+                    displayMessage("Task deleted.", green);
+                    navigateToDashboard(view);
+                });
+        alertDialog.create();
+        alertDialog.show();
     }
 
     /**

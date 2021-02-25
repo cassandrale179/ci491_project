@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,14 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
-import org.json.JSONArray;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -92,7 +84,7 @@ public class AddTask extends AppCompatActivity {
         createSpinners();
 
         // navigate back to dashboard
-        Button backButton = findViewById(R.id.taskBackButton);
+        Button backButton = findViewById(R.id.taskCancelButton);
         backButton.setOnClickListener(view -> startActivity(new Intent(view.getContext(), Dashboard.class)));
     }
 

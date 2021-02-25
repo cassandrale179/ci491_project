@@ -6,37 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".EditTask">
 
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:onClick="navigateToDashboard"
+        app:srcCompat="@drawable/left_arrow" />
+
     <LinearLayout
         android:id="@+id/editTaskScreen"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="50dp"
         android:layout_marginLeft="30dp"
+        android:layout_marginTop="85dp"
         android:layout_marginRight="30dp"
+        android:layout_marginBottom="50dp"
         android:gravity="center"
-        >
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/editTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="EDIT TASK"
-            android:textSize="40dp"
+            android:layout_marginBottom="10dp"
             android:gravity="center"
+            android:text="EDIT TASK"
             android:textColor="@color/black"
-            android:layout_marginBottom="10dp"/>
+            android:textSize="40dp" />
 
         <TextView
             android:id="@+id/edittaskSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Edit your task below."
-            android:textSize="20dp"
+            android:layout_marginBottom="20dp"
             android:gravity="center"
+            android:text="Edit your task below."
             android:textColor="@color/black"
-            android:layout_marginBottom="20dp"/>
+            android:textSize="20dp" />
 
         <ImageView
             android:id="@+id/addTaskLogo"
@@ -49,85 +57,86 @@
             android:id="@+id/taskMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            android:textStyle="italic"
             android:layout_marginBottom="20dp"
-            android:textColor="@color/red" />
+            android:textColor="@color/red"
+            android:textStyle="italic"
+            android:visibility="invisible" />
 
         <EditText
             android:id="@+id/taskName"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:ems="10"
-            android:inputType="text"
-            android:hint="Task Name"
-            tools:layout_editor_absoluteX="99dp"
-            tools:layout_editor_absoluteY="343dp"
+            android:layout_marginBottom="10dp"
             android:background="@color/gray"
+            android:ems="10"
+            android:hint="Task Name"
+            android:inputType="text"
             android:padding="10dp"
-            android:layout_marginBottom="10dp"/>
+            tools:layout_editor_absoluteX="99dp"
+            tools:layout_editor_absoluteY="343dp" />
 
         <EditText
             android:id="@+id/taskCaregivee"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:ems="10"
-            android:inputType="none"
-            android:enabled="false"
+            android:layout_marginBottom="10dp"
             android:background="@color/gray"
-            android:padding="10dp"
-            android:layout_marginBottom="10dp"/>
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="none"
+            android:padding="10dp" />
 
         <Spinner
             android:id="@+id/taskRoom"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:ems="10"
+            android:layout_marginBottom="10dp"
             android:background="@color/gray"
-            android:padding="10dp"
-            android:layout_marginBottom="10dp"/>
+            android:ems="10"
+            android:padding="10dp" />
 
 
         <EditText
             android:id="@+id/taskNotes"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:ems="10"
-            android:inputType="text"
-            android:hint="Task Notes"
+            android:layout_marginBottom="10dp"
             android:background="@color/gray"
-            android:padding="10dp"
-            android:layout_marginBottom="10dp"/>
+            android:ems="10"
+            android:hint="Task Notes"
+            android:inputType="text"
+            android:padding="10dp" />
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/taskUpdateButton"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
-                android:text="Update"
-                android:textAllCaps="false"
                 android:layout_marginTop="10dp"
-                android:textSize="20dp"
-                android:backgroundTint="@color/teal_700"
                 android:layout_marginRight="10dp"
                 android:layout_weight="0.5"
-                android:onClick="UpdateTask"/>
+                android:backgroundTint="@color/teal_700"
+                android:onClick="updateTask"
+                android:text="Update"
+                android:textAllCaps="false"
+                android:textSize="20dp" />
 
             <Button
-                android:id="@+id/taskBackButton"
+                android:id="@+id/taskDeleteButton"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
-                android:text="Cancel"
-                android:textAllCaps="false"
                 android:layout_marginTop="10dp"
-                android:textSize="20dp"
                 android:layout_weight="0.5"
-                android:onClick="NavigateToDashboard"/>
+                android:backgroundTint="@color/darkRed"
+                android:onClick="deleteTask"
+                android:text="Delete Task"
+                android:textAllCaps="false"
+                android:textSize="20dp" />
 
         </LinearLayout>
     </LinearLayout>
