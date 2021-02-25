@@ -120,7 +120,6 @@ public class my_caregivee extends Fragment {
         //Get user info
         String userId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userId", "");
 
-
         View v = inflater.inflate(R.layout.fragment_my_caregivee, null);
         ExpandableListView elv = (ExpandableListView) v.findViewById(R.id.exp_list_view);
 

@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Binder;
@@ -54,8 +55,8 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
     private StorageReference storageReference;
 
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-    //String userId = PreferenceManager.getDefaultSharedPreferences(UploadMedia()).getString("userId", "");
-
+    //SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+    //String userId = preferences.getString("userId", "");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +79,6 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
 
     private void func_click() {
         dispatchTakePictureIntent();
-//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        startActivityForResult(intent, CAPTURED_IMAGE_REQUEST);
     }
 
     private void showFileChooser() {
@@ -92,6 +91,7 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //70077Log.d("UserId","User id is" + userId);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
             try {
@@ -104,11 +104,9 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
 //            if (resultCode == Activity.RESULT_OK){
                 File f = new File(currentPhotoPath);
                 imageView.setImageURI(Uri.fromFile(f));
+                filePath = Uri.fromFile(f);
                 Log.d("FILEPATH URI","Absolute URL of the image is " + Uri.fromFile(f));
 
-//                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-//                imageView.setImageBitmap(bitmap);
-//            }
         }
     }
 
