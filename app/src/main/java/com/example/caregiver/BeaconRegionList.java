@@ -1,6 +1,8 @@
 package com.example.caregiver;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +14,7 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
@@ -32,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -47,6 +51,7 @@ public class BeaconRegionList extends Fragment {
     public static String kontaktUUID;
     public static Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
     public TableLayout regionTable;
+    public static final int LOCATION_REQUEST_CODE = 100;
 
 
     public BeaconRegionList() {
@@ -61,7 +66,24 @@ public class BeaconRegionList extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getKontaktUUID();
+        requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch(requestCode){
+            case LOCATION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(getContext(), "Location permission granted", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
+                }
+        }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
