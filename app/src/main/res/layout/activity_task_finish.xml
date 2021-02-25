@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".TaskFinish">
+
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        app:srcCompat="@drawable/left_arrow" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="40dp"
+        android:text="Brush Your Teeth"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="20dp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="30dp"
+        android:text="is marked completed!"
+        android:gravity="center"
+        android:textColor="@color/teal_700"
+        android:textStyle="bold"
+        />
+
+
+    <ImageView
+        android:id="@+id/yayImage"
+        android:layout_width="255dp"
+        android:layout_height="360dp"
+        app:srcCompat="@drawable/yay"
+        tools:layout_editor_absoluteX="90dp"
+        tools:layout_editor_absoluteY="160dp"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="You're a fast one!"
+        android:gravity="center"
+        />
+
+    <TextView
+        android:id="@+id/timerCircle"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/text_view_circle"
+        android:text="12:00"
+        android:textSize="25dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_gravity="center"/>
+</LinearLayout>

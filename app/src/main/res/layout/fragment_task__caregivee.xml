@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Task_Caregivee">
+    tools:context=".TaskCaregivee">
 
 <LinearLayout
     android:id="@+id/caregiveeTaskScreen"
@@ -37,7 +37,7 @@
         android:src="@drawable/report" />
 
     <TextView
-        android:id="@+id/profileTextLabel"
+        android:id="@+id/taskCaregiveeTextLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -47,7 +47,7 @@
         android:layout_marginRight="30dp"
         android:layout_marginBottom="30dp"
         android:text="Here is your list of tasks for the day :)"
-        android:textSize="15dp" />
+        android:textSize="17dp" />
 
     <ListView
         android:id="@+id/caregiveeTaskList"
