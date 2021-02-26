@@ -49,14 +49,25 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
     private Button buttonChoose, buttonUpload, buttonClick;
     String currentPhotoPath;
 
+    private String caregiverId;
+    private String uploadingFolderFilename;
+    private String timeStamp;
+    private String imageFileName;
+    private String uploadingFilename;
+
     private Uri filePath;
 
     //firebase storage reference
     private StorageReference storageReference;
 
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-    //SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-    //String userId = preferences.getString("userId", "");
+
+    public void displayUserInfo() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        caregiverId =  preferences.getString("userId", "");
+        Log.d("tag","CaregiverId"+caregiverId);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +86,7 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
         buttonChoose.setOnClickListener(this);
         buttonUpload.setOnClickListener(this);
         buttonClick.setOnClickListener(this);
+        displayUserInfo();
     }
 
     private void func_click() {
@@ -159,7 +171,18 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
             progressDialog.setTitle("Uploading");
             progressDialog.show();
 
-            StorageReference riversRef = storageReference.child("images/profile.jpg");
+            uploadingFolderFilename = caregiverId;
+
+            //check if the folder is created
+
+            timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            imageFileName = "JPEG_" + timeStamp + "_";
+
+            uploadingFilename = uploadingFolderFilename+("/")+(imageFileName);
+            Log.d("Tag","UploadingFilename"+uploadingFilename);
+
+
+            StorageReference riversRef = storageReference.child(uploadingFilename);
             riversRef.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
