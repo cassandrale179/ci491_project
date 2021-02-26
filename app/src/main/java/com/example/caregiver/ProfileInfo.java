@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
@@ -35,6 +34,9 @@ import com.google.firebase.database.FirebaseDatabase;
  * create an instance of this fragment.
  */
 public class ProfileInfo extends Fragment {
+
+    SharedPreferences preferences;
+    View view;
 
     // Variables pointing to the field names
     public EditText nameField;
@@ -82,16 +84,19 @@ public class ProfileInfo extends Fragment {
      * This function populate the text fields on the profile info page
      */
     public void displayUserInfo() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-        currentName = preferences.getString("userName", "N/A");
+        currentName = preferences.getString("userName", "Name");
         nameField.setHint(currentName);
 
-        currentEmail = preferences.getString("userEmail", "N/A");
+        currentEmail = preferences.getString("userEmail", "Email");
         emailField.setHint(currentEmail);
 
-        currentNotes = preferences.getString("userNotes", "N/A");
+        currentNotes = preferences.getString("userNotes", "Notes about medication.");
         notesField.setHint(currentNotes);
+
+        String role = preferences.getString("userRole", "");
+        if (role.equals("caregiver")){
+            notesField.setVisibility(view.GONE);
+        }
 
     }
 
@@ -99,7 +104,9 @@ public class ProfileInfo extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        view = inflater.inflate(R.layout.fragment_profile_info, container, false);
 
         // Get button id, text fields id and set listeners
         Button updateButton = (Button) view.findViewById(R.id.profileUpdateButton);
@@ -253,7 +260,6 @@ public class ProfileInfo extends Fragment {
      * @param user The current logged in Firebase user
      */
     public void updateUserInformation(@NonNull FirebaseUser user) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         SharedPreferences.Editor editor = preferences.edit();
 
