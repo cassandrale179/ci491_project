@@ -132,7 +132,7 @@
                 android:layout_height="70dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="0.5"
-                android:backgroundTint="@color/darkRed"
+                android:backgroundTint="@color/black"
                 android:onClick="deleteTask"
                 android:text="Delete Task"
                 android:textAllCaps="false"
