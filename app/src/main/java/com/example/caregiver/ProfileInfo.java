@@ -219,7 +219,7 @@ public class ProfileInfo extends Fragment {
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setMessage("Please input your current password below.");
         final EditText input = new EditText(getActivity());
-        input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         alert.setView(input);
         alert.setPositiveButton("Change Profile", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
