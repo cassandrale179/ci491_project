@@ -136,7 +136,6 @@ public class EditTask extends AppCompatActivity {
      * @param view,
      */
     public void deleteTask(View view){
-        Log.d("error", "we made it here!");
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
                 alertDialog.setMessage("Would you like to delete this task?");
                 alertDialog.setNegativeButton("Cancel", null);
