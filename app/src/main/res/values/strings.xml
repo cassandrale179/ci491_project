@@ -1,5 +1,30 @@
 <resources>
     <string name="app_name">caregiver</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="uuid_prompt">Enter UUID here</string>
+    <string name="region_prompt">Enter room name</string>
+    <string name="major_prompt">Major</string>
+    <string name="minor_prompt">Minor</string>
+    <string name="start_scanning">Start Scanning</string>
+    <string name="stop_scanning">Stop Scanning</string>
+    <string name="add_region">Add Room</string>
+
+    <!-- sign up / login -->
+    <string name="log_in">Log In</string>
+    <string name="email">Email</string>
+    <string name="login_subtitle">Log in to your account below.</string>
+    <string name="login_title">LOG IN</string>
+    <string name="password">Password</string>
+    <string name="nav_sign_up">Not a member? <u>Sign up now</u></string>
+    <string name="sign_up">Sign Up</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="name">Name</string>
+    <string name="email_confirmation_subtitle">Sign up below to receive an email confirmation.</string>
+    <string name="sign_up_title">SIGN UP</string>
+    <string name="plus">+</string>
+    <string name="request_approval_directions">Click on a row to approve an email request.</string>
+    <string name="add_a_caregivee">ADD A CAREGIVEE</string>
+    <string name="skip">Skip</string>
+    <string name="add_caregivee_msg">Add a new Caregivee by clicking the round button below.</string>
 </resources>

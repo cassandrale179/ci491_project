@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomeCaregivee">
+
+    <LinearLayout
+        android:id="@+id/caregiveeHomeScreen"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_top"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            android:background="@color/black">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Home"
+                android:layout_gravity="center"
+                android:id="@+id/HomeCaregiverTitle"
+                android:textColor="@color/white"
+                android:textSize="20dp"/>
+        </androidx.appcompat.widget.Toolbar>
+
+        <ImageView
+            android:id="@+id/taskImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/contactbook"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/caregiveeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="30dp"
+            android:text="View your caregivers below."
+            android:textSize="17dp"
+            android:layout_gravity="center"/>
+
+        <ListView
+            android:id="@+id/caregiverHomeList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</RelativeLayout>
