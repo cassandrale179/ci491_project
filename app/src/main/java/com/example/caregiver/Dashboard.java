@@ -25,6 +25,7 @@ public class Dashboard extends AppCompatActivity {
 
         // Set bottom navigation bar
         bottomNavigationView = findViewById(R.id.bottomNavigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
 
         if (role.equals("caregiver")) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregiver()).commit();
