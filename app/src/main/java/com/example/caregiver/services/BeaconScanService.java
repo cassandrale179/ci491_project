@@ -57,6 +57,7 @@ public class BeaconScanService extends Service {
     private boolean isRunning; // Flag indicating if service is already running.
     private long lastTimeInMillis = getTimeNow();
     private final double distanceThreshold = 1.5;
+    private final int notificationPriority = 2;
 
     public static Intent createIntent(final Context context) {
         return new Intent(context, BeaconScanService.class);
@@ -289,7 +290,7 @@ public class BeaconScanService extends Service {
                             if (assignedStatus.equals("true") || assignedStatus.equals("True")) {
                                 String contentText = String.format("You have tasks in the %s", roomName);
                                 // send notification
-                                createAndSendNotification(contentText, pendingIntent);
+                                sendNotificationWithGivenContent(contentText, pendingIntent);
                                 return;
                             }
                         }
@@ -306,7 +307,7 @@ public class BeaconScanService extends Service {
     }
 
     // sends notification to the user with specified "contentText"
-    private void createAndSendNotification(String contentText, PendingIntent pendingIntent) {
+    private void sendNotificationWithGivenContent(String contentText, PendingIntent pendingIntent) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(BeaconScanService.this, DEFAULT_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.alert_dark_frame)
                 .setContentTitle("Pending Tasks")
@@ -314,7 +315,7 @@ public class BeaconScanService extends Service {
                 .setContentIntent(pendingIntent);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(BeaconScanService.this);
-        notificationManager.notify(2, builder.build());
+        notificationManager.notify(notificationPriority, builder.build());
     }
 
 }
