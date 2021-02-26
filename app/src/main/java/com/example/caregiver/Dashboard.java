@@ -28,6 +28,7 @@ public class Dashboard extends AppCompatActivity {
 
         if (role.equals("caregiver")) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregiver()).commit();
+            bottomNavigationView.getMenu().findItem(R.id.beacon).setVisible(false);
         } else {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregivee()).commit();
         }
