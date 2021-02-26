@@ -118,7 +118,7 @@
                 android:onClick="CreateTask"/>
 
             <Button
-                android:id="@+id/taskBackButton"
+                android:id="@+id/taskCancelButton"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
                 android:text="Cancel"

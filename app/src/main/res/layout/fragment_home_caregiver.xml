@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TaskFragment"
+    tools:context=".HomeCaregiver"
     >
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:id="@+id/addTaskButton"
+        android:id="@+id/addCaregiveeButton"
         app:fabSize="normal"
         app:elevation="6dp"
         android:backgroundTint="@color/black"
@@ -22,7 +22,7 @@
         app:tint="@android:color/white"/>
 
     <LinearLayout
-        android:id="@+id/tasksScreen"
+        android:id="@+id/caregiverHomeScreen"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical">
@@ -36,9 +36,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tasks"
+                android:text="Home"
                 android:layout_gravity="center"
-                android:id="@+id/TaskTitle"
+                android:id="@+id/HomeCaregiverTitle"
                 android:textColor="@color/white"
                 android:textSize="20dp"/>
         </androidx.appcompat.widget.Toolbar>
@@ -47,26 +47,27 @@
             android:id="@+id/taskImage"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/edit"
+            android:src="@drawable/contactbook"
             android:layout_marginTop="30dp"
             android:layout_gravity="center"/>
 
         <TextView
-        android:id="@+id/profileTextLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="As a caregiver, you can add tasks to your caregivee below."
-        android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginBottom="30dp"
-        android:layout_marginTop="30dp"
-        android:gravity="center"
-        android:textSize="17dp" />
+            android:id="@+id/profileTextLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="As a caregiver, you can view your caregivees below."
+            android:layout_marginRight="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:textSize="17dp" />
 
-    <ExpandableListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/caregiveelist" />
+        <ExpandableListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/caregiveeHomelist"
+            android:childDivider="#FFFFFF"/>
     </LinearLayout>
 </RelativeLayout>
 
