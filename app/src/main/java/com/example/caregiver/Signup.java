@@ -2,7 +2,9 @@ package com.example.caregiver;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -20,8 +22,8 @@ import java.util.Map;
 
 public class Signup extends AppCompatActivity {
 
-
-    public String tag; /* user is caregiver or caregivee */
+    // User is caregiver or caregivee
+    public String userRole;
     private FirebaseAuth mAuth;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private final DatabaseReference ref = database.getReference("");
@@ -38,26 +40,21 @@ public class Signup extends AppCompatActivity {
         }
     }
 
-    /**
-     * Default oncreate function
-     * @param savedInstanceState
-     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_signup);
-        tag = getTag();
+        userRole = getUserRole();
     }
 
-    /** Function call to get user identification **/
-    protected String getTag(){
-        Log.d("this should be call!", "getTag");
+    /** Function call to check whether user is caregiver or caregivee **/
+    protected String getUserRole(){
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            return extras.getString("tag");
+            return extras.getString("userRole");
         } else {
-            Log.d("no tag found", "None");
             return "None";
         }
     }
@@ -91,7 +88,7 @@ public class Signup extends AppCompatActivity {
         } else if (email.isEmpty() || password.isEmpty()) {
             displayErrorMessage("Email or password fields are empty.");
 
-        }  else if (tag == null){
+        }  else if (userRole == null){
             displayErrorMessage("No role is assigned. Please quit app and try again.");
 
         } else {
@@ -117,13 +114,20 @@ public class Signup extends AppCompatActivity {
                 DatabaseReference usersRef = ref.child("users");
                 Map<String, Object> userObject = new HashMap<>();
 
-                userObject.put(user.getUid(), new User(name, email, tag));
+                userObject.put(user.getUid(), new User(name, email, userRole));
                 usersRef.updateChildren(userObject);
+
+                // store in current session shared preferences
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("userId", user.getUid());
+                editor.putString("userName", name);
+                editor.putString("userEmail", email);
+                editor.putString("userRole", userRole);
+                editor.apply();
 
                 Intent i = new Intent(Signup.this, Request.class);
                 startActivity(i);
-
-                Log.w("success", "createUserWithEmail:success");
 
             } else {
                 // Sign in fails, display a message to the user.

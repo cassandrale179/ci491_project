@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.caregiver">
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,20 +16,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Caregiver">
-
+        <activity android:name=".ViewProgress"></activity>
+        <activity android:name=".RemoveCaregivee" />
+        <activity android:name=".ProfileInfo$MainActivity" />
         <meta-data
             android:name="kontakt.io.API_KEY"
-            android:value="clYwuEPnEpprKHUBKIwTudpdiEqMgMQq"/>
+            android:value="clYwuEPnEpprKHUBKIwTudpdiEqMgMQq" />
+
         <service
             android:name="com.kontakt.sdk.android.ble.service.ProximityService"
-            android:exported="false"/>
+            android:exported="false" />
         <service
             android:name=".services.BeaconScanService"
-            android:exported="false"/>
+            android:exported="false" />
 
-        android:theme="@style/Theme.Caregiver"
-        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-        <activity android:name=".AddTask"></activity>
+  
+        <activity android:name=".AddTask" />
+        <activity android:name=".EditTask" />
         <activity android:name=".Dashboard" />
         <activity android:name=".Request" />
         <activity android:name=".Identification" />
@@ -36,13 +46,5 @@
             </intent-filter>
         </activity>
     </application>
-
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 </manifest>
