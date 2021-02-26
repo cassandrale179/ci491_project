@@ -37,9 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
 import java.util.Objects;
-
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -62,6 +60,7 @@ public class BeaconRegionList extends Fragment {
     public static Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
     private static BeaconRegionList instance = null;
     public TableLayout regionTable;
+  
     public static final int LOCATION_REQUEST_CODE = 100;
     private ProgressBar regionLoadingSpinner;
 
@@ -91,7 +90,6 @@ public class BeaconRegionList extends Fragment {
         instance = this;
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -108,13 +106,11 @@ public class BeaconRegionList extends Fragment {
 
     }
 
-
     /**
      * Populates the table view with the region names and the major value
      *
      * @param regionMajorMap - Map of region names and their major value
      */
-
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void populateTable(HashMap regionMajorMap) {
         int dipPaddingValue = 3;
