@@ -19,13 +19,11 @@ public class Dashboard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        bottomNavigationView = findViewById(R.id.bottomNavigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         role = preferences.getString("userRole", "");
-
-        // Set bottom navigation bar
-        bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
 
         if (role.equals("caregiver")) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregiver()).commit();

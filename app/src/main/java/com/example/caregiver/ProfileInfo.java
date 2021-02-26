@@ -298,6 +298,10 @@ public class ProfileInfo extends Fragment {
     private View.OnClickListener logOutListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear();
+            editor.commit();
             Intent i = new Intent(v.getContext(), Login.class);
             startActivity(i);
             getActivity().finish();
