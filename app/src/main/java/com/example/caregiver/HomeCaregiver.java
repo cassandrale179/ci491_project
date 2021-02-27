@@ -74,6 +74,7 @@ public class HomeCaregiver extends Fragment {
                 caregiveeNames.add(caregiveeName);
                 caregiveeIds.add(caregiveeId);
             }
+
             displayCaregiveeList();
         }@Override
         public void onCancelled(@NonNull DatabaseError error) {
