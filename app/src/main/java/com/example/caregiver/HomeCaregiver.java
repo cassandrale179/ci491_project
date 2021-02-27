@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
+import com.example.caregiver.model.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,8 +42,7 @@ public class HomeCaregiver extends Fragment {
     ExpandableListView caregiveeList;
     MainAdapter adapter;
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-    ArrayList<String> caregiveeNames  = new ArrayList<>();
-    ArrayList<String> caregiveeIds = new ArrayList<>();
+    ArrayList<User> caregivees = new ArrayList<>();
     DatabaseReference userRef;
 
 
@@ -71,8 +72,8 @@ public class HomeCaregiver extends Fragment {
             for (DataSnapshot caregivee :  snapshot.child("caregivees").getChildren()) {
                 String caregiveeId = caregivee.getKey();
                 String caregiveeName = caregivee.getValue().toString();
-                caregiveeNames.add(caregiveeName);
-                caregiveeIds.add(caregiveeId);
+                User user = new User(caregiveeId, caregiveeName);
+                caregivees.add(user);
             }
 
             displayCaregiveeList();
@@ -88,11 +89,16 @@ public class HomeCaregiver extends Fragment {
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void displayCaregiveeList(){
+        ArrayList<String> caregiveeNames = new ArrayList<>();
         HashMap<String, ArrayList<String>> listChild = new HashMap<>();
-        caregiveeNames.forEach(caregivee -> {
+
+        // Sort caregivee list by name
+        Collections.sort(caregivees, (User a, User b) -> a.name.compareToIgnoreCase(b.name));
+        caregivees.forEach(caregivee -> {
             ArrayList<String> listChildValues = new ArrayList<String>(
                     Arrays.asList("View Profile", "Set Tasks", "See Progress", "Delete Caregivee"));
-            listChild.put(caregivee, listChildValues);
+            caregiveeNames.add(caregivee.name);
+            listChild.put(caregivee.name, listChildValues);
         });
         adapter = new MainAdapter(caregiveeNames, listChild);
         caregiveeList.setAdapter(adapter);
@@ -104,8 +110,8 @@ public class HomeCaregiver extends Fragment {
      * @param groupPosition index of the caregivee in the list
      */
     public void viewCaregiveeProfile(int groupPosition){
-        String caregiveeName = caregiveeNames.get(groupPosition);
-        String caregiveeId = caregiveeIds.get(groupPosition);
+        String caregiveeName = caregivees.get(groupPosition).name;
+        String caregiveeId = caregivees.get(groupPosition).id;
         DatabaseReference ref = database.child("users/" + caregiveeId);
         ProfileInfo fragment = new ProfileInfo();
         Bundle args = new Bundle();
@@ -135,9 +141,9 @@ public class HomeCaregiver extends Fragment {
      */
     public void removeCaregiveePopUp(int groupPosition){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Want to remove " + caregiveeNames.get(groupPosition) + " from your care?")
+        builder.setMessage("Want to remove " + caregivees.get(groupPosition).name + " from your care?")
                 .setPositiveButton("Yes", (dialog, which) ->{
-                    String caregiveeId = caregiveeIds.get(groupPosition);
+                    String caregiveeId = caregivees.get(groupPosition).id;
                     userRef.child("caregivees").child(caregiveeId).removeValue();
                 }).setNegativeButton("No", null);
         builder.create().show();
@@ -150,7 +156,7 @@ public class HomeCaregiver extends Fragment {
                     viewCaregiveeProfile(groupPosition);
                     break;
                 case 1:
-                    ((Dashboard)getActivity()).replaceActiveFragment(new SetTasksFragment(caregiveeIds.get(groupPosition)));
+                    ((Dashboard)getActivity()).replaceActiveFragment(new SetTasksFragment(caregivees.get(groupPosition).id));
                     break;
                 case 2:
                     startActivity(new Intent(getContext(), ViewProgress.class));

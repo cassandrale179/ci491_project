@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
+import com.example.caregiver.model.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +30,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -294,29 +296,37 @@ public class TaskFragment extends Fragment {
     /** Display caregivee on the main screen. */
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void displayCaregivee(){
-        ArrayList<String> listGroup = new ArrayList<>();
         HashMap<String,ArrayList<String>> listChild = new HashMap<>();
+        ArrayList<String> caregiveeNames = new ArrayList<>();
+        ArrayList<User> caregivees = new ArrayList<>();
         caregiveeInfo.forEach((id, name) -> {
-            listGroup.add(name);
-            List < Task > tasks = taskList.get(id);
+            User caregivee = new User(id, name);
+            caregivees.add(caregivee);
+        });
+        // Sort caregivee list by name
+        Collections.sort(caregivees, (User a, User b) -> a.name.compareToIgnoreCase(b.name));
+        caregivees.forEach(caregivee -> {
+            caregiveeNames.add(caregivee.name);
+            List < Task > tasks = taskList.get(caregivee.id);
             ArrayList < String > taskName =  new ArrayList<>();
             if (tasks != null){
                 for (Task task : tasks){
                     taskName.add("    " + task.taskName.replace("\"", ""));
                 }
             }
-            listChild.put(name, taskName);
+            listChild.put(caregivee.name, taskName);
         });
-        adapter = new MainAdapter(listGroup, listChild);
 
+        adapter = new MainAdapter(caregiveeNames, listChild);
         caregiveeList.setAdapter(adapter);
+
+        // Set listener on task click to edit task.
         caregiveeList.setOnChildClickListener(((parent, v, groupPosition, childPosition, id) -> {
 
             // get selected task info
-            String currCaregiveeName = listGroup.get(groupPosition);
+            String currCaregiveeName = caregiveeNames.get(groupPosition);
             String currTaskName = listChild.get(currCaregiveeName).get(childPosition);
             currTaskName = currTaskName.trim(); // remove whitespaces
-
             Task selectedTask = getSelectedTask(currCaregiveeName, currTaskName);
             if(selectedTask == null) {
                 Log.e("FAIL", "TaskFragment:displayCaregivee could not get selectedTask.");
