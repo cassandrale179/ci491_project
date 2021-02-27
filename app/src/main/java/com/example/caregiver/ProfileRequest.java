@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -127,6 +128,7 @@ public class ProfileRequest extends Fragment {
             Log.e("FAIL", "approveRequest:onCancelled " + error.toException());
         }
         });
+        startActivity(new Intent(this.getContext(), Dashboard.class));
     }
 
     /**
