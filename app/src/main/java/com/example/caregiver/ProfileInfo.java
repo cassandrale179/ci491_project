@@ -130,6 +130,9 @@ public class ProfileInfo extends Fragment {
             String otherName = args.getString("otherName");
             String otherNotes = args.getString("otherNotes");
             String otherEmail = args.getString("otherEmail");
+            if (otherNotes == null){
+                otherNotes = "Notes for medications...";
+            }
             nameField.setHint(otherName);
             emailField.setHint(otherEmail);
             notesField.setHint(otherNotes);
