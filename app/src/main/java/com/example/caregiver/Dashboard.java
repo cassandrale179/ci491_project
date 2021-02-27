@@ -17,6 +17,10 @@ public class Dashboard extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
+        // minimize the app if back button is pressed while in home page
+        if (bottomNavigationView.getSelectedItemId() == R.id.home){
+            moveTaskToBack(true);
+        }
         bottomNavigationView.setSelectedItemId(R.id.home);
     }
 
