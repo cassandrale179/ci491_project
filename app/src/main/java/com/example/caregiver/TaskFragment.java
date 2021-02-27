@@ -332,16 +332,18 @@ public class TaskFragment extends Fragment {
     }
 
     /** Sent the data of the caregivee, their name, and their rooms to the Add Task page. */
-    public void shareDataWithAddTask(){
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        SharedPreferences.Editor editor = preferences.edit();
-        Gson gson = new Gson();
-        if (caregiveeInfo != null && caregiveeRooms != null){
-            String caregiveeInfoStr = gson.toJson(caregiveeInfo);
-            String caregiveeRoomStr = gson.toJson(caregiveeRooms);
-            editor.putString("caregiveeInfo", caregiveeInfoStr);
-            editor.putString("caregiveeRoom", caregiveeRoomStr);
-            editor.apply();
+    public void shareDataWithAddTask() {
+        if (this.getContext() != null) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+            SharedPreferences.Editor editor = preferences.edit();
+            Gson gson = new Gson();
+            if (caregiveeInfo != null && caregiveeRooms != null) {
+                String caregiveeInfoStr = gson.toJson(caregiveeInfo);
+                String caregiveeRoomStr = gson.toJson(caregiveeRooms);
+                editor.putString("caregiveeInfo", caregiveeInfoStr);
+                editor.putString("caregiveeRoom", caregiveeRoomStr);
+                editor.apply();
+            }
         }
     }
 

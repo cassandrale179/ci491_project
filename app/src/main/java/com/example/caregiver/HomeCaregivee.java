@@ -77,21 +77,20 @@ public class HomeCaregivee extends Fragment {
                     caregiverNames.add(caregiverName);
                     caregiverIds.add(caregiverId);
                 }
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                        getContext(),android.R.layout.simple_list_item_1, caregiverNames);
-                list.setAdapter(arrayAdapter);
+                if(getContext() != null) {
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                            getContext(), android.R.layout.simple_list_item_1, caregiverNames);
+                    list.setAdapter(arrayAdapter);
 
-                // Set a listener when people click on item
-                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // Set a listener when people click on item
+                    list.setOnItemClickListener((parent, view1, position, id) -> {
                         String caregiverId = caregiverIds.get(position);
-                        if (caregiverId != null){
+                        if (caregiverId != null) {
                             displayCaregiver(caregiverId);
                         }
                         Log.d("error", "Can't find caregiver id.");
-                    }
-                });
+                    });
+                }
             }@Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("error", "Can't query caregivers for this caregivee");
