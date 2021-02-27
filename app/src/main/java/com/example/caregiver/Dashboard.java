@@ -16,6 +16,11 @@ public class Dashboard extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
 
     @Override
+    public void onBackPressed(){
+        bottomNavigationView.setSelectedItemId(R.id.home);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
@@ -25,18 +30,20 @@ public class Dashboard extends AppCompatActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         role = preferences.getString("userRole", "");
 
-        if (role.equals("caregiver")) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregiver()).commit();
+        // By default, the app opens the home page
+        bottomNavigationView.setSelectedItemId(R.id.home);
+
+        // Hide beacon fragment for Caregiver
+        if (role.equals("caregiver"))
+        {
             bottomNavigationView.getMenu().findItem(R.id.beacon).setVisible(false);
-        } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregivee()).commit();
         }
 
-        // When user clicks on notification intent, they are redirected to the TaskCaregivee fragment
+        // When user clicks on task notification intent, they are redirected to the TaskCaregivee fragment
         String notificationIntentFragment = getIntent().getStringExtra("fragment");
         if (notificationIntentFragment != null) {
             if (notificationIntentFragment.equals("TaskCaregivee")) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, new TaskCaregivee()).commit();
+                bottomNavigationView.setSelectedItemId(R.id.task);
             }
         }
     }
