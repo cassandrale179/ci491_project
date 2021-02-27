@@ -138,7 +138,6 @@ public class Signup extends AppCompatActivity {
 
                 if (UUIDValue != null)
                 {
-                    Log.i("UUID", UUIDValue);
                     usersRef.child(user.getUid()).child("uuid").setValue(UUIDValue);
                 }
 
