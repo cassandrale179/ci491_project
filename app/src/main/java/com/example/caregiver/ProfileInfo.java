@@ -311,7 +311,7 @@ public class ProfileInfo extends Fragment {
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear();
             editor.commit();
-            Intent i = new Intent(v.getContext(), Login.class);
+            Intent i = new Intent(v.getContext(), MainActivity.class);
             startActivity(i);
             getActivity().finish();
         }
