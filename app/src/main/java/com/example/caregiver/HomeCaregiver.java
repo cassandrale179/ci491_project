@@ -116,7 +116,7 @@ public class HomeCaregiver extends Fragment {
             if (snapshot.child("notes").getValue() != null){
                 String caregiveeNotes = snapshot.child("notes").getValue().toString();
                 args.putString("otherNotes", caregiveeNotes);
-            } 
+            }
             args.putString("otherEmail", caregiveeEmail);
             args.putString("otherName", caregiveeName);
             fragment.setArguments(args);
