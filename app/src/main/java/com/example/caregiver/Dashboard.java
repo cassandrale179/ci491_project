@@ -13,55 +13,24 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class Dashboard extends AppCompatActivity {
 
     String role;
-    private final BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = new
-            BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                    Fragment fragment = null;
-                    switch (menuItem.getItemId()) {
-                        case R.id.home:
-                            fragment = new my_caregivee();
-                            break;
-                        case R.id.task:
-                            if (role.equals("caregivee")) {
-                                fragment = new TaskCaregivee();
-                            } else {
-                                fragment = new TaskFragment();
-                            }
-                            break;
-                        case R.id.beacon:
-                            fragment = new BeaconFragment();
-                            break;
-                        case R.id.profile:
-                            fragment = new ProfileFragment();
-                            break;
-                    }
-                    getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
-                    return true;
-                }
-            };
     private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
+        bottomNavigationView = findViewById(R.id.bottomNavigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         role = preferences.getString("userRole", "");
 
-        // Set bottom navigation bar
-        bottomNavigationView = findViewById(R.id.bottomNavigation);
-      
-        if (role.equals("caregiver")){
+        if (role.equals("caregiver")) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregiver()).commit();
+            bottomNavigationView.getMenu().findItem(R.id.beacon).setVisible(false);
         } else {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregivee()).commit();
         }
-
-    }
-
 
         // When user clicks on notification intent, they are redirected to the TaskCaregivee fragment
         String notificationIntentFragment = getIntent().getStringExtra("fragment");
@@ -69,10 +38,9 @@ public class Dashboard extends AppCompatActivity {
             if (notificationIntentFragment.equals("TaskCaregivee")) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, new TaskCaregivee()).commit();
             }
-        } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new my_caregivee()).commit();
         }
     }
+    
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = new
             BottomNavigationView.OnNavigationItemSelectedListener() {
