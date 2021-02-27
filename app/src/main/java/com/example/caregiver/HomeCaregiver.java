@@ -43,6 +43,7 @@ public class HomeCaregiver extends Fragment {
     ArrayList<String> caregiveeNames  = new ArrayList<>();
     ArrayList<String> caregiveeIds = new ArrayList<>();
     DatabaseReference userRef;
+    String userId;
 
 
     public HomeCaregiver() { }
@@ -62,7 +63,7 @@ public class HomeCaregiver extends Fragment {
      */
     public void queryCaregivees() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String userId = preferences.getString("userId", "");
+        userId = preferences.getString("userId", "");
         userRef = database.child("users/" + userId);
         userRef.addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -133,11 +134,14 @@ public class HomeCaregiver extends Fragment {
      * @param groupPosition index of the caregivee in the list
      */
     public void removeCaregiveePopUp(int groupPosition){
+        DatabaseReference ref =  database.child("users");
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Want to remove " + caregiveeNames.get(groupPosition) + " from your care?")
                 .setPositiveButton("Yes", (dialog, which) ->{
                     String caregiveeId = caregiveeIds.get(groupPosition);
                     userRef.child("caregivees").child(caregiveeId).removeValue();
+                    ref.child(caregiveeId).child("caregivers").child(userId).removeValue();
+                    startActivity(new Intent(getContext(), Dashboard.class));
                 }).setNegativeButton("No", null);
         builder.create().show();
     }

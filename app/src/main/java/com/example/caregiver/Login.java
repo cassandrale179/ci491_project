@@ -90,16 +90,14 @@ public class Login extends AppCompatActivity {
                 }
                 editor.putString("userId", userId);
                 editor.apply();
+                Intent i = new Intent(Login.this, Dashboard.class);
+                startActivity(i);
             }
             @Override
             public void onCancelled(@NotNull DatabaseError databaseError) {
                 Log.d("failure", "navToDashboard: Unable to obtain user information");
             }
         });
-        Intent i = new Intent(Login.this, Dashboard.class);
-        startActivity(i);
-
-
     }
 
     /**
