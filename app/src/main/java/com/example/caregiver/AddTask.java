@@ -47,18 +47,23 @@ public class AddTask extends AppCompatActivity {
     private EditText taskNotesField;
     private String caregiverId;
     private TextView errorMessage;
-    int red;
-    int green;
 
     /**
      * Render the error and success message field.
      * @param sourceString The text message to be displayed.
-     * @param color The color for the text message (red for error, green for success).
      */
-    public void displayMessage(String sourceString, int color) {
+    public void displaySuccessMessage(String sourceString) {
+        int green = ContextCompat.getColor(getApplicationContext(), R.color.green);
         errorMessage.setText(Html.fromHtml(sourceString));
         errorMessage.setVisibility(View.VISIBLE);
-        errorMessage.setTextColor(color);
+        errorMessage.setTextColor(green);
+    }
+
+    public void displayErrorMessage(String sourceString) {
+        int red = ContextCompat.getColor(getApplicationContext(), R.color.red);
+        errorMessage.setText(Html.fromHtml(sourceString));
+        errorMessage.setVisibility(View.VISIBLE);
+        errorMessage.setTextColor(red);
     }
 
 
@@ -75,10 +80,6 @@ public class AddTask extends AppCompatActivity {
         taskNameField = (EditText) findViewById(R.id.taskName);
         taskNotesField = (EditText) findViewById(R.id.taskNotes);
         errorMessage = (TextView) findViewById(R.id.taskMessage);
-
-        // Set color
-        red = ContextCompat.getColor(getApplicationContext(), R.color.red);
-        green = ContextCompat.getColor(getApplicationContext(), R.color.green);
 
         // Handling create spinner options
         createSpinners();
@@ -145,7 +146,7 @@ public class AddTask extends AppCompatActivity {
         if (taskNameField.getText().toString().isEmpty() ||
                 roomSpinner.getSelectedItem() == null ||
                 selectedCaregiveeId == null){
-            displayMessage("Some fields are missing.", red);
+            displayErrorMessage("Some fields are missing.");
             return;
         }
 
@@ -177,11 +178,12 @@ public class AddTask extends AppCompatActivity {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
-                    displayMessage(databaseError.getMessage(), red);
+                    displayErrorMessage(databaseError.getMessage());
                 } else {
-                   displayMessage("Data saved successfully.", green);
-                   // navigate back to Dashboard
-                   startActivity(new Intent(view.getContext(), Dashboard.class));
+                   displaySuccessMessage("Data saved successfully.");
+                   if (view.getContext() != null){
+                       startActivity(new Intent(view.getContext(), Dashboard.class));
+                   }
                 }
             }
         });

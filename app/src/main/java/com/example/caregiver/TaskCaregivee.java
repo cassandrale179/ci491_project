@@ -170,29 +170,29 @@ public class TaskCaregivee extends Fragment {
             data.add(room);
         }
         final ListView list = view.findViewById(R.id.caregiveeTaskList);
-        SimpleAdapter adapter = new SimpleAdapter(
-                getActivity(), data, android.R.layout.simple_list_item_2, new String[] {
-                "title",
-                "subtitle"
-        },
-                new int[] {
-                        android.R.id.text1,
-                        android.R.id.text2
-                });
-        list.setAdapter(adapter);
+        if(getActivity() != null) {
+            SimpleAdapter adapter = new SimpleAdapter(
+                    getActivity(), data, android.R.layout.simple_list_item_2, new String[]{
+                    "title",
+                    "subtitle"
+            },
+                    new int[]{
+                            android.R.id.text1,
+                            android.R.id.text2
+                    });
+            list.setAdapter(adapter);
 
-        // Redirect to TaskSingleView page with the task data
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {@Override
-        public void onItemClick(AdapterView < ?>parent, View view, final int position, long id) {
-            Gson gson = new Gson();
-            if (taskList.get(position) != null){
-                String taskJson = gson.toJson(taskList.get(position));
-                Intent i = new Intent(view.getContext(), TaskSingleView.class);
-                i.putExtra("taskObject", taskJson);
-                startActivity(i);
-            }
+            // Redirect to TaskSingleView page with the task data
+            list.setOnItemClickListener((parent, view, position, id) -> {
+                Gson gson = new Gson();
+                if (taskList.get(position) != null) {
+                    String taskJson = gson.toJson(taskList.get(position));
+                    Intent i = new Intent(view.getContext(), TaskSingleView.class);
+                    i.putExtra("taskObject", taskJson);
+                    startActivity(i);
+                }
+            });
         }
-        });
     }
 
     @Override

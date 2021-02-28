@@ -148,7 +148,9 @@ public class BeaconRegionList extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
-                kontaktUUID = dataSnapshot.child("uuid").getValue().toString();
+                if (dataSnapshot.child("uuid").getValue() != null){
+                    kontaktUUID = dataSnapshot.child("uuid").getValue().toString();
+                }
             }
 
             @Override

@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -127,6 +128,7 @@ public class ProfileRequest extends Fragment {
             Log.e("FAIL", "approveRequest:onCancelled " + error.toException());
         }
         });
+        startActivity(new Intent(this.getContext(), Dashboard.class));
     }
 
     /**
@@ -140,11 +142,13 @@ public class ProfileRequest extends Fragment {
 
         // Add in + button to send requests to caregivee
         FloatingActionButton plusButton = view.findViewById(R.id.plusButton);
-        plusButton.setVisibility(View.VISIBLE);
-        plusButton.setOnClickListener(v ->{
-            Intent intent = new Intent(view.getContext(), Request.class);
-            startActivity(intent);
-        });
+        if(view.getContext() != null) {
+            plusButton.setVisibility(View.VISIBLE);
+            plusButton.setOnClickListener(v -> {
+                Intent intent = new Intent(view.getContext(), Request.class);
+                startActivity(intent);
+            });
+        }
     }
 
     /**
@@ -162,9 +166,8 @@ public class ProfileRequest extends Fragment {
         if (allRequests.isEmpty()) {
             TextView text = view.findViewById(R.id.profileTextLabel);
             text.setText("No more requests. You're all clear :)");
-        } else {
+        } else if(getActivity() != null) {
             arrayAdapter = new ArrayAdapter < String > (getActivity(), android.R.layout.simple_list_item_1, allRequests);
-
             list.setAdapter(arrayAdapter);
             list.setOnItemClickListener((parent, view1, position, id) ->{
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

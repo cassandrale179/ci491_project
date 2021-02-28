@@ -18,29 +18,38 @@ public class Dashboard extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
 
     @Override
+    public void onBackPressed(){
+        // minimize the app if back button is pressed while in home page
+        if (bottomNavigationView.getSelectedItemId() == R.id.home){
+            moveTaskToBack(true);
+        }
+        bottomNavigationView.setSelectedItemId(R.id.home);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        bottomNavigationView = findViewById(R.id.bottomNavigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         role = preferences.getString("userRole", "");
 
-        // Set bottom navigation bar
-        bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
+        // By default, the app opens the home page
+        bottomNavigationView.setSelectedItemId(R.id.home);
 
-        if (role.equals("caregiver")) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregiver()).commit();
+        // Hide beacon fragment for Caregiver
+        if (role.equals("caregiver"))
+        {
             bottomNavigationView.getMenu().findItem(R.id.beacon).setVisible(false);
-        } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregivee()).commit();
         }
 
-        // When user clicks on notification intent, they are redirected to the TaskCaregivee fragment
+        // When user clicks on task notification intent, they are redirected to the TaskCaregivee fragment
         String notificationIntentFragment = getIntent().getStringExtra("fragment");
         if (notificationIntentFragment != null) {
             if (notificationIntentFragment.equals("TaskCaregivee")) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, new TaskCaregivee()).commit();
+                bottomNavigationView.setSelectedItemId(R.id.task);
             }
         }
     }
