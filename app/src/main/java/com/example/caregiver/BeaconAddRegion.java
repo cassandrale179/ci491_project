@@ -103,7 +103,7 @@ public class BeaconAddRegion extends Fragment {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
                 BeaconRegionList.getInstance().createRegionMajorMap(dataSnapshot);
-                Log.i("sample", "regionMajorMap after the getUsersRegion call" + BeaconRegionList.regionMajorMap.toString());
+                Log.i("RegionMajorMap", BeaconRegionList.regionMajorMap.toString());
                 String UUIDValue = getUUIDValue(rootView);
 
                 String regionName = getRegionName(rootView);
@@ -121,6 +121,7 @@ public class BeaconAddRegion extends Fragment {
                 } else if (BeaconRegionList.regionMajorMap.containsValue(majorValue)) {
                     displayErrorMessage("This major value has already been used.", rootView);
                 } else {
+
                     displayErrorMessage("", rootView);
                     regionInfo newRegionInfo = new regionInfo(UUIDValue, regionName, majorValue);
                     updateRegionInfoInBackend(user, newRegionInfo);
@@ -192,7 +193,7 @@ public class BeaconAddRegion extends Fragment {
         DatabaseReference ref = database.child("users/" + userId);
 
         // Attach a listener to read data of user (name, email, id)
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child("uuid").getValue() != null) {
