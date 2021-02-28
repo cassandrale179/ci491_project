@@ -293,10 +293,10 @@ public class my_caregivee extends Fragment {
                         Intent intent = new Intent(getContext(), UploadMedia.class);
                         startActivity(intent);
                         break;
-                    case 3:
-                        intent = new Intent(getContext(), RemoveCaregivee.class);
-                        startActivity(intent);
-                        break;
+//                    case 3:
+//                        //intent = new Intent(getContext(), RemoveCaregivee.class);
+//                        startActivity(intent);
+//                        break;
                 }
             });
 
