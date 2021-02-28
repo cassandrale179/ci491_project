@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -79,7 +78,7 @@ public class TaskCaregivee extends Fragment {
             if (roomObject != null) {
                 Gson gson = new Gson();
                 String tasksJson = gson.toJson(roomObject);
-                taskList = createTaskList(tasksJson);
+                taskList = createTaskList(caregiveeId, tasksJson);
                 displayTaskList(taskList);
             }
         }@Override
@@ -94,7 +93,7 @@ public class TaskCaregivee extends Fragment {
      * @param roomString Json-string representation of all the rooms.
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    protected List < Task > createTaskList(String roomString) {
+    protected List < Task > createTaskList(String caregiveeId, String roomString) {
 
         // Initialize an array list that will store all tasks associated with the caregivee.
         List < Task > tasks = new ArrayList < >();
@@ -115,7 +114,6 @@ public class TaskCaregivee extends Fragment {
 
                 // For each task, put them in the Task object.
                 for (String taskId: tasksIds) {
-                    Log.d("taskId", taskId);
                     JsonObject task = tasksPerRoom.getAsJsonObject(taskId);
                     String caregiverId = task.get("caregiverID").getAsString();
                     String taskName = task.get("name").getAsString();
@@ -125,8 +123,8 @@ public class TaskCaregivee extends Fragment {
 
                     // Only assigned task where assignedStatus is equal to true
                     if (assignedStatus.equals("true")){
-                        Task t = new Task(roomStr, caregiverId, taskId, taskName,
-                                taskNote, assignedStatus, completionStatus);
+                        Task t = new Task(caregiveeId, caregiverId, taskId, taskName, taskNote,
+                                assignedStatus, completionStatus, roomStr);
                         tasks.add(t);
                     }
                 }
@@ -134,6 +132,7 @@ public class TaskCaregivee extends Fragment {
         }
         return tasks;
     }
+
 
     protected void displayTaskList(List < Task > tasks) {
         List < Map < String,  String >> data = new ArrayList < Map < String, String >> ();

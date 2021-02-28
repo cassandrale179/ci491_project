@@ -20,9 +20,9 @@ public class Task implements Parcelable {
     // Default constructor
     public Task() {};
 
-    // Alternative constructor to instantiate the task object.
+    // Alternative constructor
     public Task(String caregiveeId, String caregiverId, String taskId, String taskName, String taskNote,
-                String assignedStatus, String completionStatus, String room) {
+                String assignedStatus, String completionStatus, String roomStr) {
         this.caregiveeId = caregiveeId;
         this.caregiverId = caregiverId;
         this.taskId = taskId;
@@ -30,8 +30,9 @@ public class Task implements Parcelable {
         this.taskNote = taskNote;
         this.completionStatus = completionStatus;
         this.assignedStatus = assignedStatus;
-        this.room = room;
+        this.room = roomStr;
     }
+
 
     protected Task(Parcel in) {
         caregiveeId = in.readString();
@@ -55,6 +56,7 @@ public class Task implements Parcelable {
             return new Task[size];
         }
     };
+
 
     @Override
     public int describeContents() {
