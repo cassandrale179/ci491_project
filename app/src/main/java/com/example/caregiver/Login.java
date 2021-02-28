@@ -74,20 +74,22 @@ public class Login extends AppCompatActivity {
      * Navigates to Dashboard after successful sign in through Firebase
      */
     private void navigateToDashboard(String userId){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users/" + userId);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("userId", userId);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users/" + userId);
 
-        // Attach a listener to read name , email of user
+        // Attach a listener to read name , email and notes of user profile.
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                editor.putString("name", dataSnapshot.child("name").getValue().toString());
-                editor.putString("email", dataSnapshot.child("email").getValue().toString());
-                editor.putString("tag", dataSnapshot.child("role").getValue().toString());
+                editor.putString("userName", dataSnapshot.child("name").getValue().toString());
+                editor.putString("userEmail", dataSnapshot.child("email").getValue().toString());
+                editor.putString("userRole", dataSnapshot.child("role").getValue().toString());
+                if (dataSnapshot.child("notes").getValue() != null){
+                    editor.putString("userNotes", dataSnapshot.child("notes").getValue().toString());
+                }
+                editor.putString("userId", userId);
                 editor.apply();
-                Log.i("INFO", "navToDashboard: Added user info ");
             }
             @Override
             public void onCancelled(@NotNull DatabaseError databaseError) {

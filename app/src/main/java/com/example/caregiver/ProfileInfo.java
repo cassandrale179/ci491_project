@@ -1,17 +1,18 @@
 package com.example.caregiver;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +26,8 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,10 +42,13 @@ public class ProfileInfo extends Fragment {
     public EditText newPasswordField;
     public EditText confirmPasswordField;
     public TextView errorMessage;
+    public TextView notesField;
+    public TextView caregiveeLabel;
 
     // Variables pointing to the user
     public String currentEmail;
     public String currentName;
+    public String currentNotes;
 
     // Color for error and success message
     int red;
@@ -79,56 +80,74 @@ public class ProfileInfo extends Fragment {
 
     /**
      * This function populate the text fields on the profile info page
-     * @param view the view of the profile info page
-     * @param userId the user id of the currently logged in user
      */
-    public void displayUserInfo(View view, String userId) {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference ref = database.child("users/" + userId);
+    public void displayUserInfo() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        // Attach a listener to read data of user (name, email, id)
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                currentName = dataSnapshot.child("name").getValue().toString();
-                currentEmail = dataSnapshot.child("email").getValue().toString();
-                EditText nameField = (EditText) view.findViewById(R.id.profileName);
-                EditText emailField = (EditText) view.findViewById(R.id.profileEmail);
-                nameField.setHint(currentName);
-                emailField.setHint(currentEmail);
+        currentName = preferences.getString("userName", "N/A");
+        nameField.setHint(currentName);
 
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("failure", "Unable to obtain user information");
-            }
-        });
+        currentEmail = preferences.getString("userEmail", "N/A");
+        emailField.setHint(currentEmail);
+
+        currentNotes = preferences.getString("userNotes", "N/A");
+        notesField.setHint(currentNotes);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Get current userId
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String userId = preferences.getString("userId", "");
 
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
-        displayUserInfo(view, userId);
 
         // Get button id, text fields id and set listeners
         Button updateButton = (Button) view.findViewById(R.id.profileUpdateButton);
+        Button logoutButton = (Button) view.findViewById(R.id.logOutButton);
+        Button backButton = (Button) view.findViewById(R.id.backButton);
         updateButton.setOnClickListener(updateUserInfoListener);
+        logoutButton.setOnClickListener(logOutListener);
         nameField = (EditText) view.findViewById(R.id.profileName);
         emailField = (EditText) view.findViewById(R.id.profileEmail);
+        notesField = (EditText) view.findViewById(R.id.profileNotes);
         newPasswordField = (EditText) view.findViewById(R.id.profileNewPassword);
         confirmPasswordField = (EditText) view.findViewById(R.id.profileNewPassword2);
+        caregiveeLabel = (TextView) view.findViewById(R.id.profileTextLabel);
         errorMessage = (TextView) view.findViewById(R.id.profileInfoMessage);
-
-        // Set color
         red = view.getResources().getColor(R.color.red);
         green = view.getResources().getColor(R.color.green);
 
+        // This page is opened when user clicked on "View Profile" from the homepage.
+        Bundle args = this.getArguments();
+        if (args != null){
+            String otherName = args.getString("otherName");
+            String otherNotes = args.getString("otherNotes");
+            String otherEmail = args.getString("otherEmail");
+            nameField.setHint(otherName);
+            emailField.setHint(otherEmail);
+            notesField.setHint(otherNotes);
+
+            // Hide buttons and password field
+            updateButton.setVisibility(view.GONE);
+            logoutButton.setVisibility(view.GONE);
+            backButton.setVisibility(view.VISIBLE);
+            backButton.setOnClickListener(backtoHomePage);
+            confirmPasswordField.setVisibility(view.GONE);
+            newPasswordField.setVisibility(view.GONE);
+
+            // Set title and subtitle on profil einfo page
+            TextView caregiveeTitle = (TextView) view.findViewById(R.id.profileTitle);
+            caregiveeTitle.setText(otherName);
+            caregiveeTitle.setVisibility(view.VISIBLE);
+
+            caregiveeLabel.setText("View your caregivee profile below.");
+        }
+
+        // Called this when user open page from the navigation bar
+        else {
+            caregiveeLabel.setText("View or edit your profile below.");
+            displayUserInfo();
+        }
         return view;
     }
 
@@ -152,7 +171,7 @@ public class ProfileInfo extends Fragment {
     public void changePassword(
             FirebaseUser user, @NonNull String newPassword, @NonNull String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
-            displayMessage("Your new and confirm password must be the same.", red);
+            displayMessage("Password do not match.", red);
             return;
         }
         if (newPassword.length() < 6 || confirmPassword.length() < 6) {
@@ -213,6 +232,7 @@ public class ProfileInfo extends Fragment {
                         if (task.isSuccessful()) {
                             updateUserInformation(user);
                             displayMessage("Your profile is updated!", green);
+                            displayUserInfo();
                         } else {
                             displayMessage("Your old password is not correct.", red);
                         }
@@ -233,24 +253,33 @@ public class ProfileInfo extends Fragment {
      * @param user The current logged in Firebase user
      */
     public void updateUserInformation(@NonNull FirebaseUser user) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        SharedPreferences.Editor editor = preferences.edit();
 
         String name = nameField.getText().toString();
         String email = emailField.getText().toString();
         String newPassword = newPasswordField.getText().toString();
         String confirmPassword = confirmPasswordField.getText().toString();
+        String notes = notesField.getText().toString();
 
         if (name != null && !name.isEmpty()) {
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.child("users").child(user.getUid()).child("name").setValue(name);
-            currentName = name;
-            nameField.setHint(currentName);
+            editor.putString("userName", name);
         }
         if (!email.isEmpty()) {
             changeEmail(user, email);
+            editor.putString("userEmail", email);
         }
         if (!newPassword.isEmpty() && !confirmPassword.isEmpty()) {
             changePassword(user, newPassword, confirmPassword);
         }
+
+        if (!notes.isEmpty()){
+            rootRef.child("users").child(user.getUid()).child("notes").setValue(notes);
+            editor.putString("userNotes", notes);
+        }
+        editor.commit();
     }
 
     /**
@@ -260,6 +289,29 @@ public class ProfileInfo extends Fragment {
         @Override
         public void onClick(View v) {
             askForOldPassword();
+        }
+    };
+
+    /**
+     * Function to logout
+     */
+    private View.OnClickListener logOutListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext(), Login.class);
+            startActivity(i);
+            getActivity().finish();
+        }
+    };
+  
+    /*
+     * Function to go back. It is called when clicked on the Back button.
+     */
+    private View.OnClickListener backtoHomePage = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext(), Dashboard.class);
+            startActivity(i);
         }
     };
 }

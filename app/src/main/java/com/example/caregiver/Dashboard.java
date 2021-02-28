@@ -1,24 +1,20 @@
 package com.example.caregiver;
 
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.Set;
-
 public class Dashboard extends AppCompatActivity {
 
+    String role;
     private BottomNavigationView bottomNavigationView;
 
     @Override
@@ -26,43 +22,63 @@ public class Dashboard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        role = preferences.getString("userRole", "");
+
+        // Set bottom navigation bar
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
-    }
 
+        if (role.equals("caregiver")) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregiver()).commit();
+            bottomNavigationView.getMenu().findItem(R.id.beacon).setVisible(false);
+        } else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeCaregivee()).commit();
+        }
 
-    public void replaceActiveFragment(Fragment newFragment)
-    {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, newFragment).commit();
+        // When user clicks on notification intent, they are redirected to the TaskCaregivee fragment
+        String notificationIntentFragment = getIntent().getStringExtra("fragment");
+        if (notificationIntentFragment != null) {
+            if (notificationIntentFragment.equals("TaskCaregivee")) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, new TaskCaregivee()).commit();
+            }
+        }
     }
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = new
             BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-            Fragment fragment = null;
-            switch(menuItem.getItemId()){
-            case R.id.home:
-                //fragment = new HomeFragment();
-                fragment = new my_caregivee();
-                break;
-            case R.id.task:
-                //fragment = new TaskFragment();
-                fragment = new my_caregivee(); // For testing.
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                    Fragment fragment = null;
+                    switch (menuItem.getItemId()) {
+                        case R.id.home:
+                            if (role.equals("caregiver")) {
+                                fragment = new HomeCaregiver();
+                            } else {
+                                fragment = new HomeCaregivee();
+                            }
+                            break;
+                        case R.id.task:
+                            if (role.equals("caregivee")) {
+                                fragment = new TaskCaregivee();
+                            } else {
+                                fragment = new TaskFragment();
+                            }
+                            break;
+                        case R.id.beacon:
+                            fragment = new BeaconFragment();
+                            break;
+                        case R.id.profile:
+                            fragment = new ProfileFragment();
+                            break;
+                    }
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+                    return true;
+                }
+            };
 
-                break;
-            case R.id.beacon:
-                fragment = new BeaconFragment();
-                break;
-            case R.id.profile:
-                fragment = new ProfileFragment();
-                break;
-            }
-
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
-            return true;
-        }
-     };
+    public void replaceActiveFragment(Fragment newFragment) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, newFragment).commit();
+    }
 }

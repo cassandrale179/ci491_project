@@ -16,11 +16,13 @@ import java.util.List;
 public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
 
     private ArrayList<Integer> selectedPositions;
+    private List<T> objects;
 
     public ArrayCheckboxAdapter(Context context, int layout, List<T> array)
     {
         super(context, layout, array);
         selectedPositions = new ArrayList<>();
+        objects = array;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
         checkbox.setOnClickListener(view -> {
             if (selectedPositions.contains(position))
             {
-                selectedPositions.remove(selectedPositions.indexOf(position));
+                selectedPositions.remove((Integer)position);
             }
             else
             {
@@ -63,10 +65,20 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
     public void add(T object, boolean isSelected)
     {
         super.add(object);
-        selectedPositions.add(getPosition(object));
+        if (isSelected) {
+            selectedPositions.add(getPosition(object));
+        }
     }
 
-    public ArrayList<T> getSelectedObjects()
+    @Override
+    public void clear()
+    {
+        super.clear();
+        selectedPositions = new ArrayList<Integer>();
+    }
+
+
+    public List<T> getSelectedObjects()
     {
         ArrayList<T> retVal = new ArrayList<T>();
         for (int i : selectedPositions)
@@ -74,5 +86,10 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
             retVal.add(getItem(i));
         }
         return retVal;
+    }
+
+    public List<T> getObjects()
+    {
+        return objects;
     }
 }

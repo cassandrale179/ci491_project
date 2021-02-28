@@ -7,14 +7,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <!--    Added By Pratik-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<!--    <uses-permission android:name="android.permission.CAMERA"-->
-<!--        android:required="true"/>-->
+    <!--    <uses-permission android:name="android.permission.CAMERA"-->
+    <!--        android:required="true"/>-->
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
@@ -25,9 +24,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Caregiver">
+
         <activity android:name=".UploadMedia"></activity>
+
+        <activity android:name=".TaskFinish"></activity>
+        <activity android:name=".TaskSingleView" />
+
         <activity android:name=".ViewProgress" />
-        <activity android:name=".RemoveCaregivee" />
 
         <meta-data
             android:name="kontakt.io.API_KEY"
@@ -41,6 +44,7 @@
             android:exported="false" />
 
         <activity android:name=".AddTask" />
+        <activity android:name=".EditTask" />
         <activity android:name=".Dashboard" />
         <activity android:name=".Request" />
         <activity android:name=".Identification" />
@@ -53,6 +57,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.android.fileprovider"
