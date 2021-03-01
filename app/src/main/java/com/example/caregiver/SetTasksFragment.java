@@ -39,7 +39,7 @@ public class SetTasksFragment extends Fragment {
     private String caregiveeID;
     private ArrayList<Task> tasks;
     private String caregiverName;
-    private long numTasks = 0;
+    private int numTasks = 0;
     private int tasksAssigned = 0;
     private ArrayCheckboxAdapter<Task> listAdapter;
     private View fragmentView;
