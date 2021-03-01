@@ -90,6 +90,13 @@ public class BeaconRegionList extends Fragment {
         instance = this;
     }
 
+    /**
+     * Gets users permissions for location
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -233,6 +240,11 @@ public class BeaconRegionList extends Fragment {
         });
     }
 
+    /**
+     * Populates the local region name and major value map
+     *
+     * @param dataSnapshot
+     */
     public void createRegionMajorMap(DataSnapshot dataSnapshot) {
         Iterable<DataSnapshot> newRegions = dataSnapshot.getChildren();
         for (DataSnapshot ds : newRegions) {

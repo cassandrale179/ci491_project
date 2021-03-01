@@ -54,12 +54,24 @@ public class BeaconAddRegion extends Fragment {
         return fragment;
     }
 
+    /**
+     * Default onCreate function
+     *
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         BeaconRegionList.getInstance().getKontaktUUID();
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Default onCreateView function
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,28 +94,48 @@ public class BeaconAddRegion extends Fragment {
         return rootView;
     }
 
+    /**
+     * Returns the UUID entered by the user
+     *
+     * @param rootView
+     */
     public String getUUIDValue(View rootView) {
         UUIDField = rootView.findViewById(R.id.UUIDText);
         return UUIDField.getText().toString();
     }
 
+    /**
+     * Returns the region name entered by the user
+     *
+     * @param rootView
+     */
     public String getRegionName(View rootView) {
         regionNameField = rootView.findViewById(R.id.regionName);
         return regionNameField.getText().toString();
     }
 
+    /**
+     * Returns the major value entered by the user
+     *
+     * @param rootView
+     */
     public String getMajorValue(View rootView) {
         majorField = rootView.findViewById(R.id.major);
         return majorField.getText().toString();
     }
 
+    /**
+     * Adds the region entered by the user to the backend and sets up the region on the beacon
+     *
+     * @param user
+     * @param rootView
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addRegion(@NonNull FirebaseUser user, View rootView) {
         BeaconRegionList.getInstance().getUsersRegions(new BeaconRegionList.OnQueryCompleteListener() {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
                 BeaconRegionList.getInstance().createRegionMajorMap(dataSnapshot);
-                Log.i("RegionMajorMap", BeaconRegionList.regionMajorMap.toString());
                 String UUIDValue = getUUIDValue(rootView);
 
                 String regionName = getRegionName(rootView);
@@ -149,10 +181,22 @@ public class BeaconAddRegion extends Fragment {
         });
     }
 
+    /**
+     * Adds the region name and major value to the local map
+     *
+     * @param regionName
+     * @param majorValue
+     */
     public void updateRegionMajorMap(String regionName, String majorValue) {
         BeaconRegionList.regionMajorMap.put(regionName.toLowerCase(), majorValue);
     }
 
+    /**
+     * Adds the new region to Firebase
+     *
+     * @param user
+     * @param newRegionInfo
+     */
     public void updateRegionInfoInBackend(@NonNull FirebaseUser user, regionInfo newRegionInfo) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> newRegion = new HashMap<String, Object>();
@@ -162,12 +206,24 @@ public class BeaconAddRegion extends Fragment {
         database.child("users").child(user.getUid()).child("rooms").updateChildren(newRegion);
     }
 
+    /**
+     * Displays the error message
+     *
+     * @param sourceString
+     * @param rootView
+     */
     public void displayErrorMessage(String sourceString, View rootView) {
         TextView textView = rootView.findViewById(R.id.addRegionMessage);
         textView.setText(Html.fromHtml(sourceString));
         textView.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Updates the UUID on Firebase and reconfigures the regions for the beacon with new UUID
+     *
+     * @param user
+     * @param rootView
+     */
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void updateUuid(@NonNull FirebaseUser user, View rootView) {
         String UUIDValue = getUUIDValue(rootView);
@@ -188,6 +244,12 @@ public class BeaconAddRegion extends Fragment {
         }
     }
 
+    /**
+     * Displays the last entered UUID in the text field
+     *
+     * @param view
+     * @param userId
+     */
     public void displayUuid(View view, String userId) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference ref = database.child("users/" + userId);
