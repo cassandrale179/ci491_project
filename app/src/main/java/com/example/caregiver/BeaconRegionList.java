@@ -264,6 +264,7 @@ public class BeaconRegionList extends Fragment {
                         regionTable.removeView(rowToDelete);
                         regionTable.invalidate();
                         deleteRegionBackend((String) regionToDelete.getText());
+                        deleteRegionFromRegionMajorMap((String) regionToDelete.getText());
                         dialog.dismiss();
                         break;
 
@@ -284,6 +285,11 @@ public class BeaconRegionList extends Fragment {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference ref = database.child("users/" + user.getUid() + "/rooms/" + regionName);
         ref.removeValue();
+    }
+
+    // function to delete the region major map
+    public void deleteRegionFromRegionMajorMap(String regionName) {
+        BeaconRegionList.regionMajorMap.remove(regionName);
     }
 
     /**
