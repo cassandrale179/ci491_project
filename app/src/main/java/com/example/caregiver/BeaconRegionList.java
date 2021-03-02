@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -37,7 +38,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -51,6 +51,7 @@ import java.util.UUID;
 public class BeaconRegionList extends Fragment {
 
     public static final HashMap<String, HashMap<String, Double>> regionRssiMap = new HashMap<>();
+    public static final int LOCATION_REQUEST_CODE = 100;
     public static HashMap<String, String> regionMajorMap = new HashMap<String, String>();
     public static String regionName;
     public static String regionMajorValue;
@@ -60,8 +61,7 @@ public class BeaconRegionList extends Fragment {
     public static Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
     private static BeaconRegionList instance = null;
     public TableLayout regionTable;
-  
-    public static final int LOCATION_REQUEST_CODE = 100;
+    public TextView regionToDelete;
     private ProgressBar regionLoadingSpinner;
 
     public BeaconRegionList() {
@@ -85,7 +85,7 @@ public class BeaconRegionList extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getKontaktUUID();
-        requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
         super.onCreate(savedInstanceState);
         instance = this;
     }
@@ -101,12 +101,11 @@ public class BeaconRegionList extends Fragment {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch(requestCode){
+        switch (requestCode) {
             case LOCATION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getContext(), "Location permission granted", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
                 }
         }
@@ -129,16 +128,23 @@ public class BeaconRegionList extends Fragment {
             row.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             TextView regionField = new TextView(getActivity());
             TextView majorField = new TextView(getActivity());
+            ImageView deleteRegionButton = new ImageView(getActivity());
             regionField.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
             majorField.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+            deleteRegionButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+            regionField.setId(R.id.regionNameInTable);
             regionField.setGravity(Gravity.CENTER);
             regionField.setPadding(paddingValue, paddingValue, paddingValue, paddingValue);
             regionField.setText(regionName);
             row.addView(regionField);
+            majorField.setId(R.id.majorValueInTable);
             majorField.setGravity(Gravity.CENTER);
             majorField.setPadding(paddingValue, paddingValue, paddingValue, paddingValue);
             majorField.setText(majorValue);
             row.addView(majorField);
+            deleteRegionButton.setImageResource(R.drawable.ic_baseline_delete_24);
+            deleteRegionButton.setOnClickListener(v -> deleteRegionRow(v));
+            row.addView(deleteRegionButton);
             regionTable.addView(row);
         }
     }
@@ -155,7 +161,7 @@ public class BeaconRegionList extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child("uuid").getValue() != null){
+                if (dataSnapshot.child("uuid").getValue() != null) {
                     kontaktUUID = dataSnapshot.child("uuid").getValue().toString();
                 }
             }
@@ -240,6 +246,25 @@ public class BeaconRegionList extends Fragment {
         });
     }
 
+    public void deleteRegionRow(View v) {
+        // row is your row, the parent of the clicked button
+        View rowToDelete = (View) v.getParent();
+        TextView regionToDelete = (TextView) rowToDelete.findViewById(R.id.regionNameInTable);
+        // container contains all the rows, you could keep a variable somewhere else to the container which you can refer to here
+        ViewGroup regionTable = ((ViewGroup) rowToDelete.getParent());
+        // delete the row and invalidate your view so it gets redrawn
+        regionTable.removeView(rowToDelete);
+        regionTable.invalidate();
+        deleteRegionBackend((String) regionToDelete.getText());
+    }
+
+    public void deleteRegionBackend(String regionName) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref = database.child("users/" + user.getUid() + "/rooms/" + regionName);
+        ref.removeValue();
+    }
+
     /**
      * Populates the local region name and major value map
      *
@@ -249,7 +274,7 @@ public class BeaconRegionList extends Fragment {
         Iterable<DataSnapshot> newRegions = dataSnapshot.getChildren();
         for (DataSnapshot ds : newRegions) {
             regionName = ds.getKey();
-            Log.i("createRegionMajorMap", regionName +" : " + ds.toString());
+            Log.i("createRegionMajorMap", regionName + " : " + ds.toString());
             if (regionName != null && dataSnapshot.child(regionName).child("beaconMajor").exists()) {
                 regionMajorValue = dataSnapshot.child(regionName).child("beaconMajor").getValue().toString();
                 regionMajorMap.put(regionName.toLowerCase(), regionMajorValue);
