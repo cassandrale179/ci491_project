@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="regionField" type="id" />
+    <item name="regionNameInTable" type="id" />
+    <item name="majorValueInTable" type="id" />
+</resources>
