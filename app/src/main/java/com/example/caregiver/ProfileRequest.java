@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -46,7 +47,7 @@ public class ProfileRequest extends Fragment {
         // Required empty public constructor
     }
 
-    public static ProfileRequest newInstance(String param1, String param2) {
+    public static ProfileRequest newInstance() {
         ProfileRequest fragment = new ProfileRequest();
         return fragment;
     }
@@ -80,7 +81,7 @@ public class ProfileRequest extends Fragment {
      */
     private void approveRequest(DataSnapshot requestSnapshot) {
         String userId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userId", "");
-        String name = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("name", "");
+        String name = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userName", "");
         final DatabaseReference ref = database.child("/users/" + userId);
 
         Map < String,
@@ -127,6 +128,7 @@ public class ProfileRequest extends Fragment {
             Log.e("FAIL", "approveRequest:onCancelled " + error.toException());
         }
         });
+        startActivity(new Intent(this.getContext(), Dashboard.class));
     }
 
     /**
@@ -140,11 +142,13 @@ public class ProfileRequest extends Fragment {
 
         // Add in + button to send requests to caregivee
         FloatingActionButton plusButton = view.findViewById(R.id.plusButton);
-        plusButton.setVisibility(View.VISIBLE);
-        plusButton.setOnClickListener(v ->{
-            Intent intent = new Intent(view.getContext(), Request.class);
-            startActivity(intent);
-        });
+        if(view.getContext() != null) {
+            plusButton.setVisibility(View.VISIBLE);
+            plusButton.setOnClickListener(v -> {
+                Intent intent = new Intent(view.getContext(), Request.class);
+                startActivity(intent);
+            });
+        }
     }
 
     /**
@@ -162,9 +166,8 @@ public class ProfileRequest extends Fragment {
         if (allRequests.isEmpty()) {
             TextView text = view.findViewById(R.id.profileTextLabel);
             text.setText("No more requests. You're all clear :)");
-        } else {
+        } else if(getActivity() != null) {
             arrayAdapter = new ArrayAdapter < String > (getActivity(), android.R.layout.simple_list_item_1, allRequests);
-
             list.setAdapter(arrayAdapter);
             list.setOnItemClickListener((parent, view1, position, id) ->{
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -193,17 +196,20 @@ public class ProfileRequest extends Fragment {
 
         List < String > allRequests = new ArrayList < >();
         String userId = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userId", "");
-        String role = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("tag", "");
+        String role = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("userRole", "");
 
         DatabaseReference ref = database.child("users/" + userId + "/requests/");
         ValueEventListener valueEventListener = new ValueEventListener() {@Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
-            // If the user is caregivee, formulate list with requests & display.
+            // If the user is caregivee, remove addCaregivee button & formulate list with requests
             if (role.equals("caregivee")) {
                 allRequests.clear();
                 for (DataSnapshot postSnapshot: snapshot.getChildren()) {
                     allRequests.add(Objects.requireNonNull(postSnapshot.getValue()).toString());
                 }
+                FloatingActionButton addCaregivee = view.findViewById(R.id.plusButton);
+                addCaregivee.setVisibility(View.GONE);
+
                 displayRequestListCaregivee(view, allRequests, snapshot);
             }
             else {

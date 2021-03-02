@@ -66,7 +66,7 @@ public class Request extends AppCompatActivity {
         SharedPreferences preferences = PreferenceManager
                 .getDefaultSharedPreferences(getApplicationContext());
         String userId = preferences.getString("userId", "");
-        String name = preferences.getString("name", "");
+        String name = preferences.getString("userName", "");
         // update map & save to firebase
         map.put(caregiveeId + "/requests/" + userId, name);
         ref.updateChildren(map);

@@ -25,19 +25,16 @@ public class MainActivity extends AppCompatActivity {
 
     /** Navigation function to move to Identification Screen **/
     public void openIdentification(View v){
-        String tag = (String) v.getTag();
+        /* userRole = "caregivee" or "caregiver" */
+        String userRole = (String) v.getTag();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("role", tag);
         editor.apply();
 
         Intent i = new Intent(MainActivity.this, Identification.class);
-        i.putExtra("tag", tag);
+        i.putExtra("userRole", userRole);
         startActivity(i);
-
-
-
     }
 
 }

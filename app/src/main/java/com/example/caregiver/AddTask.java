@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,14 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
-import org.json.JSONArray;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,18 +47,23 @@ public class AddTask extends AppCompatActivity {
     private EditText taskNotesField;
     private String caregiverId;
     private TextView errorMessage;
-    int red;
-    int green;
 
     /**
      * Render the error and success message field.
      * @param sourceString The text message to be displayed.
-     * @param color The color for the text message (red for error, green for success).
      */
-    public void displayMessage(String sourceString, int color) {
+    public void displaySuccessMessage(String sourceString) {
+        int green = ContextCompat.getColor(getApplicationContext(), R.color.green);
         errorMessage.setText(Html.fromHtml(sourceString));
         errorMessage.setVisibility(View.VISIBLE);
-        errorMessage.setTextColor(color);
+        errorMessage.setTextColor(green);
+    }
+
+    public void displayErrorMessage(String sourceString) {
+        int red = ContextCompat.getColor(getApplicationContext(), R.color.red);
+        errorMessage.setText(Html.fromHtml(sourceString));
+        errorMessage.setVisibility(View.VISIBLE);
+        errorMessage.setTextColor(red);
     }
 
 
@@ -84,15 +81,11 @@ public class AddTask extends AppCompatActivity {
         taskNotesField = (EditText) findViewById(R.id.taskNotes);
         errorMessage = (TextView) findViewById(R.id.taskMessage);
 
-        // Set color
-        red = ContextCompat.getColor(getApplicationContext(), R.color.red);
-        green = ContextCompat.getColor(getApplicationContext(), R.color.green);
-
         // Handling create spinner options
         createSpinners();
 
         // navigate back to dashboard
-        Button backButton = findViewById(R.id.taskBackButton);
+        Button backButton = findViewById(R.id.taskCancelButton);
         backButton.setOnClickListener(view -> startActivity(new Intent(view.getContext(), Dashboard.class)));
     }
 
@@ -153,7 +146,7 @@ public class AddTask extends AppCompatActivity {
         if (taskNameField.getText().toString().isEmpty() ||
                 roomSpinner.getSelectedItem() == null ||
                 selectedCaregiveeId == null){
-            displayMessage("Some fields are missing.", red);
+            displayErrorMessage("Some fields are missing.");
             return;
         }
 
@@ -185,11 +178,12 @@ public class AddTask extends AppCompatActivity {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
-                    displayMessage(databaseError.getMessage(), red);
+                    displayErrorMessage(databaseError.getMessage());
                 } else {
-                   displayMessage("Data saved successfully.", green);
-                   // navigate back to Dashboard
-                   startActivity(new Intent(view.getContext(), Dashboard.class));
+                   displaySuccessMessage("Data saved successfully.");
+                   if (view.getContext() != null){
+                       startActivity(new Intent(view.getContext(), Dashboard.class));
+                   }
                 }
             }
         });

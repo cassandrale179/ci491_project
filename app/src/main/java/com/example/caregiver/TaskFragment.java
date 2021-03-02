@@ -252,16 +252,12 @@ public class TaskFragment extends Fragment {
      * @return selected task object, null if no such object exists
      */
     private Task getSelectedTask(String currCaregiveeName, String currTaskName){
-        // loop thru tasklist keys to find current caregivee Id
         for(String caregiveeId : taskList.keySet()){
-            // if we find the current caregivee
             String caregiveeName = caregiveeInfo.get(caregiveeId);
             if(caregiveeName != null && caregiveeName.equals(currCaregiveeName)
                     && taskList.containsKey(caregiveeId)){
-                // loop thru all current caregivee tasks
                 List<Task> allTasks = taskList.get(caregiveeId);
                 for(Task task : allTasks){
-                    // for the current one, set it to our currTask to pass into the intent
                     if(task.taskName.equals(currTaskName)){
                         return task;
                     }
@@ -336,16 +332,18 @@ public class TaskFragment extends Fragment {
     }
 
     /** Sent the data of the caregivee, their name, and their rooms to the Add Task page. */
-    public void shareDataWithAddTask(){
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        SharedPreferences.Editor editor = preferences.edit();
-        Gson gson = new Gson();
-        if (caregiveeInfo != null && caregiveeRooms != null){
-            String caregiveeInfoStr = gson.toJson(caregiveeInfo);
-            String caregiveeRoomStr = gson.toJson(caregiveeRooms);
-            editor.putString("caregiveeInfo", caregiveeInfoStr);
-            editor.putString("caregiveeRoom", caregiveeRoomStr);
-            editor.apply();
+    public void shareDataWithAddTask() {
+        if (this.getContext() != null) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+            SharedPreferences.Editor editor = preferences.edit();
+            Gson gson = new Gson();
+            if (caregiveeInfo != null && caregiveeRooms != null) {
+                String caregiveeInfoStr = gson.toJson(caregiveeInfo);
+                String caregiveeRoomStr = gson.toJson(caregiveeRooms);
+                editor.putString("caregiveeInfo", caregiveeInfoStr);
+                editor.putString("caregiveeRoom", caregiveeRoomStr);
+                editor.apply();
+            }
         }
     }
 

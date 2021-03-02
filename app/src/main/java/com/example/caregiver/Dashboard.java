@@ -1,54 +1,57 @@
 package com.example.caregiver;
 
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.Set;
 
 public class Dashboard extends AppCompatActivity {
 
-    private BottomNavigationView bottomNavigationView;
     String role;
+    private BottomNavigationView bottomNavigationView;
+
+    @Override
+    public void onBackPressed(){
+        // minimize the app if back button is pressed while in home page
+        if (bottomNavigationView.getSelectedItemId() == R.id.home){
+            moveTaskToBack(true);
+        }
+        bottomNavigationView.setSelectedItemId(R.id.home);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        bottomNavigationView = findViewById(R.id.bottomNavigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         role = preferences.getString("userRole", "");
 
-        // Set bottom navigation bar
-        bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavigationMethod);
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, new my_caregivee()).commit();
+        // By default, the app opens the home page
+        bottomNavigationView.setSelectedItemId(R.id.home);
+
+        // Hide beacon fragment for Caregiver
+        if (role.equals("caregiver"))
+        {
+            bottomNavigationView.getMenu().findItem(R.id.beacon).setVisible(false);
+        }
+
+        // When user clicks on task notification intent, they are redirected to the TaskCaregivee fragment
+        String notificationIntentFragment = getIntent().getStringExtra("fragment");
+        if (notificationIntentFragment != null) {
+            if (notificationIntentFragment.equals("TaskCaregivee")) {
+                bottomNavigationView.setSelectedItemId(R.id.task);
+            }
+        }
     }
-
-
-    public void replaceActiveFragment(Fragment newFragment)
-    {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, newFragment).commit();
-    }
-
+    
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = new
             BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -57,7 +60,11 @@ public class Dashboard extends AppCompatActivity {
             Fragment fragment = null;
             switch(menuItem.getItemId()){
             case R.id.home:
-                fragment = new my_caregivee();
+                if (role.equals("caregiver")){
+                    fragment = new HomeCaregiver();
+                } else {
+                    fragment = new HomeCaregivee();
+                }
                 break;
             case R.id.task:
                 if (role.equals("caregivee")){
@@ -77,4 +84,8 @@ public class Dashboard extends AppCompatActivity {
             return true;
         }
      };
+
+    public void replaceActiveFragment(Fragment newFragment) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, newFragment).commit();
+    }
 }

@@ -11,13 +11,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * DO NOT modify anything here! If you do, please talk to me first @Minh.
- * Reusable class to create the expandable list view on the Tasks page.
- * Beside the OnClickListener on child item, everything else should be reusable.
+ * Main adapter for an expandable list (used for caregiver or caregivee app)
  */
 public class MainAdapter extends BaseExpandableListAdapter {
-    // Initialize variable
-
     ArrayList<String> listGroup;
     HashMap<String,ArrayList<String>> listChild;
 
@@ -90,7 +86,7 @@ public class MainAdapter extends BaseExpandableListAdapter {
                 android.R.layout.simple_selectable_list_item, viewGroup, false);
         TextView textView = view.findViewById(android.R.id.text1);
         String sChild = String.valueOf(getChild(groupPosition, childPosition));
-        textView.setText(sChild);
+        textView.setText("    " + sChild);
         textView.setTypeface(null, Typeface.NORMAL);
 
         return view;
