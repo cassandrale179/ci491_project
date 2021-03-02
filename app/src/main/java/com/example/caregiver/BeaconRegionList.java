@@ -1,6 +1,8 @@
 package com.example.caregiver;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -247,15 +249,34 @@ public class BeaconRegionList extends Fragment {
     }
 
     public void deleteRegionRow(View v) {
-        // row is your row, the parent of the clicked button
-        View rowToDelete = (View) v.getParent();
-        TextView regionToDelete = (TextView) rowToDelete.findViewById(R.id.regionNameInTable);
-        // container contains all the rows, you could keep a variable somewhere else to the container which you can refer to here
-        ViewGroup regionTable = ((ViewGroup) rowToDelete.getParent());
-        // delete the row and invalidate your view so it gets redrawn
-        regionTable.removeView(rowToDelete);
-        regionTable.invalidate();
-        deleteRegionBackend((String) regionToDelete.getText());
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked
+                        // row is your row, the parent of the clicked button
+                        View rowToDelete = (View) v.getParent();
+                        TextView regionToDelete = (TextView) rowToDelete.findViewById(R.id.regionNameInTable);
+                        // container contains all the rows, you could keep a variable somewhere else to the container which you can refer to here
+                        ViewGroup regionTable = ((ViewGroup) rowToDelete.getParent());
+                        // delete the row and invalidate your view so it gets redrawn
+                        regionTable.removeView(rowToDelete);
+                        regionTable.invalidate();
+                        deleteRegionBackend((String) regionToDelete.getText());
+                        dialog.dismiss();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        dialog.dismiss();
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Are you sure you want to delete thus region?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
     }
 
     public void deleteRegionBackend(String regionName) {
