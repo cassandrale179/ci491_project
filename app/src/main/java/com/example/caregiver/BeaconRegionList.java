@@ -292,6 +292,7 @@ public class BeaconRegionList extends Fragment {
      * @param dataSnapshot
      */
     public void createRegionMajorMap(DataSnapshot dataSnapshot) {
+        regionMajorMap.clear();
         Iterable<DataSnapshot> newRegions = dataSnapshot.getChildren();
         for (DataSnapshot ds : newRegions) {
             regionName = ds.getKey();
