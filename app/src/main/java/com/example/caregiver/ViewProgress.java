@@ -4,11 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageButton;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -20,7 +19,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,6 +62,7 @@ public class ViewProgress extends AppCompatActivity {
                 if (roomObject != null) {
                     List<Task> taskList = Task.getAllTasks(caregiveeID, roomObject);
                     renderTaskList(taskList);
+                    renderTimeList(taskList);
                 }
             }@Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -78,7 +77,7 @@ public class ViewProgress extends AppCompatActivity {
      */
     protected void renderTaskList(List<Task> taskList){
         final ListView taskListView =  findViewById(R.id.taskList);
-        List < Map < String,  String >> data = new ArrayList < Map < String, String >> ();
+        List <Map< String,  String >> data = new ArrayList < Map < String, String >> ();
         for (Task t: taskList) {
             Map< String, String > taskItem = new HashMap< String,
                     String >(2);
@@ -109,6 +108,25 @@ public class ViewProgress extends AppCompatActivity {
      * @param taskList
      */
     protected  void renderTimeList(List<Task> taskList){
+        final ListView timeListView =  findViewById(R.id.timeList);
+        List <Map< String,  String >> data = new ArrayList < Map < String, String >> ();
+        for (Task t: taskList) {
+            Map< String, String > taskItem = new HashMap< String,
+                    String >(2);
+            taskItem.put("title", t.completionStatus);
+            taskItem.put("subtitle", ""); // we need this to align two list
+            data.add(taskItem);
+        }
 
+        SimpleAdapter adapter = new SimpleAdapter(
+                this, data, android.R.layout.simple_list_item_2, new String[]{
+                "title",
+                "subtitle"
+        },
+                new int[]{
+                        android.R.id.text1,
+                        android.R.id.text2
+                });
+        timeListView.setAdapter(adapter);
     }
 }
