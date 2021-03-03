@@ -1,62 +1,34 @@
 package com.example.caregiver;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageButton;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.example.caregiver.model.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ViewProgress extends AppCompatActivity {
     private String caregiveeName;
     private String caregiveeID;
-    private TaskAdapter listAdapter;
     final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-    enum TaskStatus {Completed, Incomplete, InProgress};
-
-    public class Task {
-
-        // TODO: Eventually this will hold data from Firebase representing a task. For now this is a
-        // dummy class so I can build a ListViewAdapter around it.
-
-        private String name;
-        private Duration timeCompleted;
-        private TaskStatus status;
-
-        public Task(String name, Duration timeCompleted, TaskStatus status)
-        {
-            this.name = name;
-            this.timeCompleted = timeCompleted;
-            this.status = status;
-        }
-
-        public String getName()
-        {
-            return this.name;
-        }
-
-        public Duration getTimeCompleted()
-        {
-            return this.timeCompleted;
-        }
-
-        public TaskStatus getStatus()
-        {
-            return this.status;
-        }
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,83 +44,89 @@ public class ViewProgress extends AppCompatActivity {
         nameText.setText("Progress chart for " + caregiveeName);
 
         // Setup back button
-        ImageButton backArrow = findViewById(R.id.backArrowButton);
-        backArrow.setOnClickListener(view ->
-        {
+        ImageView backArrow = findViewById(R.id.backArrowButton);
+        backArrow.setOnClickListener(view -> {
             onBackPressed();
         });
 
-        // Setup list view
-//        ListView list = findViewById(R.id.taskProgressList);
-//        listAdapter = new
-//                TaskAdapter(this, android.R.layout.simple_list_item_1, Task.class[]);
-//        attachTaskListToDB();
-//        list.setAdapter(listAdapter);
-
+        loadCaregiveesTask();
     }
 
-    private Task[] getRoomTasks(DataSnapshot roomSnapshot)
-    {
-        ArrayList<Task> tasks = new ArrayList<>();
-        for (DataSnapshot task : roomSnapshot.child("tasks").getChildren())
-        {
-            String name = task.child("name").getValue().toString();
-
-            // Get the most recent progress
-            int progressTime = -1, progressDuration = -1;
-            for (DataSnapshot progress : task.child("progress").getChildren())
-            {
-                int currTime = -1;
-                int currDuration = -1;
-                try {
-                    currTime = Integer.parseInt(progress.getKey());
-                    currDuration = Integer.parseInt((String)progress.getValue());
-                }
-                catch (NumberFormatException e) {
-                    // The data in the database is malformed somehow.
-                    // For now just leave currTime and currProgress as -1 and we'll display
-                    // N/A on the frontend.
-                    // FIXME: Do real error handling here
-                }
-                if (currTime > progressTime)
-                {
-                    progressTime = currTime;
-                    progressDuration = currDuration;
-                }
-            }
-            String room = roomSnapshot.getKey();
-            TaskStatus status = task.child("completionStatus").getValue().equals("complete") ? TaskStatus.Completed : TaskStatus.Incomplete;
-            Task t = new Task(name,
-                    progressDuration == -1 ? null : Duration.ofSeconds(progressDuration),
-                    status);
-            tasks.add(t);
-        }
-        return tasks.toArray(new Task[tasks.size()]);
-    }
-
-    public void attachTaskListToDB()
-    {
-        final DatabaseReference tasks = database.child("/users/" + caregiveeID + "/rooms");
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
+    /** Loads all tasks associated with this caregivee */
+    protected void loadCaregiveesTask() {
+        final DatabaseReference ref= database.child("/users/" + caregiveeID);
+        ref.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)@Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listAdapter.clear();
-                for (DataSnapshot roomSnapshot: snapshot.getChildren())
-                {
-                    Task[] tasks = getRoomTasks(roomSnapshot);
-                    for (Task task : tasks)
-                    {
-                        listAdapter.add(task);
-                    }
+                Object roomObject = snapshot.child("rooms").getValue();
+                if (roomObject != null) {
+                    List<Task> taskList = Task.getAllTasks(caregiveeID, roomObject);
+                    renderTaskList(taskList);
+                    renderTimeList(taskList);
                 }
-                listAdapter.notifyDataSetChanged();
-            }
-
-            @Override
+            }@Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("FAIL", "getAllTasks:onCancelled", error.toException());
+                Log.d("error", "Can't query caregivees for this caregiver");
             }
-        };
-        tasks.addValueEventListener(valueEventListener);
+        });
+    }
+
+    /**
+     * Render the list on the left to display tasks a caregivee have completed
+     * @param taskList A list of task objects the caregivee have completed.
+     */
+    protected void renderTaskList(List<Task> taskList){
+        final ListView taskListView =  findViewById(R.id.taskList);
+        List <Map< String,  String >> data = new ArrayList < Map < String, String >> ();
+        for (Task t: taskList) {
+            Map< String, String > taskItem = new HashMap< String,
+                    String >(2);
+            taskItem.put("title", t.taskName);
+            if (t.timeCompleted != -1){
+                String sub = "Time completed: " + t.timeCompleted + " seconds";
+                taskItem.put("subtitle", sub);
+            } else {
+                taskItem.put("subtitle", "Time completed: N/A");
+            }
+            data.add(taskItem);
+        }
+
+        SimpleAdapter adapter = new SimpleAdapter(
+                this, data, android.R.layout.simple_list_item_2, new String[]{
+                "title",
+                "subtitle"
+        },
+                new int[]{
+                        android.R.id.text1,
+                        android.R.id.text2
+                });
+        taskListView.setAdapter(adapter);
+    }
+
+    /**
+     * Render the list on the right to display status of completed task
+     * @param taskList
+     */
+    protected  void renderTimeList(List<Task> taskList){
+        final ListView timeListView =  findViewById(R.id.timeList);
+        List <Map< String,  String >> data = new ArrayList < Map < String, String >> ();
+        for (Task t: taskList) {
+            Map< String, String > taskItem = new HashMap< String,
+                    String >(2);
+            taskItem.put("title", t.completionStatus);
+            taskItem.put("subtitle", ""); // we need this to align two list
+            data.add(taskItem);
+        }
+
+        SimpleAdapter adapter = new SimpleAdapter(
+                this, data, android.R.layout.simple_list_item_2, new String[]{
+                "title",
+                "subtitle"
+        },
+                new int[]{
+                        android.R.id.text1,
+                        android.R.id.text2
+                });
+        timeListView.setAdapter(adapter);
     }
 }
