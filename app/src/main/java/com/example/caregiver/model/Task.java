@@ -86,34 +86,28 @@ public class Task implements Parcelable {
         dest.writeString(room);
     }
 
-    /**
-     * Returns all tasks associated with that caregivee that is assigned to them.
-     * @param caregiveeId the String that represent the caregivee ID
-     * @param firebaseRooms this object contains all data under users/caregiveeID/rooms
-     */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public static List< Task > getAssignedTaskList(String caregiveeId, Object firebaseRooms) {
+    private static List < Task > getAllTasks(String caregiveeId, Object firebaseRooms) {
         Gson gson = new Gson();
 
         // Initialize an array list that will store all tasks associated with the caregivee.
-        List < Task > tasks = new ArrayList< >();
+        List<Task> tasks = new ArrayList<>();
 
         // Parse the roomString to return a json Object representation.
         JsonParser parser = new JsonParser();
         JsonObject roomObject = (JsonObject) parser.parse(gson.toJson(firebaseRooms));
-        List < String > rooms = roomObject.entrySet().stream().map(
-                i ->i.getKey()).collect(Collectors.toCollection(ArrayList::new));
+        List<String> rooms = roomObject.entrySet().stream().map(
+                i -> i.getKey()).collect(Collectors.toCollection(ArrayList::new));
 
         // For each room, get their corresponding tasks
-        for (String roomStr: rooms) {
+        for (String roomStr : rooms) {
             JsonObject singleRoom = roomObject.getAsJsonObject(roomStr);
             JsonObject tasksPerRoom = singleRoom.getAsJsonObject("tasks");
             if (tasksPerRoom != null) {
-                List < String > tasksIds = tasksPerRoom.entrySet().stream().map(
-                        i ->i.getKey()).collect(Collectors.toCollection(ArrayList::new));
+                List<String> tasksIds = tasksPerRoom.entrySet().stream().map(
+                        i -> i.getKey()).collect(Collectors.toCollection(ArrayList::new));
 
                 // For each task, put them in the Task object.
-                for (String taskId: tasksIds) {
+                for (String taskId : tasksIds) {
                     JsonObject task = tasksPerRoom.getAsJsonObject(taskId);
                     String caregiverId = task.get("caregiverID").getAsString();
                     String taskName = task.get("name").getAsString();
@@ -121,15 +115,30 @@ public class Task implements Parcelable {
                     String assignedStatus = task.get("assignedStatus").getAsString();
                     String completionStatus = task.get("completionStatus").getAsString();
 
-                    // Only assigned task where assignedStatus is equal to true
-                    if (assignedStatus.equals("true")){
-                        Task t = new Task(caregiveeId, caregiverId, taskId, taskName, taskNote,
-                                assignedStatus, completionStatus, roomStr);
-                        tasks.add(t);
-                    }
+                    Task t = new Task(caregiveeId, caregiverId, taskId, taskName, taskNote,
+                            assignedStatus, completionStatus, roomStr);
+                    tasks.add(t);
+
                 }
             }
         }
         return tasks;
+    }
+
+    /**
+     * Returns all tasks associated with that caregivee that is assigned to them.
+     * @param caregiveeId the String that represent the caregivee ID
+     * @param firebaseRooms this object contains all data under users/caregiveeID/rooms
+     */
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static List< Task > getAssignedTaskList(String caregiveeId, Object firebaseRooms) {
+        List<Task> assignedTasks = new ArrayList<>();
+        List<Task> tasks = getAllTasks(caregiveeId, firebaseRooms);
+        for (Task task : tasks){
+            if (task.assignedStatus.equals("true")){
+                assignedTasks.add(task);
+            }
+        }
+        return assignedTasks;
     }
 }

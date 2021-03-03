@@ -4,10 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -19,15 +17,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ViewProgress extends AppCompatActivity {
     private String caregiveeName;
     private String caregiveeID;
     final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-    enum TaskStatus {Completed, Incomplete, InProgress};
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +57,9 @@ public class ViewProgress extends AppCompatActivity {
                 Object roomObject = snapshot.child("rooms").getValue();
                 if (roomObject != null) {
                     List<Task> taskList = Task.getAssignedTaskList(caregiveeID, roomObject);
+                    for (Task t : taskList){
+                        Log.d("t", t.taskName);
+                    }
                 }
             }@Override
             public void onCancelled(@NonNull DatabaseError error) {
