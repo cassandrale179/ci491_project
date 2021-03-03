@@ -87,12 +87,12 @@ public class Task implements Parcelable {
     }
 
     /**
-     * Returns all tasks associated with that caregivee.
+     * Returns all tasks associated with that caregivee that is assigned to them.
      * @param caregiveeId the String that represent the caregivee ID
-     * @param roomString Json-string representation of all the rooms.
+     * @param firebaseRooms this object contains all data under users/caregiveeID/rooms
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static List< Task > getTaskList(String caregiveeId, Object firebaseRooms) {
+    public static List< Task > getAssignedTaskList(String caregiveeId, Object firebaseRooms) {
         Gson gson = new Gson();
 
         // Initialize an array list that will store all tasks associated with the caregivee.

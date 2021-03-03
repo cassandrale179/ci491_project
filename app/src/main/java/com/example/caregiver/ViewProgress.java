@@ -60,13 +60,8 @@ public class ViewProgress extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)@Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Object roomObject = snapshot.child("rooms").getValue();
-                Log.d("call!", "this is call!");
                 if (roomObject != null) {
-                    List<Task> taskList = Task.getTaskList(caregiveeID, roomObject);
-                    Log.d("length", String.valueOf(taskList.size()));
-                    for (Task t : taskList){
-                        Log.d("taskName", t.taskName);
-                    }
+                    List<Task> taskList = Task.getAssignedTaskList(caregiveeID, roomObject);
                 }
             }@Override
             public void onCancelled(@NonNull DatabaseError error) {

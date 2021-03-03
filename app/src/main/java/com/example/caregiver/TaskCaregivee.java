@@ -76,7 +76,7 @@ public class TaskCaregivee extends Fragment {
         public void onDataChange(@NonNull DataSnapshot snapshot) {
             Object roomObject = snapshot.child("rooms").getValue();
             if (roomObject != null) {
-                taskList = Task.getTaskList(caregiveeId, roomObject);
+                taskList = Task.getAssignedTaskList(caregiveeId, roomObject);
                 displayTaskList(taskList);
             }
         }@Override
