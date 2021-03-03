@@ -11,15 +11,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.ListAdapter;
 
 import java.time.Duration;
 import java.time.Period;
-import java.util.List;
+import java.util.List;d
 
-public class TaskAdapter extends ArrayAdapter<Task> {
-
+public class TaskAdapter extends ArrayAdapter<ViewProgress.Task> {
     public TaskAdapter(Context context, int layout, List<Task> array)
+
+    public TaskAdapter(Context context, int layout, ViewProgress.Task[] array)
     {
         super(context, layout, array);
     }
@@ -27,7 +27,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     @Override
     public View getView (int position, View convertView, ViewGroup parent)
     {
-        Task t = getItem(position);
+        ViewProgress.Task t = getItem(position);
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER);
@@ -82,7 +82,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
         //add the Completion status to the right side of the row
         TextView status = new TextView(getContext());
-        if (t.getStatus() == TaskStatus.InProgress)
+        if (t.getStatus() == ViewProgress.TaskStatus.InProgress)
         {
             status.setText("In Progress");
         }
@@ -100,9 +100,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
     public String durationToString(Duration d)
     {
-        // Helper method to convert Duration to human-readable strings. Since toString() yields
-        // an ISO-8601 format time, which is not easily readable.
-
+       
         if (d == null) {
             return "N/A";
         }
