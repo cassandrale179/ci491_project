@@ -3,17 +3,34 @@ package com.example.caregiver.model;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.caregiver.ViewProgress;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+
 
 
 /** This represents a single task object
@@ -28,6 +45,8 @@ public class Task implements Parcelable {
     public String assignedStatus; /* true = task assigned to caregivee to do, false otherwise*/
     public String completionStatus; /* caregivee complete the tasks (complete), incomplete otherwise */
     public String room; /* room in which task was assigned */
+    public int timeCompleted = -1; /* (optional) time take to complete a task in seconds */
+    public long dateCompleted = -1; /* (optional) DATE when a task was completed in EpochTime */
 
     // Default constructor
     public Task() {};
@@ -45,6 +64,10 @@ public class Task implements Parcelable {
         this.room = roomStr;
     }
 
+    // Alternative constructor for completed task
+    public void setTimeCompleted(int timeCompleted) {
+        this.timeCompleted = timeCompleted;
+    }
 
     protected Task(Parcel in) {
         caregiveeId = in.readString();
@@ -87,6 +110,11 @@ public class Task implements Parcelable {
         dest.writeString(room);
     }
 
+    /**
+     * Returns all tasks associated with that caregivee.
+     * @param caregiveeId the String that represent the caregivee ID
+     * @param firebaseRooms this object contains all data under users/caregiveeID/rooms
+     */
     private static List < Task > getAllTasks(String caregiveeId, Object firebaseRooms) {
         Gson gson = new Gson();
 
@@ -109,6 +137,7 @@ public class Task implements Parcelable {
 
                 // For each task, put them in the Task object.
                 for (String taskId : tasksIds) {
+
                     JsonObject task = tasksPerRoom.getAsJsonObject(taskId);
                     String caregiverId = task.get("caregiverID").getAsString();
                     String taskName = task.get("name").getAsString();
@@ -118,12 +147,44 @@ public class Task implements Parcelable {
 
                     Task t = new Task(caregiveeId, caregiverId, taskId, taskName, taskNote,
                             assignedStatus, completionStatus, roomStr);
-                    tasks.add(t);
 
+                    // If task is completed, set the time and date when task is completed.
+                    if (completionStatus.equals("complete")){
+                        if (task.get("progress") != null){
+                            JsonObject progress = task.get("progress").getAsJsonObject();
+                            setCompletionDateAndTime(progress, t);
+                        }
+                    }
+                    tasks.add(t);
                 }
             }
         }
         return tasks;
+    }
+
+    /**
+     * Set the time and date when a task is completed
+     * @param progress the progress object that store all time and date when user complete tasks.
+     * @param task the task object that contains the progress object.
+     */
+    protected static void setCompletionDateAndTime(JsonObject progress, Task task){
+        int completionTime = -1;
+        long completionDate = -1;
+
+        // Since user complete a task MULTIPLE times, we want to get the last
+        // date when the user complete a task.
+        Set<Map.Entry<String, JsonElement>> entries = progress.entrySet();
+        for (Map.Entry<String, JsonElement> entry: entries) {
+            if (entry.getKey().matches("-?\\d+")){ // check if key is an integer
+                long epochDate = Long.valueOf(entry.getKey());
+                if (epochDate > completionDate){
+                    completionDate = epochDate;
+                    completionTime = Integer.valueOf(entry.getValue().toString());
+                }
+            }
+        }
+        task.dateCompleted = completionDate;
+        task.timeCompleted = completionTime;
     }
 
     /**
@@ -144,7 +205,7 @@ public class Task implements Parcelable {
     }
 
     /**
-     * Returns all tasks associated with that caregivee that has been completed
+     * Returns all tasks associated with that caregivee that has been completed.
      * @param caregiveeId the String that represent the caregivee ID
      * @param firebaseRooms this object contains all data under users/caregiveeID/rooms
      */
@@ -159,17 +220,4 @@ public class Task implements Parcelable {
         }
         return completedTasks;
     }
-
-    /**
-     * Return the progress for a task by date (if the date is Feb. 8, return the time a caregivee
-     * has completed the task on Feb 8.
-     * @param taskId the task Id
-     * @param date the current date, in epoch time format
-     * @return
-     */
-    public static HashMap<String, String> getTaskProgress(String taskId, String date){
-        
-        return null;
-    }
-
 }

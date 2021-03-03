@@ -15,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class ViewProgress extends AppCompatActivity {
     private String caregiveeName;
     private String caregiveeID;
     final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,6 @@ public class ViewProgress extends AppCompatActivity {
         });
 
         loadCaregiveesTask();
-
     }
 
     /** Loads all tasks associated with this caregivee */
@@ -57,7 +58,8 @@ public class ViewProgress extends AppCompatActivity {
                 if (roomObject != null) {
                     List<Task> taskList = Task.getCompletedTaskList(caregiveeID, roomObject);
                     for (Task t : taskList){
-                        Log.d("t", t.taskName);
+                        Log.d("completionDate", String.valueOf(t.dateCompleted));
+                        Log.d("completionTime", String.valueOf(t.timeCompleted));
                     }
                 }
             }@Override
