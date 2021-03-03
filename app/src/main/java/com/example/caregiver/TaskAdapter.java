@@ -14,10 +14,9 @@ import android.widget.TextView;
 
 import java.time.Duration;
 import java.time.Period;
-import java.util.List;d
+import java.util.List;
 
 public class TaskAdapter extends ArrayAdapter<ViewProgress.Task> {
-    public TaskAdapter(Context context, int layout, List<Task> array)
 
     public TaskAdapter(Context context, int layout, ViewProgress.Task[] array)
     {

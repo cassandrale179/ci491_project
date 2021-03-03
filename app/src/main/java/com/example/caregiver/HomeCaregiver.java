@@ -164,8 +164,8 @@ public class HomeCaregiver extends Fragment {
                     break;
                 case 2:
                     Intent i = new Intent(getContext(), ViewProgress.class);
-                    i.putExtra("caregiveeName", caregiveeNames.get(groupPosition));
-                    i.putExtra("caregiveeID", caregiveeIds.get(groupPosition));
+                    i.putExtra("caregiveeName", caregivees.get(groupPosition).name);
+                    i.putExtra("caregiveeID", caregivees.get(groupPosition).id);
                     startActivity(i);
                     break;
                 case 3:
