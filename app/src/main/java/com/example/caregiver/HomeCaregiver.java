@@ -163,7 +163,10 @@ public class HomeCaregiver extends Fragment {
                     ((Dashboard)getActivity()).replaceActiveFragment(new SetTasksFragment(caregivees.get(groupPosition).id));
                     break;
                 case 2:
-                    startActivity(new Intent(getContext(), ViewProgress.class));
+                    Intent i = new Intent(getContext(), ViewProgress.class);
+                    i.putExtra("caregiveeName", caregiveeNames.get(groupPosition));
+                    i.putExtra("caregiveeID", caregiveeIds.get(groupPosition));
+                    startActivity(i);
                     break;
                 case 3:
                     removeCaregiveePopUp(groupPosition);

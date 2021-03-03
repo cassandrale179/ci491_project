@@ -31,20 +31,69 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="VIEW PROGRESS"
-            android:textSize="40dp"/>
+            android:textSize="40sp"/>
 
         <TextView
-            android:id="@+id/textView8"
+            android:id="@+id/progressNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Progress chart for John Smith"
-            android:textSize="17dp"
+            android:text="Progress chart for"
+            android:textSize="17sp"
             android:textStyle="italic"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
 
         <ListView
             android:id = "@+id/taskProgressList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content" >
+
+        </ListView>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:text="Email today's progress to" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_weight="0.5"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:text="All Caregivers"
+                android:layout_marginHorizontal="10dp"/>
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_weight="0.5"
+                android:backgroundTint="@color/teal_700"
+                android:textAllCaps="false"
+                android:textSize="20sp"
+                android:text="Myself"
+                android:layout_marginHorizontal="10dp"/>
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

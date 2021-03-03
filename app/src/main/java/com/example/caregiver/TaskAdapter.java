@@ -13,8 +13,11 @@ import android.widget.TextView;
 
 
 import java.time.Duration;
+import java.time.Period;
+import java.util.List;d
 
 public class TaskAdapter extends ArrayAdapter<ViewProgress.Task> {
+    public TaskAdapter(Context context, int layout, List<Task> array)
 
     public TaskAdapter(Context context, int layout, ViewProgress.Task[] array)
     {
@@ -97,9 +100,7 @@ public class TaskAdapter extends ArrayAdapter<ViewProgress.Task> {
 
     public String durationToString(Duration d)
     {
-        // Helper method to convert Duration to human-readable strings. Since toString() yields
-        // an ISO-8601 format time, which is not easily readable.
-
+       
         if (d == null) {
             return "N/A";
         }
@@ -121,4 +122,5 @@ public class TaskAdapter extends ArrayAdapter<ViewProgress.Task> {
 
         return s;
     }
+
 }

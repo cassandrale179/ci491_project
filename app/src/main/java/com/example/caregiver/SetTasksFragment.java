@@ -86,7 +86,8 @@ public class SetTasksFragment extends Fragment {
         {
             String name = task.child("name").getValue().toString();
             String id = task.getKey();
-            boolean status = task.child("assignedStatus").getValue().equals(true);
+            boolean status = task.child("assignedStatus").getValue().equals(true) ||
+                    task.child("assignedStatus").getValue().equals("true");
             String room = roomSnapshot.getKey();
             Task t = new Task(id, name, status, room);
             tasks.add(t);
