@@ -115,7 +115,7 @@ public class Task implements Parcelable {
      * @param caregiveeId the String that represent the caregivee ID
      * @param firebaseRooms this object contains all data under users/caregiveeID/rooms
      */
-    private static List < Task > getAllTasks(String caregiveeId, Object firebaseRooms) {
+    public static List < Task > getAllTasks(String caregiveeId, Object firebaseRooms) {
         Gson gson = new Gson();
 
         // Initialize an array list that will store all tasks associated with the caregivee.
@@ -163,31 +163,6 @@ public class Task implements Parcelable {
     }
 
     /**
-     * Set the time and date when a task is completed
-     * @param progress the progress object that store all time and date when user complete tasks.
-     * @param task the task object that contains the progress object.
-     */
-    protected static void setCompletionDateAndTime(JsonObject progress, Task task){
-        int completionTime = -1;
-        long completionDate = -1;
-
-        // Since user complete a task MULTIPLE times, we want to get the last
-        // date when the user complete a task.
-        Set<Map.Entry<String, JsonElement>> entries = progress.entrySet();
-        for (Map.Entry<String, JsonElement> entry: entries) {
-            if (entry.getKey().matches("-?\\d+")){ // check if key is an integer
-                long epochDate = Long.valueOf(entry.getKey());
-                if (epochDate > completionDate){
-                    completionDate = epochDate;
-                    completionTime = Integer.valueOf(entry.getValue().toString());
-                }
-            }
-        }
-        task.dateCompleted = completionDate;
-        task.timeCompleted = completionTime;
-    }
-
-    /**
      * Returns all tasks associated with that caregivee that is assigned to them.
      * @param caregiveeId the String that represent the caregivee ID
      * @param firebaseRooms this object contains all data under users/caregiveeID/rooms
@@ -220,4 +195,30 @@ public class Task implements Parcelable {
         }
         return completedTasks;
     }
+
+    /**
+     * Set the time and date when a task is completed
+     * @param progress the progress object that store all time and date when user complete tasks.
+     * @param task the task object that contains the progress object.
+     */
+    protected static void setCompletionDateAndTime(JsonObject progress, Task task){
+        int completionTime = -1;
+        long completionDate = -1;
+
+        // Since user complete a task MULTIPLE times, we want to get the last
+        // date when the user complete a task.
+        Set<Map.Entry<String, JsonElement>> entries = progress.entrySet();
+        for (Map.Entry<String, JsonElement> entry: entries) {
+            if (entry.getKey().matches("-?\\d+")){ // check if key is an integer
+                long epochDate = Long.valueOf(entry.getKey());
+                if (epochDate > completionDate){
+                    completionDate = epochDate;
+                    completionTime = Integer.valueOf(entry.getValue().toString());
+                }
+            }
+        }
+        task.dateCompleted = completionDate;
+        task.timeCompleted = completionTime;
+    }
+
 }
