@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -141,4 +142,34 @@ public class Task implements Parcelable {
         }
         return assignedTasks;
     }
+
+    /**
+     * Returns all tasks associated with that caregivee that has been completed
+     * @param caregiveeId the String that represent the caregivee ID
+     * @param firebaseRooms this object contains all data under users/caregiveeID/rooms
+     */
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static List< Task > getCompletedTaskList(String caregiveeId, Object firebaseRooms) {
+        List<Task> completedTasks = new ArrayList<>();
+        List<Task> tasks = getAllTasks(caregiveeId, firebaseRooms);
+        for (Task task : tasks){
+            if (task.completionStatus.equals("complete")){
+                completedTasks.add(task);
+            }
+        }
+        return completedTasks;
+    }
+
+    /**
+     * Return the progress for a task by date (if the date is Feb. 8, return the time a caregivee
+     * has completed the task on Feb 8.
+     * @param taskId the task Id
+     * @param date the current date, in epoch time format
+     * @return
+     */
+    public static HashMap<String, String> getTaskProgress(String taskId, String date){
+        
+        return null;
+    }
+
 }

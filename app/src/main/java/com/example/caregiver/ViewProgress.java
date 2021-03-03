@@ -47,7 +47,6 @@ public class ViewProgress extends AppCompatActivity {
 
     }
 
-
     /** Loads all tasks associated with this caregivee */
     protected void loadCaregiveesTask() {
         final DatabaseReference ref= database.child("/users/" + caregiveeID);
@@ -56,7 +55,7 @@ public class ViewProgress extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Object roomObject = snapshot.child("rooms").getValue();
                 if (roomObject != null) {
-                    List<Task> taskList = Task.getAssignedTaskList(caregiveeID, roomObject);
+                    List<Task> taskList = Task.getCompletedTaskList(caregiveeID, roomObject);
                     for (Task t : taskList){
                         Log.d("t", t.taskName);
                     }
