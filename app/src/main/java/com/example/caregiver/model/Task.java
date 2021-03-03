@@ -1,7 +1,18 @@
 package com.example.caregiver.model;
 
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import androidx.annotation.RequiresApi;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /** This represents a single task object
@@ -73,5 +84,52 @@ public class Task implements Parcelable {
         dest.writeString(assignedStatus);
         dest.writeString(completionStatus);
         dest.writeString(room);
+    }
+
+    /**
+     * Returns all tasks associated with that caregivee.
+     * @param caregiveeId the String that represent the caregivee ID
+     * @param roomString Json-string representation of all the rooms.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static List< Task > getTaskList(String caregiveeId, Object firebaseRooms) {
+        Gson gson = new Gson();
+
+        // Initialize an array list that will store all tasks associated with the caregivee.
+        List < Task > tasks = new ArrayList< >();
+
+        // Parse the roomString to return a json Object representation.
+        JsonParser parser = new JsonParser();
+        JsonObject roomObject = (JsonObject) parser.parse(gson.toJson(firebaseRooms));
+        List < String > rooms = roomObject.entrySet().stream().map(
+                i ->i.getKey()).collect(Collectors.toCollection(ArrayList::new));
+
+        // For each room, get their corresponding tasks
+        for (String roomStr: rooms) {
+            JsonObject singleRoom = roomObject.getAsJsonObject(roomStr);
+            JsonObject tasksPerRoom = singleRoom.getAsJsonObject("tasks");
+            if (tasksPerRoom != null) {
+                List < String > tasksIds = tasksPerRoom.entrySet().stream().map(
+                        i ->i.getKey()).collect(Collectors.toCollection(ArrayList::new));
+
+                // For each task, put them in the Task object.
+                for (String taskId: tasksIds) {
+                    JsonObject task = tasksPerRoom.getAsJsonObject(taskId);
+                    String caregiverId = task.get("caregiverID").getAsString();
+                    String taskName = task.get("name").getAsString();
+                    String taskNote = task.get("notes").getAsString();
+                    String assignedStatus = task.get("assignedStatus").getAsString();
+                    String completionStatus = task.get("completionStatus").getAsString();
+
+                    // Only assigned task where assignedStatus is equal to true
+                    if (assignedStatus.equals("true")){
+                        Task t = new Task(caregiveeId, caregiverId, taskId, taskName, taskNote,
+                                assignedStatus, completionStatus, roomStr);
+                        tasks.add(t);
+                    }
+                }
+            }
+        }
+        return tasks;
     }
 }
