@@ -11,13 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
 import java.time.Duration;
-import java.time.Period;
-import java.util.List;
 
 public class TaskAdapter extends ArrayAdapter<ViewProgress.Task> {
-
     public TaskAdapter(Context context, int layout, ViewProgress.Task[] array)
     {
         super(context, layout, array);
@@ -99,7 +95,7 @@ public class TaskAdapter extends ArrayAdapter<ViewProgress.Task> {
 
     public String durationToString(Duration d)
     {
-       
+
         if (d == null) {
             return "N/A";
         }

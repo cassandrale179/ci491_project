@@ -81,7 +81,7 @@ public class ViewProgress extends AppCompatActivity {
         // Setup list view
 //        ListView list = findViewById(R.id.taskProgressList);
 //        listAdapter = new
-//                TaskAdapter(this, android.R.layout.simple_list_item_1, new ArrayList<>());
+//                TaskAdapter(this, android.R.layout.simple_list_item_1, Task.class[]);
 //        attachTaskListToDB();
 //        list.setAdapter(listAdapter);
 
