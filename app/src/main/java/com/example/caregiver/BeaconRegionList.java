@@ -79,6 +79,14 @@ public class BeaconRegionList extends Fragment {
         return instance;
     }
 
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        if (isVisibleToUser) {
+//            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
+//        }
+//    }
+
     /**
      * Default onCreate function
      *
@@ -254,7 +262,6 @@ public class BeaconRegionList extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        //Yes button clicked
                         // row is your row, the parent of the clicked button
                         View rowToDelete = (View) v.getParent();
                         TextView regionToDelete = (TextView) rowToDelete.findViewById(R.id.regionNameInTable);
@@ -269,7 +276,6 @@ public class BeaconRegionList extends Fragment {
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
-                        //No button clicked
                         dialog.dismiss();
                         break;
                 }

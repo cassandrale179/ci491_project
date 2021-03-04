@@ -51,6 +51,7 @@ public class BeaconFragment extends Fragment {
 
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         ViewPager viewPager = view.findViewById(R.id.view_pager);
+        viewPager.setOffscreenPageLimit(0);
         prepareViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         return view;
