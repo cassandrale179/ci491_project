@@ -65,7 +65,7 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
     public void displayUserInfo() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         caregiverId =  preferences.getString("userId", "");
-        Log.d("tag","CaregiverId"+caregiverId);
+        //Log.d("tag","CaregiverId"+caregiverId);
     }
 
 
