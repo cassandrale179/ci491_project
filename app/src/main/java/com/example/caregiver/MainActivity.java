@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = preferences.edit();
         editor.apply();
 
-        Intent i = new Intent(MainActivity.this, Identification.class);
-        i.putExtra("userRole", userRole);
+        Intent intent = new Intent(MainActivity.this, Identification.class);
+        intent.putExtra("userRole", userRole);
         startActivity(i);
     }
 }
