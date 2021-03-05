@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.caregiver.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -34,18 +35,6 @@ public class Signup extends AppCompatActivity {
     private FirebaseAuth mAuth;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private final DatabaseReference ref = database.getReference("");
-
-    /** Initialize a user class to store their info **/
-    public class User {
-        public String name;
-        public String email;
-        public String role;
-        public User(String name, String email, String role) {
-            this.name = name;
-            this.email = email;
-            this.role = role;
-        }
-    }
 
 
     @Override
