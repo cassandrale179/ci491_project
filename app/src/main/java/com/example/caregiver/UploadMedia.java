@@ -179,7 +179,7 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
             imageFileName = "JPEG_" + timeStamp + "_";
 
             uploadingFilename = uploadingFolderFilename+("/")+(imageFileName);
-            Log.d("Tag","UploadingFilename"+uploadingFilename);
+            //Log.d("Tag","UploadingFilename"+uploadingFilename);
 
 
             StorageReference riversRef = storageReference.child(uploadingFilename);
