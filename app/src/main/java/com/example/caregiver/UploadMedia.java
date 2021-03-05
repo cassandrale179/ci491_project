@@ -46,7 +46,7 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
     private static final int PICK_IMAGE_REQUEST = 234;
     private static final int CAPTURED_IMAGE_REQUEST = 1024;
     private ImageView imageView;
-    private Button buttonChoose, buttonUpload, buttonClick;
+    private Button buttonChoose, buttonUpload, buttonCameraClick;
     String currentPhotoPath;
 
     private String caregiverId;
@@ -79,17 +79,17 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
         storageReference = FirebaseStorage.getInstance().getReference();
 
         imageView = (ImageView) findViewById(R.id.imageview12);
-        buttonChoose = (Button) findViewById(R.id.buttonChoose);
-        buttonUpload = (Button) findViewById(R.id.buttonUpload);
-        buttonClick = (Button) findViewById(R.id.buttonClick);
+        buttonChoose = (Button) findViewById(R.id.buttonChoose);//to choose photo from gallery
+        buttonUpload = (Button) findViewById(R.id.buttonUpload);//to upload to storage
+        buttonCameraClick = (Button) findViewById(R.id.buttonClick);//to click picture from camera
 
         buttonChoose.setOnClickListener(this);
         buttonUpload.setOnClickListener(this);
-        buttonClick.setOnClickListener(this);
+        buttonCameraClick.setOnClickListener(this);
         displayUserInfo();
     }
 
-    private void func_click() {
+    private void clickPicture() {
         dispatchTakePictureIntent();
     }
 
@@ -103,7 +103,6 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //70077Log.d("UserId","User id is" + userId);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
             try {
@@ -113,7 +112,6 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
                 e.printStackTrace();
             }
         } else if (requestCode == CAPTURED_IMAGE_REQUEST) {
-//            if (resultCode == Activity.RESULT_OK){
                 File f = new File(currentPhotoPath);
                 imageView.setImageURI(Uri.fromFile(f));
                 filePath = Uri.fromFile(f);
@@ -233,8 +231,8 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
         } else if (view == buttonUpload) {
             //Upload
             uploadFile();
-        } else if (view == buttonClick) {
-            func_click();
+        } else if (view == buttonCameraClick) {
+            clickPicture();
         }
     }
 }
