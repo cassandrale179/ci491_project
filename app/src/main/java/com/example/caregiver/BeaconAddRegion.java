@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -153,8 +154,11 @@ public class BeaconAddRegion extends Fragment {
                 } else if (BeaconRegionList.regionMajorMap.containsValue(majorValue)) {
                     displayErrorMessage("This major value has already been used.", rootView);
                 } else {
-
                     displayErrorMessage("", rootView);
+                    regionNameField.setText("");
+                    majorField.setText("");
+                    String toastMessage = regionName + " was successfully added.";
+                    Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
                     regionInfo newRegionInfo = new regionInfo(UUIDValue, regionName, majorValue);
                     updateRegionInfoInBackend(user, newRegionInfo);
                     // call stop scanning using scanServiceIntent used to start it
@@ -238,8 +242,7 @@ public class BeaconAddRegion extends Fragment {
             BeaconRegionList.getInstance().setupBeaconRegions(BeaconRegionList.regionMajorMap, UUIDValue);
             // call start scanning using same scanService intent used to stop it
             BeaconRegionList.getInstance().startBeaconScanService(scanServiceIntent);
-        }
-        else {
+        } else {
             displayErrorMessage("UUID Value is not provided.", rootView);
         }
     }
