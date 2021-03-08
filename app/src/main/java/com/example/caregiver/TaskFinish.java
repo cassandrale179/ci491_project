@@ -35,7 +35,7 @@ import java.util.Map;
 public class TaskFinish extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    protected void doSomething(@NonNull String taskStr, @NonNull String time){
+    protected void doSomething(@NonNull String taskStr, @NonNull int time){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String caregiveeId = preferences.getString("userId", "");
         if (caregiveeId.isEmpty()) {
@@ -102,7 +102,7 @@ public class TaskFinish extends AppCompatActivity {
             String taskStr = b.getString("finishTask");
             String taskTime = b.getString("finishTime");
             timerCircle.setText(taskTime + ":00");
-            doSomething(taskStr, taskTime);
+            doSomething(taskStr, Integer.valueOf(taskTime));
         } else {
             Log.d("error", "Cannot get task.");
         }

@@ -204,6 +204,7 @@ public class Task implements Parcelable {
     protected static void setCompletionDateAndTime(JsonObject progress, Task task){
         int completionTime = -1;
         long completionDate = -1;
+        Log.d("call!", "call this");
 
         // Since user complete a task MULTIPLE times, we want to get the last
         // date when the user complete a task.
@@ -214,7 +215,7 @@ public class Task implements Parcelable {
                 if (epochDate > completionDate){
                     completionDate = epochDate;
                     try{
-                        completionTime = Integer.valueOf(entry.getValue().toString());
+                        completionTime = entry.getValue().getAsInt();
                     } catch (Exception e){
                         Log.d("error", "Invalid completion time");
                     }
