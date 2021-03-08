@@ -119,19 +119,19 @@ public class AddTask extends AppCompatActivity {
                 selectedCaregiveeId = caregivee_spinner_ids.get(pos);
 
                 // If caregivee has not defined their room, we give them default value.
-                if (caregiveeRooms.size() > 0 && caregiveeRooms.containsKey(selectedCaregiveeId)){
+//                if (caregiveeRooms.size() > 0 && caregiveeRooms.containsKey(selectedCaregiveeId)){
                     List<String> rooms = caregiveeRooms.get(selectedCaregiveeId);
                     ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (
                             AddTask.this, android.R.layout.simple_spinner_item, rooms);
                     adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     roomSpinner.setAdapter(adapter2);
-                } else {
-                    List<String> rooms = Arrays.asList("livingroom", "bedroom", "bathroom", "kitchen");
-                    ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (
-                            AddTask.this, android.R.layout.simple_spinner_item, rooms);
-                    adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    roomSpinner.setAdapter(adapter2);
-                }
+//                } else {
+//                    List<String> rooms = Arrays.asList("livingroom", "bedroom", "bathroom", "kitchen");
+//                    ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (
+//                            AddTask.this, android.R.layout.simple_spinner_item, rooms);
+//                    adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//                    roomSpinner.setAdapter(adapter2);
+//                }
             }
             public void onNothingSelected(AdapterView<?> parent) {
             }
