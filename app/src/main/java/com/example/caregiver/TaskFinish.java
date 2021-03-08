@@ -42,8 +42,14 @@ public class TaskFinish extends AppCompatActivity {
             return;
         }
         JsonObject task = new Gson().fromJson(taskStr, JsonObject.class);
-        String room = task.get("room").toString().replace("\"", "");
-        String taskId = task.get("taskId").toString().replace("\"", "");
+        String room = task.get("room").getAsString();
+        String taskId = task.get("taskId").getAsString();
+
+        // Set task name on view
+        String taskName = task.get("taskName").getAsString();
+        TextView taskTitleView = findViewById(R.id.taskFinishTitle);
+        taskTitleView.setText(taskName);
+
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference taskRef = database
                 .child("users").child(caregiveeId)
