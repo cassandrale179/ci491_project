@@ -284,7 +284,7 @@ public class TaskFragment extends Fragment {
                 String caregiveeInfoStr = gson.toJson(caregiveeInfo);
                 String caregiveeRoomStr = gson.toJson(caregiveeRooms);
                 editor.putString("caregiveeInfo", caregiveeInfoStr);
-                editor.putString("caregiveeRoom", caregiveeRoomStr);
+                editor.putString("caregiveeRooms", caregiveeRoomStr);
                 editor.apply();
             }
         }
