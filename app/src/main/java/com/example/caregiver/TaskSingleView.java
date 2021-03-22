@@ -111,15 +111,6 @@ public class TaskSingleView extends AppCompatActivity {
         helpBg.setColor(getResources().getColor(R.color.gray));
         helpBtn.setTextColor(Color.BLACK);
 
-        // Add listener on the back arrow on the single task view screen
-        ImageView backArrow = (ImageView) findViewById(R.id.backArrow);
-        backArrow.setOnClickListener(new View.OnClickListener() {@Override
-        public void onClick(View v) {
-            Intent i = new Intent(TaskSingleView.this, Dashboard.class);
-            startActivity(i);
-        }
-        });
-
         setTitleAndNotes();
         setTimer(timer);
     }
