@@ -48,6 +48,9 @@ public class AddTask extends AppCompatActivity {
     private String caregiverId;
     private TextView errorMessage;
 
+
+
+
     /**
      * Render the error and success message field.
      * @param sourceString The text message to be displayed.
@@ -87,6 +90,10 @@ public class AddTask extends AppCompatActivity {
         // navigate back to dashboard
         Button backButton = findViewById(R.id.taskCancelButton);
         backButton.setOnClickListener(view -> startActivity(new Intent(view.getContext(), Dashboard.class)));
+
+        //navigate to upload media
+        TextView uploadMedia = findViewById(R.id.UploadMediaTextView);
+        uploadMedia.setOnClickListener(view -> startActivity(new Intent(view.getContext(), UploadMedia.class)));
     }
 
     protected void createSpinners(){
