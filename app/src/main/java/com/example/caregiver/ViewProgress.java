@@ -49,27 +49,27 @@ public class ViewProgress extends AppCompatActivity {
             onBackPressed();
         });
 
-        loadCaregiveesTask();
+//        loadCaregiveesTask();
     }
 
     /** Loads all tasks associated with this caregivee */
-    protected void loadCaregiveesTask() {
-        final DatabaseReference ref= database.child("/users/" + caregiveeID);
-        ref.addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)@Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Object roomObject = snapshot.child("rooms").getValue();
-                if (roomObject != null) {
-                    List<Task> taskList = Task.getAllTasks(caregiveeID, roomObject);
-                    renderTaskList(taskList);
-                    renderTimeList(taskList);
-                }
-            }@Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("error", "Can't query caregivees for this caregiver");
-            }
-        });
-    }
+//    protected void loadCaregiveesTask() {
+//        final DatabaseReference ref= database.child("/users/" + caregiveeID);
+//        ref.addValueEventListener(new ValueEventListener() {
+//            @RequiresApi(api = Build.VERSION_CODES.N)@Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                Object roomObject = snapshot.child("rooms").getValue();
+//                if (roomObject != null) {
+//                    List<Task> taskList = Task.getAllTasks(caregiveeID, roomObject);
+//                    renderTaskList(taskList);
+//                    renderTimeList(taskList);
+//                }
+//            }@Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Log.d("error", "Can't query caregivees for this caregiver");
+//            }
+//        });
+//    }
 
     /**
      * Render the list on the left to display tasks a caregivee have completed

@@ -42,9 +42,6 @@ import java.util.stream.Collectors;
  * create an instance of this fragment.
  */
 public class TaskFragment extends Fragment {
-
-
-
     // Global object representation of the view.
     View view;
 

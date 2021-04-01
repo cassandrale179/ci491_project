@@ -5,8 +5,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.example.caregiver.App;
+import com.example.caregiver.TaskFragment;
 import com.example.caregiver.ViewProgress;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -113,88 +116,104 @@ public class Task implements Parcelable {
     /**
      * Returns all tasks associated with that caregivee.
      * @param caregiveeId the String that represent the caregivee ID
-     * @param firebaseRooms this object contains all data under users/caregiveeID/rooms
      */
-    public static List < Task > getAllTasks(String caregiveeId, Object firebaseRooms) {
+    public void getAllTasks(String caregiveeId, App.TaskCallback callback) {
         Gson gson = new Gson();
 
         // Initialize an array list that will store all tasks associated with the caregivee.
         List<Task> tasks = new ArrayList<>();
 
-        // Parse the roomString to return a json Object representation.
-        JsonParser parser = new JsonParser();
-        JsonObject roomObject = (JsonObject) parser.parse(gson.toJson(firebaseRooms));
-        List<String> rooms = roomObject.entrySet().stream().map(
-                i -> i.getKey()).collect(Collectors.toCollection(ArrayList::new));
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref = database.child("users/" + caregiveeId);
+        ref.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)@Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Object firebaseRooms = snapshot.child("rooms").getValue();
+                if (firebaseRooms != null) {
+                    // Parse the roomString to return a json Object representation.
+                    JsonParser parser = new JsonParser();
+                    JsonObject roomObject = (JsonObject) parser.parse(gson.toJson(firebaseRooms));
+                    List<String> rooms = roomObject.entrySet().stream().map(
+                            i -> i.getKey()).collect(Collectors.toCollection(ArrayList::new));
 
-        // For each room, get their corresponding tasks
-        for (String roomStr : rooms) {
-            JsonObject singleRoom = roomObject.getAsJsonObject(roomStr);
-            JsonObject tasksPerRoom = singleRoom.getAsJsonObject("tasks");
-            if (tasksPerRoom != null) {
-                List<String> tasksIds = tasksPerRoom.entrySet().stream().map(
-                        i -> i.getKey()).collect(Collectors.toCollection(ArrayList::new));
+                    // For each room, get their corresponding tasks
+                    for (String roomStr : rooms) {
+                        JsonObject singleRoom = roomObject.getAsJsonObject(roomStr);
+                        JsonObject tasksPerRoom = singleRoom.getAsJsonObject("tasks");
+                        if (tasksPerRoom != null) {
+                            List<String> tasksIds = tasksPerRoom.entrySet().stream().map(
+                                    i -> i.getKey()).collect(Collectors.toCollection(ArrayList::new));
 
-                // For each task, put them in the Task object.
-                for (String taskId : tasksIds) {
+                            // For each task, put them in the Task object.
+                            for (String taskId : tasksIds) {
 
-                    JsonObject task = tasksPerRoom.getAsJsonObject(taskId);
-                    String caregiverId = task.get("caregiverID").getAsString();
-                    String taskName = task.get("name").getAsString();
-                    String taskNote = task.get("notes").getAsString();
-                    String assignedStatus = task.get("assignedStatus").getAsString();
-                    String completionStatus = task.get("completionStatus").getAsString();
+                                JsonObject task = tasksPerRoom.getAsJsonObject(taskId);
+                                String caregiverId = task.get("caregiverID").getAsString();
+                                String taskName = task.get("name").getAsString();
+                                String taskNote = task.get("notes").getAsString();
+                                String assignedStatus = task.get("assignedStatus").getAsString();
+                                String completionStatus = task.get("completionStatus").getAsString();
 
-                    Task t = new Task(caregiveeId, caregiverId, taskId, taskName, taskNote,
-                            assignedStatus, completionStatus, roomStr);
+                                Task t = new Task(caregiveeId, caregiverId, taskId, taskName, taskNote,
+                                        assignedStatus, completionStatus, roomStr);
 
-                    // If task is completed, set the time and date when task is completed.
-                    if (completionStatus.equals("complete")){
-                        if (task.get("progress") != null){
-                            JsonObject progress = task.get("progress").getAsJsonObject();
-                            setCompletionDateAndTime(progress, t);
+                                // If task is completed, set the time and date when task is completed.
+                                if (completionStatus.equals("complete")){
+                                    if (task.get("progress") != null){
+                                        JsonObject progress = task.get("progress").getAsJsonObject();
+                                        setCompletionDateAndTime(progress, t);
+                                    }
+                                }
+                                tasks.add(t);
+                            }
                         }
                     }
-                    tasks.add(t);
+                    callback.onDataGot(tasks);
                 }
+            }@Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("error", "Can't query caregivees for this caregiver");
             }
-        }
-        return tasks;
+        });
     }
 
     /**
      * Returns all tasks associated with that caregivee that is assigned to them.
      * @param caregiveeId the String that represent the caregivee ID
-     * @param firebaseRooms this object contains all data under users/caregiveeID/rooms
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public static List< Task > getAssignedTaskList(String caregiveeId, Object firebaseRooms) {
-        List<Task> assignedTasks = new ArrayList<>();
-        List<Task> tasks = getAllTasks(caregiveeId, firebaseRooms);
-        for (Task task : tasks){
-            if (task.assignedStatus.equals("true")){
-                assignedTasks.add(task);
-            }
-        }
-        return assignedTasks;
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.N)
+//    public static List< Task > getAssignedTaskList(String caregiveeId) {
+//        List<Task> assignedTasks = new ArrayList<>();
+////        List<Task> tasks = getAllTasks(caregiveeId);
+//        getAllTasks(caregiveeId, new MyCallback() {
+//            @Override
+//            public void onDataGot(String number) {
+//                // response
+//            }
+//        });
+//        for (Task task : tasks){
+//            if (task.assignedStatus.equals("true")){
+//                assignedTasks.add(task);
+//            }
+//        }
+//        return assignedTasks;
+//    }
 
     /**
      * Returns all tasks associated with that caregivee that has been completed.
      * @param caregiveeId the String that represent the caregivee ID
-     * @param firebaseRooms this object contains all data under users/caregiveeID/rooms
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public static List< Task > getCompletedTaskList(String caregiveeId, Object firebaseRooms) {
-        List<Task> completedTasks = new ArrayList<>();
-        List<Task> tasks = getAllTasks(caregiveeId, firebaseRooms);
-        for (Task task : tasks){
-            if (task.completionStatus.equals("complete")){
-                completedTasks.add(task);
-            }
-        }
-        return completedTasks;
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.N)
+//    public static List< Task > getCompletedTaskList(String caregiveeId) {
+//        List<Task> completedTasks = new ArrayList<>();
+//        List<Task> tasks = getAllTasks(caregiveeId);
+//        for (Task task : tasks){
+//            if (task.completionStatus.equals("complete")){
+//                completedTasks.add(task);
+//            }
+//        }
+//        return completedTasks;
+//    }
 
     /**
      * Set the time and date when a task is completed
