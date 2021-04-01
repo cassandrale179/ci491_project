@@ -77,7 +77,8 @@ public class TaskCaregivee extends Fragment {
         taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
             @Override
             public void onDataGot(List<Task> tasks){
-                Log.d("tasks", tasks.toString());
+                taskList = tasks;
+                displayTaskList(taskList);
             }
         });
     }

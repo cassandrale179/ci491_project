@@ -110,25 +110,25 @@ public class TaskFragment extends Fragment {
         ref.addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            String name = dataSnapshot.child("name").getValue().toString();
-            Object taskObject = dataSnapshot.child("rooms").getValue();
-            if (taskObject != null) {
-                Gson gson = new Gson();
-                String tasksJson = gson.toJson(taskObject);
-                List<Task> tasks = createRoomAndTaskObject(caregiveeId, tasksJson);
-                taskList.put(caregiveeId, tasks);
-            }
-            caregiveeInfo.put(caregiveeId, name);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("name").getValue().toString();
+                Object taskObject = dataSnapshot.child("rooms").getValue();
+                if (taskObject != null) {
+                    Gson gson = new Gson();
+                    String tasksJson = gson.toJson(taskObject);
+                    List<Task> tasks = createRoomAndTaskObject(caregiveeId, tasksJson);
+                    taskList.put(caregiveeId, tasks);
+                }
+                caregiveeInfo.put(caregiveeId, name);
 
-            // TODO: hacky way of display the list. Need to use async.
-            if (caregiveeInfo.size() == size){
-                displayCaregivee();
+                // TODO: hacky way of display the list. Need to use async.
+                if (caregiveeInfo.size() == size){
+                    displayCaregivee();
+                }
+            }@Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("failure", "Unable to obtain data for this caregivee " + caregiveeId);
             }
-        }@Override
-        public void onCancelled(DatabaseError databaseError) {
-            Log.d("failure", "Unable to obtain data for this caregivee " + caregiveeId);
-        }
         });
     }
 
@@ -281,7 +281,7 @@ public class TaskFragment extends Fragment {
                 String caregiveeInfoStr = gson.toJson(caregiveeInfo);
                 String caregiveeRoomStr = gson.toJson(caregiveeRooms);
                 editor.putString("caregiveeInfo", caregiveeInfoStr);
-                editor.putString("caregiveeRoom", caregiveeRoomStr);
+                editor.putString("caregiveeRooms", caregiveeRoomStr);
                 editor.apply();
             }
         }

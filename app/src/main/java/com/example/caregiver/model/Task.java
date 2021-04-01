@@ -9,25 +9,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.example.caregiver.App;
-import com.example.caregiver.TaskFragment;
-import com.example.caregiver.ViewProgress;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -178,44 +170,6 @@ public class Task implements Parcelable {
     }
 
     /**
-     * Returns all tasks associated with that caregivee that is assigned to them.
-     * @param caregiveeId the String that represent the caregivee ID
-     */
-//    @RequiresApi(api = Build.VERSION_CODES.N)
-//    public static List< Task > getAssignedTaskList(String caregiveeId) {
-//        List<Task> assignedTasks = new ArrayList<>();
-////        List<Task> tasks = getAllTasks(caregiveeId);
-//        getAllTasks(caregiveeId, new MyCallback() {
-//            @Override
-//            public void onDataGot(String number) {
-//                // response
-//            }
-//        });
-//        for (Task task : tasks){
-//            if (task.assignedStatus.equals("true")){
-//                assignedTasks.add(task);
-//            }
-//        }
-//        return assignedTasks;
-//    }
-
-    /**
-     * Returns all tasks associated with that caregivee that has been completed.
-     * @param caregiveeId the String that represent the caregivee ID
-     */
-//    @RequiresApi(api = Build.VERSION_CODES.N)
-//    public static List< Task > getCompletedTaskList(String caregiveeId) {
-//        List<Task> completedTasks = new ArrayList<>();
-//        List<Task> tasks = getAllTasks(caregiveeId);
-//        for (Task task : tasks){
-//            if (task.completionStatus.equals("complete")){
-//                completedTasks.add(task);
-//            }
-//        }
-//        return completedTasks;
-//    }
-
-    /**
      * Set the time and date when a task is completed
      * @param progress the progress object that store all time and date when user complete tasks.
      * @param task the task object that contains the progress object.
@@ -233,7 +187,7 @@ public class Task implements Parcelable {
                 if (epochDate > completionDate){
                     completionDate = epochDate;
                     try{
-                        completionTime = Integer.valueOf(entry.getValue().toString());
+                        completionTime = entry.getValue().getAsInt();
                     } catch (Exception e){
                         Log.d("error", "Invalid completion time");
                     }
@@ -244,5 +198,4 @@ public class Task implements Parcelable {
         task.dateCompleted = completionDate;
         task.timeCompleted = completionTime;
     }
-
 }
