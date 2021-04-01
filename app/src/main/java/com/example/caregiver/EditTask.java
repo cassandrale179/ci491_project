@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.caregiver.model.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -32,7 +33,7 @@ public class EditTask extends AppCompatActivity {
     private Spinner roomSpinner;
     private TextView errorMessage;
 
-    private TaskFragment.Task currTask; // current task being edited
+    private Task currTask; // current task being edited
     final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
     @Override

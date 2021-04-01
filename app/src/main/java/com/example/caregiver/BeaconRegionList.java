@@ -90,6 +90,13 @@ public class BeaconRegionList extends Fragment {
         instance = this;
     }
 
+    /**
+     * Gets users permissions for location
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -144,7 +151,7 @@ public class BeaconRegionList extends Fragment {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference ref = database.child("users/" + user.getUid());
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
@@ -219,7 +226,7 @@ public class BeaconRegionList extends Fragment {
         DatabaseReference ref = database.child("users/" + user.getUid() + "/rooms");
         listener.onStart();
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
@@ -233,11 +240,17 @@ public class BeaconRegionList extends Fragment {
         });
     }
 
+    /**
+     * Populates the local region name and major value map
+     *
+     * @param dataSnapshot
+     */
     public void createRegionMajorMap(DataSnapshot dataSnapshot) {
         Iterable<DataSnapshot> newRegions = dataSnapshot.getChildren();
         for (DataSnapshot ds : newRegions) {
             regionName = ds.getKey();
-            if (regionName != null) {
+            Log.i("createRegionMajorMap", regionName +" : " + ds.toString());
+            if (regionName != null && dataSnapshot.child(regionName).child("beaconMajor").exists()) {
                 regionMajorValue = dataSnapshot.child(regionName).child("beaconMajor").getValue().toString();
                 regionMajorMap.put(regionName.toLowerCase(), regionMajorValue);
             }
@@ -252,7 +265,6 @@ public class BeaconRegionList extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void setupBeaconRegions(HashMap regionMajorMap, String... UUIDString) {
         String UUIDValue = UUIDString.length > 0 ? UUIDString[0] : kontaktUUID;
-        Log.i("sample", "UUID: " + UUIDValue + " " + UUIDValue.getClass() + " kontaktUUID: " + kontaktUUID + " " + kontaktUUID.getClass());
         regionMajorMap.forEach((regionName, majorValue) -> {
             Log.i("sample", "Major Value: " + majorValue + " " + majorValue.getClass());
             IBeaconRegion region = new BeaconRegion.Builder()

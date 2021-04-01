@@ -279,15 +279,15 @@ public class BeaconScanService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         // query tasks for the room the user is in
-        rooms.addValueEventListener(new ValueEventListener() {
+        rooms.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot roomSnapShot : snapshot.getChildren()) {
-                    if (roomSnapShot.getKey().equals(roomName)) {
+                    if (roomSnapShot.getKey().toLowerCase().equals(roomName)) {
                         for (DataSnapshot task : roomSnapShot.child("tasks").getChildren()) {
                             // if the user has pending tasks in this room, send them notification
-                            String assignedStatus = (String) task.child("assignedStatus").getValue();
-                            if (assignedStatus.equals("true") || assignedStatus.equals("True")) {
+                            boolean assignedStatus = (boolean) task.child("assignedStatus").getValue();
+                            if (assignedStatus) {
                                 String contentText = String.format("You have tasks in the %s", roomName);
                                 // send notification
                                 sendNotificationWithGivenContent(contentText, pendingIntent);

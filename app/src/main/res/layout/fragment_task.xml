@@ -63,11 +63,14 @@
         android:layout_marginTop="30dp"
         android:gravity="center"
         android:textSize="17dp" />
+    </LinearLayout>
 
+    <!-- Expandable list should be set outside linear layout to be scrollable -->
     <ExpandableListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="240dp"
+        android:layout_marginBottom="50dp"
         android:id="@+id/caregiveelist" />
-    </LinearLayout>
 </RelativeLayout>
 

@@ -132,13 +132,14 @@ public class AddTask extends AppCompatActivity {
                             AddTask.this, android.R.layout.simple_spinner_item, rooms);
                     adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     roomSpinner.setAdapter(adapter2);
-                } else {
-                    List<String> rooms = Arrays.asList("livingroom", "bedroom", "bathroom", "kitchen");
-                    ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (
-                            AddTask.this, android.R.layout.simple_spinner_item, rooms);
-                    adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    roomSpinner.setAdapter(adapter2);
                 }
+//                else {
+//                    List<String> rooms = Arrays.asList("livingroom", "bedroom", "bathroom", "kitchen");
+//                    ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (
+//                            AddTask.this, android.R.layout.simple_spinner_item, rooms);
+//                    adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//                    roomSpinner.setAdapter(adapter2);
+//                }
             }
             public void onNothingSelected(AdapterView<?> parent) {
             }
