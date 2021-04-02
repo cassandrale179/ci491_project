@@ -35,15 +35,21 @@ import java.util.Map;
 public class TaskFinish extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    protected void doSomething(@NonNull String taskStr, @NonNull String time){
+    protected void doSomething(@NonNull String taskStr, @NonNull int time){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String caregiveeId = preferences.getString("userId", "");
         if (caregiveeId.isEmpty()) {
             return;
         }
         JsonObject task = new Gson().fromJson(taskStr, JsonObject.class);
-        String room = task.get("room").toString().replace("\"", "");
-        String taskId = task.get("taskId").toString().replace("\"", "");
+        String room = task.get("room").getAsString();
+        String taskId = task.get("taskId").getAsString();
+
+        // Set task name on view
+        String taskName = task.get("taskName").getAsString();
+        TextView taskTitleView = findViewById(R.id.taskFinishTitle);
+        taskTitleView.setText(taskName);
+
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference taskRef = database
                 .child("users").child(caregiveeId)
@@ -96,7 +102,7 @@ public class TaskFinish extends AppCompatActivity {
             String taskStr = b.getString("finishTask");
             String taskTime = b.getString("finishTime");
             timerCircle.setText(taskTime + ":00");
-            doSomething(taskStr, taskTime);
+            doSomething(taskStr, Integer.valueOf(taskTime));
         } else {
             Log.d("error", "Cannot get task.");
         }

@@ -16,10 +16,10 @@
         app:srcCompat="@drawable/left_arrow" />
 
     <TextView
+        android:id="@+id/taskFinishTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="40dp"
-        android:text="Brush Your Teeth"
         android:gravity="center"
         android:textStyle="bold"
         android:textColor="@color/black"
