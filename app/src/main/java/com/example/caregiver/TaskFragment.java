@@ -110,12 +110,9 @@ public class TaskFragment extends Fragment {
         taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
             @Override
             public void onDataGot(List<Task> tasks){
-                Log.d("call!", String.valueOf(caregiveeInfo.size()));
-                Log.d("actual", String.valueOf(size));
                 taskList.put(caregiveeId, tasks);
                 caregiveeInfo.put(caregiveeId, caregiveeName);
                 if (caregiveeInfo.size() == size){
-                    Log.d("size!", "this is call right!");
                     displayCaregivee();
                 }
             }
