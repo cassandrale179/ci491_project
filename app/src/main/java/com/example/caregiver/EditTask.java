@@ -168,8 +168,6 @@ public class EditTask extends AppCompatActivity {
      * @param color The color for the text message (red for error, green for success).
      */
     public void displayMessage(String sourceString, int color) {
-
-
         errorMessage.setText(Html.fromHtml(sourceString));
         errorMessage.setVisibility(View.VISIBLE);
         errorMessage.setTextColor(color);
