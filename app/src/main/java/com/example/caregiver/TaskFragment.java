@@ -37,9 +37,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link TaskFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Create the Tasks page on the Caregiver view. Display list of caregivees
+ * with their tasks.
  */
 public class TaskFragment extends Fragment {
     // Global object representation of the view.
@@ -89,8 +88,9 @@ public class TaskFragment extends Fragment {
         public void onDataChange(@NonNull DataSnapshot snapshot) {
             for (DataSnapshot caregivee :  snapshot.child("caregivees").getChildren()) {
                 String caregiveeId = caregivee.getKey();
+                String caregiveeName = caregivee.getValue().toString();
                 long size = snapshot.child("caregivees").getChildrenCount();
-                getCaregiveeNameAndTask(caregiveeId, size);
+                getCaregiveeNameAndTask(caregiveeId, caregiveeName, size);
             }
 
         }@Override
@@ -105,76 +105,21 @@ public class TaskFragment extends Fragment {
      * @param caregiveeId the id of the caregivee
      * @param size the size of the caregivees list
      */
-    protected void getCaregiveeNameAndTask(String caregiveeId, long size) {
-        DatabaseReference ref = database.child("users/" + caregiveeId);
-        ref.addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
+    protected void getCaregiveeNameAndTask(String caregiveeId, String caregiveeName, long size) {
+        Task taskModelObject = new Task();
+        taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String name = dataSnapshot.child("name").getValue().toString();
-                Object taskObject = dataSnapshot.child("rooms").getValue();
-                if (taskObject != null) {
-                    Gson gson = new Gson();
-                    String tasksJson = gson.toJson(taskObject);
-                    List<Task> tasks = createRoomAndTaskObject(caregiveeId, tasksJson);
-                    taskList.put(caregiveeId, tasks);
-                }
-                caregiveeInfo.put(caregiveeId, name);
-
-                // TODO: hacky way of display the list. Need to use async.
+            public void onDataGot(List<Task> tasks){
+                Log.d("call!", String.valueOf(caregiveeInfo.size()));
+                Log.d("actual", String.valueOf(size));
+                taskList.put(caregiveeId, tasks);
+                caregiveeInfo.put(caregiveeId, caregiveeName);
                 if (caregiveeInfo.size() == size){
+                    Log.d("size!", "this is call right!");
                     displayCaregivee();
                 }
-            }@Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("failure", "Unable to obtain data for this caregivee " + caregiveeId);
             }
         });
-    }
-
-    /**
-     * Returns all tasks associated with that caregivee.
-     * @param caregiveeId The caregivee user id.
-     * @param roomString Json-string representation of all the rooms.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    protected List<Task> createRoomAndTaskObject(String caregiveeId, String roomString) {
-
-        // Initialize an array list that will store all tasks associated with the caregivee.
-        List<Task> tasks = new ArrayList<>();
-
-        // Parse the roomString to return a json Object representation.
-        JsonParser parser = new JsonParser();
-        JsonObject roomObject = (JsonObject) parser.parse(roomString);
-        List < String > rooms = roomObject.entrySet().stream().map(i
-                ->i.getKey()).collect(Collectors.toCollection(ArrayList::new));
-
-        // Store the caregivee and their rooms
-        caregiveeRooms.put(caregiveeId, rooms);
-
-        // For each room, get their corresponding tasks
-        for (String roomStr: rooms) {
-            JsonObject singleRoom = roomObject.getAsJsonObject(roomStr);
-            JsonObject tasksPerRoom = singleRoom.getAsJsonObject("tasks");
-            if (tasksPerRoom != null) {
-                List < String > tasksIds = tasksPerRoom.entrySet().stream().map(i
-                        ->i.getKey()).collect(Collectors.toCollection(ArrayList::new));
-
-                // For each task, put them in the Task object.
-                for (String taskId: tasksIds) {
-                    JsonObject task = tasksPerRoom.getAsJsonObject(taskId);
-                    String caregiverId = task.get("caregiverID").getAsString();
-                    String taskName = task.get("name").getAsString();
-                    String taskNote = task.get("notes").getAsString();
-                    String assignedStatus = task.get("assignedStatus").getAsString();
-                    String completionStatus = task.get("completionStatus").getAsString();
-                    Task t = new Task(caregiveeId, caregiverId, taskId, taskName, taskNote,
-                            assignedStatus, completionStatus, roomStr);
-                    tasks.add(t);
-                }
-            }
-        }
-        return tasks;
     }
 
     /**
@@ -252,7 +197,6 @@ public class TaskFragment extends Fragment {
 
         // Set listener on task click to edit task.
         caregiveeList.setOnChildClickListener(((parent, v, groupPosition, childPosition, id) -> {
-
             // get selected task info
             String currCaregiveeName = caregiveeNames.get(groupPosition);
             String currTaskName = listChild.get(currCaregiveeName).get(childPosition);

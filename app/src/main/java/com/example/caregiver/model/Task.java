@@ -160,8 +160,8 @@ public class Task implements Parcelable {
                             }
                         }
                     }
-                    callback.onDataGot(tasks);
                 }
+                callback.onDataGot(tasks);
             }@Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("error", "Can't query caregivees for this caregiver");
