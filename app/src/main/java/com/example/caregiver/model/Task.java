@@ -20,6 +20,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -130,6 +131,7 @@ public class Task implements Parcelable {
                     JsonObject roomObject = (JsonObject) parser.parse(gson.toJson(firebaseRooms));
                     List<String> rooms = roomObject.entrySet().stream().map(
                             i -> i.getKey()).collect(Collectors.toCollection(ArrayList::new));
+
 
                     // For each room, get their corresponding tasks
                     for (String roomStr : rooms) {

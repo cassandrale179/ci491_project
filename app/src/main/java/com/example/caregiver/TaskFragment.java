@@ -110,6 +110,10 @@ public class TaskFragment extends Fragment {
         taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
             @Override
             public void onDataGot(List<Task> tasks){
+                List<String> rooms = tasks.stream()              // stream over the list
+                        .map(task -> task.room)                  // try to get the rooms
+                        .collect(Collectors.toCollection(ArrayList::new));
+                caregiveeRooms.put(caregiveeId, rooms);
                 taskList.put(caregiveeId, tasks);
                 caregiveeInfo.put(caregiveeId, caregiveeName);
                 if (caregiveeInfo.size() == size){
@@ -147,9 +151,11 @@ public class TaskFragment extends Fragment {
      * @return true if successful retrieval of info
      */
     private boolean createEditTaskIntent(Task selectedTask){
-        // get caregivee rooms & name
         List<String> currRooms = caregiveeRooms.get(selectedTask.caregiveeId);
-        if(currRooms == null) return false;
+
+        if(currRooms == null){
+            return false;
+        }
         String[] currCaregiveeRooms = new String[currRooms.size()];
         currCaregiveeRooms = currRooms.toArray(currCaregiveeRooms);
 
@@ -194,6 +200,7 @@ public class TaskFragment extends Fragment {
 
         // Set listener on task click to edit task.
         caregiveeList.setOnChildClickListener(((parent, v, groupPosition, childPosition, id) -> {
+            Log.d("call!", "listener should be call");
             // get selected task info
             String currCaregiveeName = caregiveeNames.get(groupPosition);
             String currTaskName = listChild.get(currCaregiveeName).get(childPosition);

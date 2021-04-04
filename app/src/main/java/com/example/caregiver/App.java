@@ -14,8 +14,10 @@ public class App extends Application {
         KontaktSDK.initialize(this);
     }
 
+    /* Return a list of tasks associated with that caregivee */
     public interface TaskCallback {
         void onDataGot(List<Task> tasks);
     }
+
 }
 
