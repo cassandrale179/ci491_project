@@ -108,6 +108,15 @@ public class Task implements Parcelable {
         dest.writeString(room);
     }
 
+    public void toggleAssignedStatus() {
+        this.assignedStatus = !this.assignedStatus;
+    }
+
+    @Override
+    public String toString(){
+        return this.taskName;
+    }
+
     /**
      * Returns all tasks associated with that caregivee.
      * @param caregiveeId the String that represent the caregivee ID

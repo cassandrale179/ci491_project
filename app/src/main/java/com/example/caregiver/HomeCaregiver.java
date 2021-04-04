@@ -142,15 +142,14 @@ public class HomeCaregiver extends Fragment {
      * @param groupPosition index of the caregivee in the list
      */
     public void removeCaregiveePopUp(int groupPosition){
-        Log.d("call!????", "why is this call");
         DatabaseReference ref =  database.child("users");
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Want to remove " + caregivees.get(groupPosition).name + " from your care?")
                 .setPositiveButton("Yes", (dialog, which) ->{
                     String caregiveeId = caregivees.get(groupPosition).id;
                     setAssignedStatusForCaregivee(caregiveeId);
-//                    userRef.child("caregivees").child(caregiveeId).removeValue();
-//                    ref.child(caregiveeId).child("caregivers").child(userId).removeValue();
+                    userRef.child("caregivees").child(caregiveeId).removeValue();
+                    ref.child(caregiveeId).child("caregivers").child(userId).removeValue();
                     startActivity(new Intent(getContext(), Dashboard.class));
                 }).setNegativeButton("No", null);
         builder.create().show();
@@ -161,23 +160,23 @@ public class HomeCaregiver extends Fragment {
      * @param caregiveeId the caregivee whom tasks should be set to false
      */
     public void setAssignedStatusForCaregivee(String caregiveeId){
-//        Task taskModelObject = new Task();
-//        taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
-//            @Override
-//            public void onDataGot(List<Task> tasks){
-//                for (Task task : tasks){
-//                    Log.d("caregiver in setAssignedStatus!!!!", userId);
-//                    if (task.assignedStatus && task.caregiverId.equals(userId)){
-//                        task.assignedStatus = false;
-//                        database.child("users").child(caregiveeId)
-//                                .child("rooms").child(task.room)
-//                                .child("tasks").child(task.taskId)
-//                                .child("assignedStatus").setValue(false);
-//
-//                    }
-//                }
-//            }
-//        });
+        Task taskModelObject = new Task();
+        taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
+            @Override
+            public void onDataGot(List<Task> tasks){
+                for (Task task : tasks){
+                    if (task.assignedStatus && task.caregiverId.equals(userId)){
+                        task.assignedStatus = false;
+                        database.child("users").child(caregiveeId)
+                                .child("rooms").child(task.room)
+                                .child("rooms").child(task.room)
+                                .child("tasks").child(task.taskId)
+                                .child("assignedStatus").setValue(false);
+
+                    }
+                }
+            }
+        });
     }
 
     public void setOnChildListener(){
