@@ -165,14 +165,13 @@ public class HomeCaregiver extends Fragment {
             @Override
             public void onDataGot(List<Task> tasks){
                 for (Task task : tasks){
+                    DatabaseReference taskRef =  database.child("users").child(caregiveeId)
+                            .child("rooms").child(task.room)
+                            .child("tasks").child(task.taskId);
                     if (task.assignedStatus && task.caregiverId.equals(userId)){
                         task.assignedStatus = false;
-                        database.child("users").child(caregiveeId)
-                                .child("rooms").child(task.room)
-                                .child("rooms").child(task.room)
-                                .child("tasks").child(task.taskId)
-                                .child("assignedStatus").setValue(false);
-
+                        taskRef.child("assignedStatus").setValue(false);
+                        taskRef.child("caregiverId").setValue(false);
                     }
                 }
             }
