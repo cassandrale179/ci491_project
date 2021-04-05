@@ -129,6 +129,7 @@ public class BeaconRegionList extends Fragment {
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void populateTable(HashMap regionMajorMap) {
+        regionTable.removeViews(1, regionTable.getChildCount() - 1);
         int dipPaddingValue = 3;
         int paddingValue = (int) (dipPaddingValue * getResources().getDisplayMetrics().density);
         SortedSet<String> keys = new TreeSet<>(regionMajorMap.keySet());
