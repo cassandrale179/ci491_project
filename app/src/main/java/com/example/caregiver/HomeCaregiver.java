@@ -171,7 +171,6 @@ public class HomeCaregiver extends Fragment {
                     if (task.assignedStatus && task.caregiverId.equals(userId)){
                         task.assignedStatus = false;
                         taskRef.child("assignedStatus").setValue(false);
-                        taskRef.child("caregiverId").setValue(false);
                     }
                 }
             }
