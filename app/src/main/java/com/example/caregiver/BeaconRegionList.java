@@ -79,13 +79,13 @@ public class BeaconRegionList extends Fragment {
         return instance;
     }
 
-//    @Override
-//    public void setUserVisibleHint(boolean isVisibleToUser) {
-//        super.setUserVisibleHint(isVisibleToUser);
-//        if (isVisibleToUser) {
-//            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
-//        }
-//    }
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
+        }
+    }
 
     /**
      * Default onCreate function
