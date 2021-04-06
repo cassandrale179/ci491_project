@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -14,6 +15,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.example.caregiver.model.Task;
+import com.example.caregiver.services.EmailService;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -128,5 +130,11 @@ public class ViewProgress extends AppCompatActivity {
                         android.R.id.text2
                 });
         timeListView.setAdapter(adapter);
+    }
+
+    public void emailSelf(View view)
+    {
+        EmailService emailService = new EmailService(this);
+        emailService.sendEmail("zmcconnell02@gmail.com", "Caregiver test email", "Test");
     }
 }
