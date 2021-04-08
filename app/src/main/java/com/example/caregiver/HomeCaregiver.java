@@ -148,9 +148,9 @@ public class HomeCaregiver extends Fragment {
                 .setPositiveButton("Yes", (dialog, which) ->{
                     String caregiveeId = caregivees.get(groupPosition).id;
                     setAssignedStatusForCaregivee(caregiveeId);
-//                    userRef.child("caregivees").child(caregiveeId).removeValue();
-//                    ref.child(caregiveeId).child("caregivers").child(userId).removeValue();
-//                    startActivity(new Intent(getContext(), Dashboard.class));
+                    userRef.child("caregivees").child(caregiveeId).removeValue();
+                    ref.child(caregiveeId).child("caregivers").child(userId).removeValue();
+                    startActivity(new Intent(getContext(), Dashboard.class));
                 }).setNegativeButton("No", null);
         builder.create().show();
     }
