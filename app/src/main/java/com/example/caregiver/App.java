@@ -16,7 +16,7 @@ public class App extends Application {
 
     /* Return a list of tasks associated with that caregivee */
     public interface TaskCallback {
-        void onDataGot(List<Task> tasks);
+        void onDataReceived(List<Task> tasks);
     }
 
 }

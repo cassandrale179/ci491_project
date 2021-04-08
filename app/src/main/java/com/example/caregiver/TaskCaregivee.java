@@ -76,7 +76,7 @@ public class TaskCaregivee extends Fragment {
         Task taskModelObject = new Task();
         taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
             @Override
-            public void onDataGot(List<Task> tasks){
+            public void onDataReceived(List<Task> tasks){
                 for (Task task : tasks){
                     if (task.assignedStatus){
                         taskList.add(task);
