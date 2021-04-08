@@ -54,7 +54,7 @@ public class ViewProgress extends AppCompatActivity {
         Task taskModelObject = new Task();
         taskModelObject.getAllTasks(caregiveeID, new App.TaskCallback() {
             @Override
-            public void onDataGot(List<Task> tasks){
+            public void onDataReceived(List<Task> tasks){
                 renderTaskList(tasks);
                 renderTimeList(tasks);
             }

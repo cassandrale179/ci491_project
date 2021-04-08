@@ -109,7 +109,11 @@ public class TaskFragment extends Fragment {
         Task taskModelObject = new Task();
         taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
             @Override
-            public void onDataGot(List<Task> tasks){
+            public void onDataReceived(List<Task> tasks){
+                List<String> rooms = tasks.stream()              // stream over the list
+                        .map(task -> task.room)                  // try to get the rooms
+                        .collect(Collectors.toCollection(ArrayList::new));
+                caregiveeRooms.put(caregiveeId, rooms);
                 taskList.put(caregiveeId, tasks);
                 caregiveeInfo.put(caregiveeId, caregiveeName);
                 if (caregiveeInfo.size() == size){
@@ -147,9 +151,11 @@ public class TaskFragment extends Fragment {
      * @return true if successful retrieval of info
      */
     private boolean createEditTaskIntent(Task selectedTask){
-        // get caregivee rooms & name
         List<String> currRooms = caregiveeRooms.get(selectedTask.caregiveeId);
-        if(currRooms == null) return false;
+
+        if(currRooms == null){
+            return false;
+        }
         String[] currCaregiveeRooms = new String[currRooms.size()];
         currCaregiveeRooms = currRooms.toArray(currCaregiveeRooms);
 

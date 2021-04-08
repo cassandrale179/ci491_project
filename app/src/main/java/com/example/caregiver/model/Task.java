@@ -20,6 +20,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -116,7 +117,6 @@ public class Task implements Parcelable {
     public String toString(){
         return this.taskName;
     }
-
     /**
      * Returns all tasks associated with that caregivee.
      * @param caregiveeId the String that represent the caregivee ID
@@ -173,7 +173,7 @@ public class Task implements Parcelable {
                         }
                     }
                 }
-                callback.onDataGot(tasks);
+                callback.onDataReceived(tasks);
             }@Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("error", "Can't query caregivees for this caregiver");
