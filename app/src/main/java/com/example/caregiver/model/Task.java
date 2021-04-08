@@ -214,7 +214,7 @@ public class Task implements Parcelable {
                 if (epochDate > completionDate){
                     completionDate = epochDate;
                     try{
-                        completionTime = Integer.valueOf(entry.getValue().toString());
+                        completionTime = entry.getValue().getAsInt();
                     } catch (Exception e){
                         Log.d("error", "Invalid completion time");
                     }
