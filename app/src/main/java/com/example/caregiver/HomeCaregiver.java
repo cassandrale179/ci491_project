@@ -163,7 +163,7 @@ public class HomeCaregiver extends Fragment {
         Task taskModelObject = new Task();
         taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
             @Override
-            public void onDataGot(List<Task> tasks){
+            public void onDataReceived(List<Task> tasks){
                 for (Task task : tasks){
                     DatabaseReference taskRef =  database.child("users").child(caregiveeId)
                             .child("rooms").child(task.room)
