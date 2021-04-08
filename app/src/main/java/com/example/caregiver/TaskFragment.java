@@ -109,7 +109,7 @@ public class TaskFragment extends Fragment {
         Task taskModelObject = new Task();
         taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
             @Override
-            public void onDataGot(List<Task> tasks){
+            public void onDataReceived(List<Task> tasks){
                 List<String> rooms = tasks.stream()              // stream over the list
                         .map(task -> task.room)                  // try to get the rooms
                         .collect(Collectors.toCollection(ArrayList::new));
