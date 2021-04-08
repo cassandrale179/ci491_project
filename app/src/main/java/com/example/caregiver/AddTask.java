@@ -171,7 +171,7 @@ public class AddTask extends AppCompatActivity {
         userUpdates.put(uniqueID+"/name", taskName);
         userUpdates.put(uniqueID+"/notes", taskNotes);
         userUpdates.put(uniqueID+"/caregiverID", caregiverId);
-        userUpdates.put(uniqueID+"/assignedStatus", "true");
+        userUpdates.put(uniqueID+"/assignedStatus", true);
         userUpdates.put(uniqueID+"/completionStatus", "incomplete");
 
         taskRef.updateChildren(userUpdates, new DatabaseReference.CompletionListener() {
