@@ -18,6 +18,5 @@ public class App extends Application {
     public interface TaskCallback {
         void onDataReceived(List<Task> tasks);
     }
-
 }
 

@@ -55,7 +55,7 @@ public class ArrayCheckboxAdapter<T> extends ArrayAdapter<T> {
 
         // Add the descriptive text
         TextView text = new TextView(this.getContext());
-        text.setText(this.getItem(position).toString());
+        text.setText("   "  + this.getItem(position).toString());
         text.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
         row.addView(text);
 
