@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -15,6 +17,9 @@ import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -27,6 +32,8 @@ public class TaskSingleView extends AppCompatActivity {
     public long timeWhenStopped = 0;
     public boolean timeStarted = false;
     String taskStr = "";
+    private StorageReference storageReference;
+    private ImageView imageView;
 
     /** Function to set text and notes for a task */
     protected void setTitleAndNotes(){
@@ -34,6 +41,7 @@ public class TaskSingleView extends AppCompatActivity {
         taskStr = b.getString("taskObject");
         TextView taskTitleField = findViewById(R.id.taskName);
         TextView taskNoteField = findViewById(R.id.taskNotes);
+        imageView = (ImageView) findViewById(R.id.singleTaskImage);
 
         // No task object to be found
         if (taskStr.isEmpty()){
@@ -51,6 +59,21 @@ public class TaskSingleView extends AppCompatActivity {
         // Set task message and title
         String taskTitle = task.get("taskName").getAsString();
         String taskNotes = task.get("taskNote").getAsString();
+        Log.d("TAG is","TASK DETAILS"+task.toString());
+        //Initialized the storage reference
+        storageReference = FirebaseStorage.getInstance().getReference()
+                .child(task.get("caregiverId").getAsString())
+                .child(task.get("taskId").getAsString());
+        //Populate the imageview with the associated image
+        storageReference.getBytes(1024*1024*5)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        //Log.d("Success -123",storageReference.toString());
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                        imageView.setImageBitmap(bitmap);
+                    }
+                });
         taskTitleField.setText(taskTitle);
         taskNoteField.setText(taskNotes);
     }
