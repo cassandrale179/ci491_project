@@ -2,24 +2,35 @@ package com.example.caregiver;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.caregiver.model.Task;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,9 +43,14 @@ public class EditTask extends AppCompatActivity {
     private EditText caregiveeField;
     private Spinner roomSpinner;
     private TextView errorMessage;
+    private ImageView imageView;
 
     private Task currTask; // current task being edited
     final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+    private StorageReference storageReference;
+    private Uri filePath;
+    String imgPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +76,28 @@ public class EditTask extends AppCompatActivity {
         roomSpinner = findViewById(R.id.taskRoom);
         caregiveeField = findViewById(R.id.taskCaregivee);
         errorMessage = findViewById(R.id.taskMessage);
+        imageView = (ImageView) findViewById(R.id.addTaskLogo);
 
         // populate all fields with task info & create spinner
         taskNameField.setText(currTask.taskName, TextView.BufferType.EDITABLE);
         taskNotesField.setText(currTask.taskNote, TextView.BufferType.EDITABLE);
         caregiveeField.setText(caregiveeName, TextView.BufferType.NORMAL);
         createSpinner(caregiveeRooms, currTask.room);
+
+        //Initialized the storage reference
+        storageReference = FirebaseStorage.getInstance().getReference()
+                .child(currTask.caregiverId.toString())
+                .child(currTask.taskId.toString());
+
+        storageReference.getBytes(1024*1024*5)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        //Log.d("Success -123",storageReference.toString());
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                        imageView.setImageBitmap(bitmap);
+                    }
+                });
 
     }
 

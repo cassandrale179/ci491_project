@@ -59,13 +59,11 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
 
     //firebase storage reference
     private StorageReference storageReference;
-
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
     public void displayUserInfo() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         caregiverId =  preferences.getString("userId", "");
-        //Log.d("tag","CaregiverId"+caregiverId);
     }
 
 
@@ -177,7 +175,7 @@ public class UploadMedia extends AppCompatActivity implements View.OnClickListen
             imageFileName = "JPEG_" + timeStamp + "_";
 
             uploadingFilename = uploadingFolderFilename+("/")+(imageFileName);
-            //Log.d("Tag","UploadingFilename"+uploadingFilename);
+            Log.d("Tag","UploadingFilename"+uploadingFilename);
 
 
             StorageReference riversRef = storageReference.child(uploadingFilename);
