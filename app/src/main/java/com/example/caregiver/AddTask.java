@@ -83,8 +83,6 @@ public class AddTask extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 234;
     private static final int CAPTURED_IMAGE_REQUEST = 1024;
     private String uploadingFolderFilename;
-    private String timeStamp;
-    private String imageFileName;
     private String uploadingFilename;
 
     /**
@@ -140,15 +138,13 @@ public class AddTask extends AppCompatActivity {
         //uploadMedia.setOnClickListener(view -> startActivity(new Intent(view.getContext(), UploadMedia.class)));
 
         builder = new AlertDialog.Builder(this);
+
         uploadMedia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Uncomment the below code to Set the message and title from the strings.xml file
                 //builder.setMessage(R.string.dialog_message)
                 // .setTitle(R.string.dialog_title);
-
-                builder.setTitle("Upload Image from Gallery or Click an Image");
-
                 // add a list
                 String[] options = {"Gallery", "Click"};
                 builder.setItems(options, new DialogInterface.OnClickListener() {
@@ -164,7 +160,7 @@ public class AddTask extends AppCompatActivity {
                 //Creating dialog box
                 AlertDialog alert = builder.create();
                 //Setting the title manually
-                alert.setTitle("AlertDialogExample");
+                alert.setTitle("Upload Image from Gallery or Click an Image");
                 alert.show();
             }
         });
@@ -247,11 +243,6 @@ public class AddTask extends AppCompatActivity {
             progressDialog.show();
 
             uploadingFolderFilename = caregiverId;
-
-            //check if the folder is created
-
-            timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            imageFileName = "JPEG_" + timeStamp + "_";
 
             uploadingFilename = uploadingFolderFilename+("/")+taskuniqueID;
             //Log.d("Tag","UploadingFilename"+uploadingFilename);
