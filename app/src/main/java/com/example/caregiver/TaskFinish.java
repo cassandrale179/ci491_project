@@ -88,14 +88,14 @@ public class TaskFinish extends AppCompatActivity {
         GradientDrawable helpBg = (GradientDrawable) timerCircle.getBackground();
         helpBg.setColor(getResources().getColor(R.color.teal_700));
 
-        // Add listener on the back arrow on the single task view screen
-        ImageView backArrow = (ImageView) findViewById(R.id.backArrow);
-        backArrow.setOnClickListener(new View.OnClickListener() {@Override
-        public void onClick(View v) {
-            Intent i = new Intent(TaskFinish.this, Dashboard.class);
-            startActivity(i);
-        }
-        });
+//        // Add listener on the back arrow on the single task view screen
+//        ImageView backArrow = (ImageView) findViewById(R.id.backArrow);
+//        backArrow.setOnClickListener(new View.OnClickListener() {@Override
+//        public void onClick(View v) {
+//            Intent i = new Intent(TaskFinish.this, Dashboard.class);
+//            startActivity(i);
+//        }
+//        });
 
         Bundle b = getIntent().getExtras();
         if (b != null) {
