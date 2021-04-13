@@ -17,11 +17,11 @@ public class EmailService extends Service {
         this.context = context;
     }
 
-    public void sendEmail(String to, String subject, String body)
+    public void sendEmail(String[] to, String subject, String body)
     {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-        emailIntent.setData(Uri.parse("mailto:" + to));
-        //emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
+        emailIntent.setData(Uri.parse("mailto:"/* + to*/));
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(Intent.EXTRA_TEXT, body);
 

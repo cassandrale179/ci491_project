@@ -31,6 +31,7 @@ public class ViewProgress extends AppCompatActivity {
     private String caregiveeName;
     private String caregiveeID;
     private String caregiverEmail;
+    private String[] allCaregiverEmails;
     final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
     @Override
@@ -42,6 +43,9 @@ public class ViewProgress extends AppCompatActivity {
         caregiveeName = getIntent().getStringExtra("caregiveeName");
         caregiveeID = getIntent().getStringExtra("caregiveeID");
         caregiverEmail = getIntent().getStringExtra("caregiverEmail");
+
+        // Get all caregiver emails
+        queryAllCaregiverEmails();
 
         // Set the text to use the correct caregivee name
         TextView nameText = findViewById(R.id.progressNameText);
@@ -70,7 +74,31 @@ public class ViewProgress extends AppCompatActivity {
                 }
             }@Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("error", "Can't query caregivees for this caregiver");
+                Log.d("error", "Can't query tasks for this caregivee");
+            }
+        });
+    }
+
+    private void queryAllCaregiverEmails()
+    {
+        final DatabaseReference ref = database.child("/users/" + caregiveeID);
+        ref.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)@Override
+            public void onDataChange(@NonNull DataSnapshot snapshot)
+            {
+                List<String> emails = new ArrayList<>();
+                for (DataSnapshot caregiver : snapshot.child("caregivers").getChildren())
+                {
+                    String caregiverID = caregiver.getKey();
+                    final DatabaseReference caregiverRef = database.child("/users/" + caregiverID);
+                    caregiverRef.child("email").get().addOnSuccessListener((snap) -> {
+                        emails.add(snap.getValue().toString());
+                    });
+                }
+                allCaregiverEmails = emails.toArray(new String[0]);
+            }@Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("error", "Can't query caregiver emails for this caregivee");
             }
         });
     }
@@ -137,11 +165,12 @@ public class ViewProgress extends AppCompatActivity {
     public void emailSelf(View view)
     {
         EmailService emailService = new EmailService(this);
-        emailService.sendEmail(caregiverEmail, "Caregiver test email", "Test");
+        emailService.sendEmail(new String[]{caregiverEmail}, "Caregiver test email", "Test");
     }
 
     public void emailAllCaregivers(View view)
     {
         EmailService emailService = new EmailService(this);
+        emailService.sendEmail(allCaregiverEmails, "Caregiver test email", "Test");
     }
 }
