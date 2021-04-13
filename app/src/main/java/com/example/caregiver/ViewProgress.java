@@ -30,6 +30,7 @@ import java.util.Map;
 public class ViewProgress extends AppCompatActivity {
     private String caregiveeName;
     private String caregiveeID;
+    private String caregiverEmail;
     final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
     @Override
@@ -40,6 +41,7 @@ public class ViewProgress extends AppCompatActivity {
         // get our fields from the extras
         caregiveeName = getIntent().getStringExtra("caregiveeName");
         caregiveeID = getIntent().getStringExtra("caregiveeID");
+        caregiverEmail = getIntent().getStringExtra("caregiverEmail");
 
         // Set the text to use the correct caregivee name
         TextView nameText = findViewById(R.id.progressNameText);
@@ -135,6 +137,11 @@ public class ViewProgress extends AppCompatActivity {
     public void emailSelf(View view)
     {
         EmailService emailService = new EmailService(this);
-        emailService.sendEmail("zmcconnell02@gmail.com", "Caregiver test email", "Test");
+        emailService.sendEmail(caregiverEmail, "Caregiver test email", "Test");
+    }
+
+    public void emailAllCaregivers(View view)
+    {
+        EmailService emailService = new EmailService(this);
     }
 }

@@ -92,7 +92,8 @@
                 android:layout_weight="0.5"
                 android:textSize="15sp"
                 android:text="ALL CAREGIVERS"
-                android:layout_marginRight="10dp"/>
+                android:layout_marginRight="10dp"
+                android:onClick="emailAllCaregivers"/>
 
             <Button
                 android:id="@+id/button2"

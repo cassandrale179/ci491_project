@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,6 +44,7 @@ public class HomeCaregiver extends Fragment {
     ArrayList<User> caregivees = new ArrayList<>();
     DatabaseReference userRef;
     String userId;
+    String email;
 
 
     public HomeCaregiver() { }
@@ -62,7 +62,7 @@ public class HomeCaregiver extends Fragment {
     /**
      * Return list of caregivees associated with the caregiver.
      */
-    public void queryCaregivees() {
+    public void queryCaregiveesAndEmailAddress() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         userId = preferences.getString("userId", "");
         userRef = database.child("users/" + userId);
@@ -78,6 +78,8 @@ public class HomeCaregiver extends Fragment {
             }
 
             displayCaregiveeList();
+            email = snapshot.child("email").getValue().toString();
+
         }@Override
         public void onCancelled(@NonNull DatabaseError error) {
             Log.d("error", "Can't query caregivees for this caregiver");
@@ -166,6 +168,7 @@ public class HomeCaregiver extends Fragment {
                     Intent i = new Intent(getContext(), ViewProgress.class);
                     i.putExtra("caregiveeName", caregivees.get(groupPosition).name);
                     i.putExtra("caregiveeID", caregivees.get(groupPosition).id);
+                    i.putExtra("caregiverEmail", email);
                     startActivity(i);
                     break;
                 case 3:
@@ -199,7 +202,7 @@ public class HomeCaregiver extends Fragment {
         caregiveeList = (ExpandableListView) view.findViewById(R.id.caregiveeHomelist);
 
         // Call firebase to query the caregivees
-        queryCaregivees();
+        queryCaregiveesAndEmailAddress();
 
         // Set the floating action button to redirect to match request page
         FloatingActionButton plusButton = view.findViewById(R.id.addCaregiveeButton);
