@@ -43,11 +43,11 @@ public class ViewProgress extends AppCompatActivity {
         TextView nameText = findViewById(R.id.progressNameText);
         nameText.setText("Progress chart for " + caregiveeName);
 
-        // Setup back button
-        ImageView backArrow = findViewById(R.id.backArrowButton);
-        backArrow.setOnClickListener(view -> {
-            onBackPressed();
-        });
+//        // Setup back button
+//        ImageView backArrow = findViewById(R.id.backArrowButton);
+//        backArrow.setOnClickListener(view -> {
+//            onBackPressed();
+//        });
 
 
         // Load all caregivee tasks
