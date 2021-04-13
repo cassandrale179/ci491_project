@@ -1,25 +1,38 @@
 package com.example.caregiver;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -27,6 +40,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,9 +80,21 @@ public class ProfileInfo extends Fragment {
     int red;
     int green;
 
+    android.app.AlertDialog.Builder builder;
+    private static final int PICK_IMAGE_REQUEST = 234;
+    private static final int CAPTURED_IMAGE_REQUEST = 1024;
+    String currentPhotoPath;
+    private StorageReference storageReference;
+    private StorageReference storageReference1;
+    private Uri filePath;
+    private ImageView imageView;
+    String Id;
+    String caregiveeId;
+
     public class ProfileUser {
         public String name;
         public String email;
+
         public ProfileUser(String name, String email) {
             this.name = name;
             this.email = email;
@@ -78,6 +114,7 @@ public class ProfileInfo extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     /**
@@ -94,7 +131,17 @@ public class ProfileInfo extends Fragment {
         notesField.setHint(currentNotes);
 
         String role = preferences.getString("userRole", "");
-        if (role.equals("caregiver")){
+
+        if(role.equals("caregiver")){
+            Id =  preferences.getString("userId", "");
+        } else if(role.equals("caregivee")){
+            Id =  preferences.getString("userId", "");
+        }
+
+
+
+
+        if (role.equals("caregiver")) {
             notesField.setVisibility(view.GONE);
         }
 
@@ -124,13 +171,15 @@ public class ProfileInfo extends Fragment {
         red = view.getResources().getColor(R.color.red);
         green = view.getResources().getColor(R.color.green);
 
+
+
         // This page is opened when user clicked on "View Profile" from the homepage.
         Bundle args = this.getArguments();
-        if (args != null){
+        if (args != null) {
             String otherName = args.getString("otherName");
             String otherNotes = args.getString("otherNotes");
             String otherEmail = args.getString("otherEmail");
-            if (otherNotes == null){
+            if (otherNotes == null) {
                 otherNotes = "Notes for medications...";
             }
             nameField.setHint(otherName);
@@ -158,13 +207,188 @@ public class ProfileInfo extends Fragment {
             caregiveeLabel.setText("View or edit your profile below.");
             displayUserInfo();
         }
+
+        //Initialized the storage reference
+        storageReference1 = FirebaseStorage.getInstance().getReference()
+                .child(Id).child("ProfilePicture");
+        //Populate the imageview with the associated image
+        storageReference1.getBytes(1024*1024*5)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        //Log.d("Success -123",storageReference.toString());
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                        imageView.setImageBitmap(bitmap);
+                    }
+                });
+
+        //Initialized the storage reference
+        storageReference = FirebaseStorage.getInstance().getReference();
+
+        //navigate to Profile Picture
+        TextView profileImageTextView = view.findViewById(R.id.ProfilePicTextView);
+
+        imageView = (ImageView) view.findViewById(R.id.profileImage);
+
+        builder = new android.app.AlertDialog.Builder(getActivity());
+
+        profileImageTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Uncomment the below code to Set the message and title from the strings.xml file
+                //builder.setMessage(R.string.dialog_message)
+                // .setTitle(R.string.dialog_title);
+                // add a list
+                String[] options = {"Gallery", "Click"};
+                builder.setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) { //Gallery
+                            showFileChooser();
+                        } else if (which == 1) {//Click
+                            dispatchTakePictureIntent();
+                        }
+                    }
+                });
+                //Creating dialog box
+                android.app.AlertDialog alert = builder.create();
+                //Setting the title manually
+                alert.setTitle("Upload Image from Gallery or Click an Image");
+                alert.show();
+            }
+        });
+
         return view;
+    }
+
+    private void showFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select an Image"), PICK_IMAGE_REQUEST);
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) { //check if
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File...
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, CAPTURED_IMAGE_REQUEST);
+            }
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            filePath = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), filePath);
+                imageView.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (requestCode == CAPTURED_IMAGE_REQUEST) {
+            File f = new File(currentPhotoPath);
+            imageView.setImageURI(Uri.fromFile(f));
+            filePath = Uri.fromFile(f);
+            //Log.d("FILEPATH URI","Absolute URL of the image is " + Uri.fromFile(f));
+
+        }
+    }
+
+    //this method will upload the file
+    private void uploadFile() {
+        //if there is a file to upload
+        Log.e("Filepath",filePath.toString());
+        if (filePath != null) {
+            storageReference = FirebaseStorage.getInstance().getReference();
+            //displaying a progress dialog while upload is going on
+            ProgressDialog progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setTitle("Uploading");
+            progressDialog.show();
+
+            String uploadingFolderFilename = Id;
+
+            String uploadingFilename = uploadingFolderFilename+("/")+"ProfilePicture";
+            //Log.d("Tag","UploadingFilename"+uploadingFilename);
+
+            StorageReference riversRef = storageReference.child(uploadingFilename);
+            riversRef.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            //if the upload is successfull
+                            //hiding the progress dialog
+                            progressDialog.dismiss();
+
+                            //and displaying a success toast
+                            Toast.makeText(getActivity().getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            //if the upload is not successfull
+                            //hiding the progress dialog
+                            progressDialog.dismiss();
+                            //and displaying error message
+                            Toast.makeText(getActivity().getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            //calculating progress percentage
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                            //displaying percentage in progress dialog
+                            progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
+                        }
+                    });
+        }
+        //if there is not any file
+        else {
+            Toast.makeText(getActivity().getApplicationContext(), "File Not Uploaded ", Toast.LENGTH_LONG).show();
+            //you can display an error toast
+        }
     }
 
     /**
      * Render the error and success message field.
+     *
      * @param sourceString The text message to be displayed.
-     * @param color The color for the text message (red for error, green for success).
+     * @param color        The color for the text message (red for error, green for success).
      */
     public void displayMessage(String sourceString, int color) {
         errorMessage.setText(Html.fromHtml(sourceString));
@@ -174,8 +398,9 @@ public class ProfileInfo extends Fragment {
 
     /**
      * Handle user password update.
-     * @param user The current user who is logged in the app
-     * @param newPassword User new password
+     *
+     * @param user            The current user who is logged in the app
+     * @param newPassword     User new password
      * @param confirmPassword User new password (should be same as newPassword)
      */
     public void changePassword(
@@ -188,9 +413,9 @@ public class ProfileInfo extends Fragment {
             displayMessage("Your password must be longer than 6 characters", red);
             return;
         }
-        user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener < Void > () {
+        user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task < Void > task) {
+            public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     displayMessage("Successfully change your password", green);
                 } else {
@@ -202,14 +427,15 @@ public class ProfileInfo extends Fragment {
 
     /**
      * Handle user email update.
-     * @param user The current user who is logged in the app
+     *
+     * @param user  The current user who is logged in the app
      * @param email User new email
      */
-    public void changeEmail(FirebaseUser user, @NonNull String email){
+    public void changeEmail(FirebaseUser user, @NonNull String email) {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        user.updateEmail(email).addOnCompleteListener(new OnCompleteListener < Void > () {
+        user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task < Void > task) {
+            public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     displayMessage("Successfully change your email", green);
                     rootRef.child("users").child(user.getUid()).child("email").setValue(email);
@@ -236,9 +462,9 @@ public class ProfileInfo extends Fragment {
                 String password = input.getText().toString();
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 AuthCredential credential = EmailAuthProvider.getCredential(currentEmail, password);
-                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener < Void > () {
+                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task < Void > task) {
+                    public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             updateUserInformation(user);
                             displayMessage("Your profile is updated!", green);
@@ -260,6 +486,7 @@ public class ProfileInfo extends Fragment {
 
     /**
      * Updates user information after user has verified their old password.
+     *
      * @param user The current logged in Firebase user
      */
     public void updateUserInformation(@NonNull FirebaseUser user) {
@@ -284,11 +511,12 @@ public class ProfileInfo extends Fragment {
             changePassword(user, newPassword, confirmPassword);
         }
 
-        if (!notes.isEmpty()){
+        if (!notes.isEmpty()) {
             rootRef.child("users").child(user.getUid()).child("notes").setValue(notes);
             editor.putString("userNotes", notes);
         }
         editor.commit();
+        uploadFile();
     }
 
     /**
@@ -316,7 +544,7 @@ public class ProfileInfo extends Fragment {
             getActivity().finish();
         }
     };
-  
+
     /*
      * Function to go back. It is called when clicked on the Back button.
      */

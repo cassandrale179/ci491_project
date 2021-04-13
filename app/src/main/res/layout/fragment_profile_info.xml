@@ -43,6 +43,16 @@
             app:srcCompat="@drawable/identification_screen_logo" />
 
         <TextView
+            android:id="@+id/ProfilePicTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add/Change Profile"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:textColor="@color/teal_700"
+            android:layout_marginBottom="1dp"/>
+
+        <TextView
             android:id="@+id/profileTextLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -127,6 +137,7 @@
             android:background="@color/gray"
             android:padding="10dp"
             android:layout_marginBottom="10dp" />
+
 
     <LinearLayout
         android:layout_width="fill_parent"
