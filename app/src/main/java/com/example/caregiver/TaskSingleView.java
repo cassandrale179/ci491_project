@@ -75,7 +75,7 @@ public class TaskSingleView extends AppCompatActivity {
             else {
                 timer.stop();
                 timeStarted = false;
-                timeWhenStopped = timer.getBase() -  SystemClock.elapsedRealtime();
+                timeWhenStopped = Math.abs(timer.getBase() -  SystemClock.elapsedRealtime());
                 AlertDialog.Builder builder = new AlertDialog.Builder(TaskSingleView.this);
 
                 // Pop up open dialog-box to check if they actually finished task.
