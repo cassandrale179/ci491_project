@@ -65,7 +65,8 @@
             tools:layout_editor_absoluteY="343dp"
             android:background="@color/gray"
             android:padding="10dp"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="10dp"
+            android:nextFocusDown = "@+id/taskCaregivee"/>
 
         <Spinner
             android:id="@+id/taskCaregivee"
@@ -75,7 +76,8 @@
             android:inputType="textPassword"
             android:background="@color/gray"
             android:padding="10dp"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="10dp"
+            android:nextFocusDown = "@+id/taskRoom"/>
 
         <Spinner
             android:id="@+id/taskRoom"
@@ -84,7 +86,8 @@
             android:ems="10"
             android:background="@color/gray"
             android:padding="10dp"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="10dp"
+            android:nextFocusDown = "@+id/taskNotes"/>
 
 
         <EditText
