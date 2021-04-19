@@ -322,6 +322,11 @@ public class EditTask extends AppCompatActivity {
 
         // post updated task details
         String updatedTaskName = String.valueOf(taskNameField.getText());
+        if(updatedTaskName.isEmpty()){
+            displayMessage("Please enter a task name.",
+                    ContextCompat.getColor(getApplicationContext(), R.color.red));
+            return;
+        }
         String updatedNotes = String.valueOf(taskNotesField.getText());
         // formulate path
         path = createPath(currTask.caregiveeId, updatedRoom, currTask.taskId);
@@ -393,8 +398,6 @@ public class EditTask extends AppCompatActivity {
      * @param color The color for the text message (red for error, green for success).
      */
     public void displayMessage(String sourceString, int color) {
-
-
         errorMessage.setText(Html.fromHtml(sourceString));
         errorMessage.setVisibility(View.VISIBLE);
         errorMessage.setTextColor(color);
@@ -428,7 +431,7 @@ public class EditTask extends AppCompatActivity {
                 Intent intent = new Intent(this, Dashboard.class);
                 startActivity(intent);
             } else {
-                displayMessage("Your task cannot be updated", red);
+                displayMessage("Your task cannot be updated. Please try again later.", red);
             }
         });
     }

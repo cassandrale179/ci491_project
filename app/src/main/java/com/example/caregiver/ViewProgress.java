@@ -49,24 +49,14 @@ public class ViewProgress extends AppCompatActivity {
             onBackPressed();
         });
 
-        loadCaregiveesTask();
-    }
 
-    /** Loads all tasks associated with this caregivee */
-    protected void loadCaregiveesTask() {
-        final DatabaseReference ref= database.child("/users/" + caregiveeID);
-        ref.addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)@Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Object roomObject = snapshot.child("rooms").getValue();
-                if (roomObject != null) {
-                    List<Task> taskList = Task.getAllTasks(caregiveeID, roomObject);
-                    renderTaskList(taskList);
-                    renderTimeList(taskList);
-                }
-            }@Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("error", "Can't query caregivees for this caregiver");
+        // Load all caregivee tasks
+        Task taskModelObject = new Task();
+        taskModelObject.getAllTasks(caregiveeID, new App.TaskCallback() {
+            @Override
+            public void onDataReceived(List<Task> tasks){
+                renderTaskList(tasks);
+                renderTimeList(tasks);
             }
         });
     }
