@@ -52,10 +52,6 @@ public class ProfileInfo extends Fragment {
     public String currentName;
     public String currentNotes;
 
-    // Color for error and success message
-    int red;
-    int green;
-
     public class ProfileUser {
         public String name;
         public String email;
@@ -118,11 +114,10 @@ public class ProfileInfo extends Fragment {
         emailField = (EditText) view.findViewById(R.id.profileEmail);
         notesField = (EditText) view.findViewById(R.id.profileNotes);
         newPasswordField = (EditText) view.findViewById(R.id.profileNewPassword);
-        confirmPasswordField = (EditText) view.findViewById(R.id.profileNewPassword2);
+        confirmPasswordField = (EditText) view.findViewById(R.id.profileConfirmPassword);
         caregiveeLabel = (TextView) view.findViewById(R.id.profileTextLabel);
         errorMessage = (TextView) view.findViewById(R.id.profileInfoMessage);
-        red = view.getResources().getColor(R.color.red);
-        green = view.getResources().getColor(R.color.green);
+
 
         // This page is opened when user clicked on "View Profile" from the homepage.
         Bundle args = this.getArguments();
@@ -164,13 +159,20 @@ public class ProfileInfo extends Fragment {
     /**
      * Render the error and success message field.
      * @param sourceString The text message to be displayed.
-     * @param color The color for the text message (red for error, green for success).
      */
-    public void displayMessage(String sourceString, int color) {
+    public void displayErrorMessage(String sourceString) {
         errorMessage.setText(Html.fromHtml(sourceString));
         errorMessage.setVisibility(View.VISIBLE);
-        errorMessage.setTextColor(color);
+        int red = view.getResources().getColor(R.color.red);
+        errorMessage.setTextColor(red);
     }
+    public void displaySuccessMessage(String sourceString) {
+        errorMessage.setText(Html.fromHtml(sourceString));
+        errorMessage.setVisibility(View.VISIBLE);
+        int green = view.getResources().getColor(R.color.green);
+        errorMessage.setTextColor(green);
+    }
+
 
     /**
      * Handle user password update.
@@ -180,21 +182,13 @@ public class ProfileInfo extends Fragment {
      */
     public void changePassword(
             FirebaseUser user, @NonNull String newPassword, @NonNull String confirmPassword) {
-        if (!newPassword.equals(confirmPassword)) {
-            displayMessage("Password do not match.", red);
-            return;
-        }
-        if (newPassword.length() < 6 || confirmPassword.length() < 6) {
-            displayMessage("Your password must be longer than 6 characters", red);
-            return;
-        }
         user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener < Void > () {
             @Override
             public void onComplete(@NonNull Task < Void > task) {
                 if (task.isSuccessful()) {
-                    displayMessage("Successfully change your password", green);
+                    displaySuccessMessage("Successfully change your password");
                 } else {
-                    displayMessage("Cannot update password.", red);
+                    displayErrorMessage("Cannot update password.");
                 }
             }
         });
@@ -211,12 +205,12 @@ public class ProfileInfo extends Fragment {
             @Override
             public void onComplete(@NonNull Task < Void > task) {
                 if (task.isSuccessful()) {
-                    displayMessage("Successfully change your email", green);
+                    displaySuccessMessage("Successfully change your email");
                     rootRef.child("users").child(user.getUid()).child("email").setValue(email);
                     currentEmail = email;
                     emailField.setHint(currentEmail);
                 } else {
-                    displayMessage("Cannot update email.", red);
+                    displayErrorMessage("Cannot update email.");
                 }
             }
         });
@@ -240,11 +234,12 @@ public class ProfileInfo extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task < Void > task) {
                         if (task.isSuccessful()) {
-                            updateUserInformation(user);
-                            displayMessage("Your profile is updated!", green);
-                            displayUserInfo();
+                            if (updateUserInformation(user)){
+                                displaySuccessMessage("Your profile is updated!");
+                                displayUserInfo();
+                            }
                         } else {
-                            displayMessage("Your old password is not correct.", red);
+                            displayErrorMessage("Your old password is not correct.");
                         }
                     }
                 });
@@ -262,7 +257,7 @@ public class ProfileInfo extends Fragment {
      * Updates user information after user has verified their old password.
      * @param user The current logged in Firebase user
      */
-    public void updateUserInformation(@NonNull FirebaseUser user) {
+    public boolean updateUserInformation(@NonNull FirebaseUser user) {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         SharedPreferences.Editor editor = preferences.edit();
 
@@ -281,6 +276,14 @@ public class ProfileInfo extends Fragment {
             editor.putString("userEmail", email);
         }
         if (!newPassword.isEmpty() && !confirmPassword.isEmpty()) {
+            if (!newPassword.equals(confirmPassword)) {
+                displayErrorMessage("Password do not match.");
+                return false;
+            }
+            if (newPassword.length() < 6 || confirmPassword.length() < 6) {
+                displayErrorMessage("Your password must be longer than 6 characters");
+                return false;
+            }
             changePassword(user, newPassword, confirmPassword);
         }
 
@@ -289,6 +292,7 @@ public class ProfileInfo extends Fragment {
             editor.putString("userNotes", notes);
         }
         editor.commit();
+        return true;
     }
 
     /**

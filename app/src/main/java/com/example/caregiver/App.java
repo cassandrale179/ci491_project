@@ -1,7 +1,11 @@
 package com.example.caregiver;
 
 import android.app.Application;
+
+import com.example.caregiver.model.Task;
 import com.kontakt.sdk.android.common.KontaktSDK;
+
+import java.util.List;
 
 public class App extends Application {
     @Override
@@ -9,5 +13,11 @@ public class App extends Application {
         super.onCreate();
         KontaktSDK.initialize(this);
     }
+
+    /* Return a list of tasks associated with that caregivee */
+    public interface TaskCallback {
+        void onDataReceived(List<Task> tasks);
+    }
+
 }
 

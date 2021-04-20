@@ -73,16 +73,16 @@ public class TaskSingleView extends AppCompatActivity {
 
             // When timer is paused, check if caregivee finished task.
             else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(TaskSingleView.this);
                 timer.stop();
                 timeStarted = false;
-                timeWhenStopped = timer.getBase() -  SystemClock.elapsedRealtime();
-                AlertDialog.Builder builder = new AlertDialog.Builder(TaskSingleView.this);
+                timeWhenStopped = Math.abs(timer.getBase() -  SystemClock.elapsedRealtime());
 
                 // Pop up open dialog-box to check if they actually finished task.
                 builder.setMessage("Finish your task?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {@Override
                 public void onClick(DialogInterface dialog, int which) {
                     Intent i = new Intent(TaskSingleView.this, TaskFinish.class);
-                    long elapsedMillis = (SystemClock.elapsedRealtime() - timer.getBase()) / 1000;
+                    long elapsedMillis = timeWhenStopped / 1000;
                     i.putExtra("finishTime", String.valueOf(elapsedMillis));
                     i.putExtra("finishTask", taskStr);
                     startActivity(i);

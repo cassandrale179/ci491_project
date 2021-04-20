@@ -56,9 +56,18 @@ public class ViewProgress extends AppCompatActivity {
         backArrow.setOnClickListener(view -> {
             onBackPressed();
         });
-
-        loadCaregiveesTask();
+      // Load all caregivee tasks
+        Task taskModelObject = new Task();
+        taskModelObject.getAllTasks(caregiveeID, new App.TaskCallback() {
+            @Override
+            public void onDataReceived(List<Task> tasks){
+                renderTaskList(tasks);
+                renderTimeList(tasks);
+            }
+        });
     }
+
+
 
     /** Loads all tasks associated with this caregivee */
     protected void loadCaregiveesTask() {
@@ -102,6 +111,7 @@ public class ViewProgress extends AppCompatActivity {
             }
         });
     }
+        
 
     /**
      * Render the list on the left to display tasks a caregivee have completed

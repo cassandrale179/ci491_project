@@ -121,12 +121,13 @@ public class AddTask extends AppCompatActivity {
                 // If caregivee has not defined their room, we give them default value.
                 if (caregiveeRooms.size() > 0 && caregiveeRooms.containsKey(selectedCaregiveeId)){
                     List<String> rooms = caregiveeRooms.get(selectedCaregiveeId);
+                    rooms.add("none");
                     ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (
                             AddTask.this, android.R.layout.simple_spinner_item, rooms);
                     adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     roomSpinner.setAdapter(adapter2);
                 } else {
-                    List<String> rooms = Arrays.asList("livingroom", "bedroom", "bathroom", "kitchen");
+                    List<String> rooms = Arrays.asList("none");
                     ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (
                             AddTask.this, android.R.layout.simple_spinner_item, rooms);
                     adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -171,7 +172,7 @@ public class AddTask extends AppCompatActivity {
         userUpdates.put(uniqueID+"/name", taskName);
         userUpdates.put(uniqueID+"/notes", taskNotes);
         userUpdates.put(uniqueID+"/caregiverID", caregiverId);
-        userUpdates.put(uniqueID+"/assignedStatus", "true");
+        userUpdates.put(uniqueID+"/assignedStatus", true);
         userUpdates.put(uniqueID+"/completionStatus", "incomplete");
 
         taskRef.updateChildren(userUpdates, new DatabaseReference.CompletionListener() {
