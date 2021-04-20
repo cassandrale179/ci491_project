@@ -149,11 +149,34 @@ public class HomeCaregiver extends Fragment {
         builder.setMessage("Want to remove " + caregivees.get(groupPosition).name + " from your care?")
                 .setPositiveButton("Yes", (dialog, which) ->{
                     String caregiveeId = caregivees.get(groupPosition).id;
+                    setAssignedStatusForCaregivee(caregiveeId);
                     userRef.child("caregivees").child(caregiveeId).removeValue();
                     ref.child(caregiveeId).child("caregivers").child(userId).removeValue();
                     startActivity(new Intent(getContext(), Dashboard.class));
                 }).setNegativeButton("No", null);
         builder.create().show();
+    }
+
+    /**
+     * After caregiver deleted caregivee, all tasks assigned to them should be false.
+     * @param caregiveeId the caregivee whom tasks should be set to false
+     */
+    public void setAssignedStatusForCaregivee(String caregiveeId){
+        Task taskModelObject = new Task();
+        taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
+            @Override
+            public void onDataReceived(List<Task> tasks){
+                for (Task task : tasks){
+                    DatabaseReference taskRef =  database.child("users").child(caregiveeId)
+                            .child("rooms").child(task.room)
+                            .child("tasks").child(task.taskId);
+                    if (task.assignedStatus && task.caregiverId.equals(userId)){
+                        task.assignedStatus = false;
+                        taskRef.child("assignedStatus").setValue(false);
+                    }
+                }
+            }
+        });
     }
 
     public void setOnChildListener(){
