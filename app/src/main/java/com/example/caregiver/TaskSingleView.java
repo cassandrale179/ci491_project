@@ -77,6 +77,7 @@ public class TaskSingleView extends AppCompatActivity {
                 timer.stop();
                 timeStarted = false;
                 timeWhenStopped = Math.abs(timer.getBase() -  SystemClock.elapsedRealtime());
+                AlertDialog.Builder builder = new AlertDialog.Builder(TaskSingleView.this);
 
                 // Pop up open dialog-box to check if they actually finished task.
                 builder.setMessage("Finish your task?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {@Override
@@ -110,15 +111,6 @@ public class TaskSingleView extends AppCompatActivity {
         GradientDrawable helpBg = (GradientDrawable) helpBtn.getBackground();
         helpBg.setColor(getResources().getColor(R.color.gray));
         helpBtn.setTextColor(Color.BLACK);
-
-        // Add listener on the back arrow on the single task view screen
-        ImageView backArrow = (ImageView) findViewById(R.id.backArrow);
-        backArrow.setOnClickListener(new View.OnClickListener() {@Override
-        public void onClick(View v) {
-            Intent i = new Intent(TaskSingleView.this, Dashboard.class);
-            startActivity(i);
-        }
-        });
 
         setTitleAndNotes();
         setTimer(timer);

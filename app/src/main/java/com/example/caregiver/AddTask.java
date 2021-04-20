@@ -132,8 +132,6 @@ public class AddTask extends AppCompatActivity {
                             AddTask.this, android.R.layout.simple_spinner_item, rooms);
                     adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     roomSpinner.setAdapter(adapter2);
-                }
-            }
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
