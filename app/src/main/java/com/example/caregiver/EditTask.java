@@ -80,8 +80,6 @@ public class EditTask extends AppCompatActivity {
         String[] caregiveeRooms = intent.getStringArrayExtra("rooms");
         String caregiveeName = intent.getStringExtra("caregiveeName");
 
-        /* TODO better error handling */
-        // if task is not found, do not display
         if(currTask == null){
             Log.e("FAIL", "EditTask:onCreate could not get selectedTask from TaskFragment.");
             return;
@@ -118,17 +116,11 @@ public class EditTask extends AppCompatActivity {
 
         //navigate to upload media
         TextView uploadMedia = findViewById(R.id.UploadMediaTextViewEditTaskView);
-        //uploadMedia.setOnClickListener(view -> startActivity(new Intent(view.getContext(), UploadMedia.class)));
 
         builder = new android.app.AlertDialog.Builder(this);
-
         uploadMedia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Uncomment the below code to Set the message and title from the strings.xml file
-                //builder.setMessage(R.string.dialog_message)
-                // .setTitle(R.string.dialog_title);
-                // add a list
                 String[] options = {"Gallery", "Click"};
                 builder.setItems(options, new DialogInterface.OnClickListener() {
                     @Override
@@ -140,9 +132,7 @@ public class EditTask extends AppCompatActivity {
                         }
                     }
                 });
-                //Creating dialog box
                 android.app.AlertDialog alert = builder.create();
-                //Setting the title manually
                 alert.setTitle("Upload Image from Gallery or Click an Image");
                 alert.show();
             }
@@ -162,11 +152,7 @@ public class EditTask extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
+        File image = File.createTempFile(imageFileName,".jpg", storageDir);
 
         // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = image.getAbsolutePath();
@@ -181,10 +167,8 @@ public class EditTask extends AppCompatActivity {
             File photoFile = null;
             try {
                 photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File...
-            }
-            // Continue only if the File was successfully created
+            } catch (IOException ex) { }
+
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
                         "com.example.android.fileprovider",
@@ -211,48 +195,33 @@ public class EditTask extends AppCompatActivity {
             File f = new File(currentPhotoPath);
             imageView.setImageURI(Uri.fromFile(f));
             filePath = Uri.fromFile(f);
-            //Log.d("FILEPATH URI","Absolute URL of the image is " + Uri.fromFile(f));
 
         }
     }
 
-    //this method will upload the file
     private void uploadFile(String taskuniqueID) {
-        //if there is a file to upload
-        Log.e("Filepath",filePath.toString());
         if (filePath != null) {
             storageReference = FirebaseStorage.getInstance().getReference();
-            //displaying a progress dialog while upload is going on
             ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setTitle("Uploading");
             progressDialog.show();
 
             uploadingFolderFilename = currTask.caregiverId.toString();
-
-
             uploadingFilename = uploadingFolderFilename+("/")+taskuniqueID;
-            //Log.d("Tag","UploadingFilename"+uploadingFilename);
 
             StorageReference riversRef = storageReference.child(uploadingFilename);
             riversRef.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            //if the upload is successfull
-                            //hiding the progress dialog
                             progressDialog.dismiss();
-
-                            //and displaying a success toast
                             Toast.makeText(getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
-                            //if the upload is not successfull
-                            //hiding the progress dialog
                             progressDialog.dismiss();
-                            //and displaying error message
                             Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     })
@@ -261,16 +230,12 @@ public class EditTask extends AppCompatActivity {
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                             //calculating progress percentage
                             double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-
-                            //displaying percentage in progress dialog
                             progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
                         }
                     });
         }
-        //if there is not any file
         else {
             Toast.makeText(getApplicationContext(), "File Not Uploaded ", Toast.LENGTH_LONG).show();
-            //you can display an error toast
         }
     }
 
@@ -361,17 +326,14 @@ public class EditTask extends AppCompatActivity {
                     StorageReference desertRef = storageRef.child(currTask.caregiverId.toString())
                             .child(currTask.taskId.toString());
 
-// Delete the file
                     desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            // File deleted successfull
                             Log.d("Deleted","The Image is delete"+ desertRef.toString());
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
-                            // Uh-oh, an error occurred!
                         }
                     });
                     displayMessage("Task deleted.", green);
@@ -419,7 +381,6 @@ public class EditTask extends AppCompatActivity {
      *                     Name, Notes
      */
     private void updateTaskInFirebase(String path, Map<String, Object> updatedTask){
-        // Set color for success/error messages
         int red = ContextCompat.getColor(getApplicationContext(), R.color.red);
         int green = ContextCompat.getColor(getApplicationContext(), R.color.green);
 
@@ -427,7 +388,6 @@ public class EditTask extends AppCompatActivity {
         ref.updateChildren(updatedTask, (databaseError, databaseReference) -> {
             if (databaseError == null) {
                 displayMessage("Your task is updated", green);
-                // navigate to dashboard after update
                 Intent intent = new Intent(this, Dashboard.class);
                 startActivity(intent);
             } else {
