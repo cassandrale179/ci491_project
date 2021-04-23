@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,7 +18,6 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -222,15 +220,12 @@ public class AddTask extends AppCompatActivity {
             File f = new File(currentPhotoPath);
             imageView.setImageURI(Uri.fromFile(f));
             filePath = Uri.fromFile(f);
-            //Log.d("FILEPATH URI","Absolute URL of the image is " + Uri.fromFile(f));
 
         }
     }
 
     //this method will upload the file
     private void uploadFile(String taskuniqueID) {
-        //if there is a file to upload
-        Log.e("Filepath",filePath.toString());
         if (filePath != null) {
             //displaying a progress dialog while upload is going on
             ProgressDialog progressDialog = new ProgressDialog(this);
@@ -240,46 +235,33 @@ public class AddTask extends AppCompatActivity {
             uploadingFolderFilename = caregiverId;
 
             uploadingFilename = uploadingFolderFilename+("/")+taskuniqueID;
-            //Log.d("Tag","UploadingFilename"+uploadingFilename);
 
             StorageReference riversRef = storageReference.child(uploadingFilename);
             riversRef.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            //if the upload is successfull
-                            //hiding the progress dialog
                             progressDialog.dismiss();
-
-                            //and displaying a success toast
                             Toast.makeText(getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
-                            //if the upload is not successfull
-                            //hiding the progress dialog
                             progressDialog.dismiss();
-                            //and displaying error message
                             Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            //calculating progress percentage
                             double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-
-                            //displaying percentage in progress dialog
                             progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
                         }
                     });
         }
-        //if there is not any file
         else {
             Toast.makeText(getApplicationContext(), "File Not Uploaded ", Toast.LENGTH_LONG).show();
-            //you can display an error toast
         }
     }
 

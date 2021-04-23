@@ -76,10 +76,6 @@ public class ProfileInfo extends Fragment {
     public String currentName;
     public String currentNotes;
 
-    // Color for error and success message
-    int red;
-    int green;
-
     private AlertDialog.Builder builder;
     private static final int PICK_IMAGE_REQUEST = 234;
     private static final int CAPTURED_IMAGE_REQUEST = 1024;
@@ -105,7 +101,6 @@ public class ProfileInfo extends Fragment {
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static ProfileInfo newInstance() {
         ProfileInfo fragment = new ProfileInfo();
         return fragment;
@@ -115,6 +110,23 @@ public class ProfileInfo extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+    }
+
+    /**
+     * Render the error and success message field.
+     * @param sourceString The text message to be displayed.
+     */
+    public void displayErrorMessage(String sourceString) {
+        errorMessage.setText(Html.fromHtml(sourceString));
+        errorMessage.setVisibility(View.VISIBLE);
+        int red = view.getResources().getColor(R.color.red);
+        errorMessage.setTextColor(red);
+    }
+    public void displaySuccessMessage(String sourceString) {
+        errorMessage.setText(Html.fromHtml(sourceString));
+        errorMessage.setVisibility(View.VISIBLE);
+        int green = view.getResources().getColor(R.color.green);
+        errorMessage.setTextColor(green);
     }
 
     /**
@@ -161,10 +173,6 @@ public class ProfileInfo extends Fragment {
         confirmPasswordField = (EditText) view.findViewById(R.id.profileConfirmPassword);
         caregiveeLabel = (TextView) view.findViewById(R.id.profileTextLabel);
         errorMessage = (TextView) view.findViewById(R.id.profileInfoMessage);
-        red = view.getResources().getColor(R.color.red);
-        green = view.getResources().getColor(R.color.green);
-
-
 
         // This page is opened when user clicked on "View Profile" from the homepage.
         Bundle args = this.getArguments();
@@ -256,16 +264,16 @@ public class ProfileInfo extends Fragment {
         startActivityForResult(Intent.createChooser(intent, "Select an Image"), PICK_IMAGE_REQUEST);
     }
 
+    /**
+     * Function to create image file name
+     * @return the created image
+     * @throws IOException
+     */
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
 
         // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = image.getAbsolutePath();
@@ -314,77 +322,52 @@ public class ProfileInfo extends Fragment {
         }
     }
 
-    //this method will upload the file
+    /**
+     * Function to upload file
+     */
     private void uploadFile() {
-        //if there is a file to upload
         Log.e("Filepath",filePath.toString());
         if (filePath != null) {
             storageReference = FirebaseStorage.getInstance().getReference();
-            //displaying a progress dialog while upload is going on
             ProgressDialog progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("Uploading");
             progressDialog.show();
 
             String uploadingFolderFilename = Id;
-
             String uploadingFilename = uploadingFolderFilename+("/")+"ProfilePicture";
-
             StorageReference riversRef = storageReference.child(uploadingFilename);
             riversRef.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            //if the upload is successfull
-                            //hiding the progress dialog
                             progressDialog.dismiss();
-
-                            //and displaying a success toast
                             Toast.makeText(getActivity().getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
-                            //if the upload is not successfull
-                            //hiding the progress dialog
                             progressDialog.dismiss();
-                            //and displaying error message
                             Toast.makeText(getActivity().getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            //calculating progress percentage
+                            // Calculating progress percentage
                             double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-
-                            //displaying percentage in progress dialog
                             progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
                         }
                     });
         }
-        //if there is not any file
         else {
             Toast.makeText(getActivity().getApplicationContext(), "File Not Uploaded ", Toast.LENGTH_LONG).show();
-            //you can display an error toast
         }
     }
 
-    /**
-     * Render the error and success message field.
-     *
-     * @param sourceString The text message to be displayed.
-     * @param color        The color for the text message (red for error, green for success).
-     */
-    public void displayMessage(String sourceString, int color) {
-        errorMessage.setText(Html.fromHtml(sourceString));
-        errorMessage.setVisibility(View.VISIBLE);
-        errorMessage.setTextColor(color);
-    }
 
     /**
      * Handle user password update.
-     *
      * @param user            The current user who is logged in the app
      * @param newPassword     User new password
      * @param confirmPassword User new password (should be same as newPassword)
@@ -392,20 +375,20 @@ public class ProfileInfo extends Fragment {
     public void changePassword(
             FirebaseUser user, @NonNull String newPassword, @NonNull String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
-            displayMessage("Password do not match.", red);
+            displayErrorMessage("Password do not match.");
             return;
         }
         if (newPassword.length() < 6 || confirmPassword.length() < 6) {
-            displayMessage("Your password must be longer than 6 characters", red);
+            displayErrorMessage("Your password must be longer than 6 characters");
             return;
         }
         user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    displayMessage("Successfully change your password", green);
+                    displaySuccessMessage("Successfully change your password");
                 } else {
-                    displayMessage("Cannot update password.", red);
+                    displayErrorMessage("Cannot update password.");
                 }
             }
         });
@@ -423,12 +406,12 @@ public class ProfileInfo extends Fragment {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    displayMessage("Successfully change your email", green);
+                    displaySuccessMessage("Successfully change your email");
                     rootRef.child("users").child(user.getUid()).child("email").setValue(email);
                     currentEmail = email;
                     emailField.setHint(currentEmail);
                 } else {
-                    displayMessage("Cannot update email.", red);
+                    displayErrorMessage("Cannot update email.");
                 }
             }
         });
@@ -452,11 +435,12 @@ public class ProfileInfo extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            updateUserInformation(user);
-                            displayMessage("Your profile is updated!", green);
-                            displayUserInfo();
+                            if (updateUserInformation(user)){
+                                displaySuccessMessage("Your profile is updated!");
+                                displayUserInfo();
+                            }
                         } else {
-                            displayMessage("Your old password is not correct.", red);
+                            displayErrorMessage("Your old password is not correct.");
                         }
                     }
                 });
@@ -470,12 +454,13 @@ public class ProfileInfo extends Fragment {
         alert.show();
     }
 
+
     /**
      * Updates user information after user has verified their old password.
-     *
-     * @param user The current logged in Firebase user
+     * @param user The currently logged in Firebase user
+     * @return true if profile is updated successfully, false otherwise.
      */
-    public void updateUserInformation(@NonNull FirebaseUser user) {
+    public boolean updateUserInformation(@NonNull FirebaseUser user) {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         SharedPreferences.Editor editor = preferences.edit();
 
@@ -494,15 +479,23 @@ public class ProfileInfo extends Fragment {
             editor.putString("userEmail", email);
         }
         if (!newPassword.isEmpty() && !confirmPassword.isEmpty()) {
+            if (!newPassword.equals(confirmPassword)) {
+                displayErrorMessage("Password do not match.");
+                return false;
+            }
+            if (newPassword.length() < 6 || confirmPassword.length() < 6) {
+                displayErrorMessage("Your password must be longer than 6 characters");
+                return false;
+            }
             changePassword(user, newPassword, confirmPassword);
         }
 
-        if (!notes.isEmpty()) {
+        if (!notes.isEmpty()){
             rootRef.child("users").child(user.getUid()).child("notes").setValue(notes);
             editor.putString("userNotes", notes);
         }
         editor.commit();
-        uploadFile();
+        return true;
     }
 
     /**
