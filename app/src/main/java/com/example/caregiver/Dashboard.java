@@ -4,12 +4,10 @@ package com.example.caregiver;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class Dashboard extends AppCompatActivity {
@@ -60,16 +58,16 @@ public class Dashboard extends AppCompatActivity {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                     Fragment fragment = null;
-                    switch (menuItem.getItemId()) {
+                    switch(menuItem.getItemId()){
                         case R.id.home:
-                            if (role.equals("caregiver")) {
+                            if (role.equals("caregiver")){
                                 fragment = new HomeCaregiver();
                             } else {
                                 fragment = new HomeCaregivee();
                             }
                             break;
                         case R.id.task:
-                            if (role.equals("caregivee")) {
+                            if (role.equals("caregivee")){
                                 fragment = new TaskCaregivee();
                             } else {
                                 fragment = new TaskFragment();
