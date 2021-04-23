@@ -495,6 +495,7 @@ public class ProfileInfo extends Fragment {
             editor.putString("userNotes", notes);
         }
         editor.commit();
+        uploadFile();
         return true;
     }
 
