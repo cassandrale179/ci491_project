@@ -51,39 +51,39 @@ public class Dashboard extends AppCompatActivity {
             }
         }
     }
-    
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavigationMethod = new
             BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-            Fragment fragment = null;
-            switch(menuItem.getItemId()){
-            case R.id.home:
-                if (role.equals("caregiver")){
-                    fragment = new HomeCaregiver();
-                } else {
-                    fragment = new HomeCaregivee();
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                    Fragment fragment = null;
+                    switch(menuItem.getItemId()){
+                        case R.id.home:
+                            if (role.equals("caregiver")){
+                                fragment = new HomeCaregiver();
+                            } else {
+                                fragment = new HomeCaregivee();
+                            }
+                            break;
+                        case R.id.task:
+                            if (role.equals("caregivee")){
+                                fragment = new TaskCaregivee();
+                            } else {
+                                fragment = new TaskFragment();
+                            }
+                            break;
+                        case R.id.beacon:
+                            fragment = new BeaconFragment();
+                            break;
+                        case R.id.profile:
+                            fragment = new ProfileFragment();
+                            break;
+                    }
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+                    return true;
                 }
-                break;
-            case R.id.task:
-                if (role.equals("caregivee")){
-                    fragment = new TaskCaregivee();
-                } else {
-                    fragment = new TaskFragment();
-                }
-                break;
-            case R.id.beacon:
-                fragment = new BeaconFragment();
-                break;
-            case R.id.profile:
-                fragment = new ProfileFragment();
-                break;
-            }
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
-            return true;
-        }
-     };
+            };
 
     public void replaceActiveFragment(Fragment newFragment) {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, newFragment).commit();
