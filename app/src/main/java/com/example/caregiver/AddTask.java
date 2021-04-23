@@ -135,17 +135,12 @@ public class AddTask extends AppCompatActivity {
 
         //navigate to upload media
         TextView uploadMedia = findViewById(R.id.UploadMediaTextView);
-        //uploadMedia.setOnClickListener(view -> startActivity(new Intent(view.getContext(), UploadMedia.class)));
 
         builder = new AlertDialog.Builder(this);
 
         uploadMedia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Uncomment the below code to Set the message and title from the strings.xml file
-                //builder.setMessage(R.string.dialog_message)
-                // .setTitle(R.string.dialog_title);
-                // add a list
                 String[] options = {"Gallery", "Click"};
                 builder.setItems(options, new DialogInterface.OnClickListener() {
                     @Override
@@ -320,7 +315,6 @@ public class AddTask extends AppCompatActivity {
                 // If caregivee has not defined their room, we give them default value.
                 if (caregiveeRooms.size() > 0 && caregiveeRooms.containsKey(selectedCaregiveeId)) {
                     List<String> rooms = caregiveeRooms.get(selectedCaregiveeId);
-                    ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(
                     rooms.add("none");
                     ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (
                             AddTask.this, android.R.layout.simple_spinner_item, rooms);
@@ -366,7 +360,6 @@ public class AddTask extends AppCompatActivity {
                 .child("rooms")
                 .child(room)
                 .child("tasks");
-        //Log.e("Task ID",uniqueID.toString());
         if (taskNotesField.getText() != null) {
             taskNotes = taskNotesField.getText().toString();
         }

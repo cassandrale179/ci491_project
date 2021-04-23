@@ -76,7 +76,11 @@ public class ProfileInfo extends Fragment {
     public String currentName;
     public String currentNotes;
 
-    android.app.AlertDialog.Builder builder;
+    // Color for error and success message
+    int red;
+    int green;
+
+    private AlertDialog.Builder builder;
     private static final int PICK_IMAGE_REQUEST = 234;
     private static final int CAPTURED_IMAGE_REQUEST = 1024;
     String currentPhotoPath;
@@ -128,14 +132,7 @@ public class ProfileInfo extends Fragment {
 
         String role = preferences.getString("userRole", "");
 
-        if(role.equals("caregiver")){
-            Id =  preferences.getString("userId", "");
-        } else if(role.equals("caregivee")){
-            Id =  preferences.getString("userId", "");
-        }
-
-
-
+        Id =  preferences.getString("userId", "");
 
         if (role.equals("caregiver")) {
             notesField.setVisibility(view.GONE);
@@ -164,7 +161,8 @@ public class ProfileInfo extends Fragment {
         confirmPasswordField = (EditText) view.findViewById(R.id.profileConfirmPassword);
         caregiveeLabel = (TextView) view.findViewById(R.id.profileTextLabel);
         errorMessage = (TextView) view.findViewById(R.id.profileInfoMessage);
-
+        red = view.getResources().getColor(R.color.red);
+        green = view.getResources().getColor(R.color.green);
 
 
 
@@ -211,7 +209,6 @@ public class ProfileInfo extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
-                        //Log.d("Success -123",storageReference.toString());
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
                         imageView.setImageBitmap(bitmap);
                     }
@@ -225,14 +222,12 @@ public class ProfileInfo extends Fragment {
 
         imageView = (ImageView) view.findViewById(R.id.profileImage);
 
-        builder = new android.app.AlertDialog.Builder(getActivity());
+        builder = new AlertDialog.Builder(getActivity());
 
         profileImageTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Uncomment the below code to Set the message and title from the strings.xml file
-                //builder.setMessage(R.string.dialog_message)
-                // .setTitle(R.string.dialog_title);
+
                 // add a list
                 String[] options = {"Gallery", "Click"};
                 builder.setItems(options, new DialogInterface.OnClickListener() {
@@ -245,9 +240,7 @@ public class ProfileInfo extends Fragment {
                         }
                     }
                 });
-                //Creating dialog box
-                android.app.AlertDialog alert = builder.create();
-                //Setting the title manually
+                AlertDialog alert = builder.create();
                 alert.setTitle("Upload Image from Gallery or Click an Image");
                 alert.show();
             }
@@ -317,7 +310,6 @@ public class ProfileInfo extends Fragment {
             File f = new File(currentPhotoPath);
             imageView.setImageURI(Uri.fromFile(f));
             filePath = Uri.fromFile(f);
-            //Log.d("FILEPATH URI","Absolute URL of the image is " + Uri.fromFile(f));
 
         }
     }
@@ -336,7 +328,6 @@ public class ProfileInfo extends Fragment {
             String uploadingFolderFilename = Id;
 
             String uploadingFilename = uploadingFolderFilename+("/")+"ProfilePicture";
-            //Log.d("Tag","UploadingFilename"+uploadingFilename);
 
             StorageReference riversRef = storageReference.child(uploadingFilename);
             riversRef.putFile(filePath)
@@ -381,20 +372,15 @@ public class ProfileInfo extends Fragment {
 
     /**
      * Render the error and success message field.
+     *
+     * @param sourceString The text message to be displayed.
+     * @param color        The color for the text message (red for error, green for success).
      */
-    public void displayErrorMessage(String sourceString) {
+    public void displayMessage(String sourceString, int color) {
         errorMessage.setText(Html.fromHtml(sourceString));
         errorMessage.setVisibility(View.VISIBLE);
-        int red = view.getResources().getColor(R.color.red);
-        errorMessage.setTextColor(red);
+        errorMessage.setTextColor(color);
     }
-    public void displaySuccessMessage(String sourceString) {
-        errorMessage.setText(Html.fromHtml(sourceString));
-        errorMessage.setVisibility(View.VISIBLE);
-        int green = view.getResources().getColor(R.color.green);
-        errorMessage.setTextColor(green);
-    }
-
 
     /**
      * Handle user password update.
@@ -405,13 +391,21 @@ public class ProfileInfo extends Fragment {
      */
     public void changePassword(
             FirebaseUser user, @NonNull String newPassword, @NonNull String confirmPassword) {
-        user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener < Void > () {
+        if (!newPassword.equals(confirmPassword)) {
+            displayMessage("Password do not match.", red);
+            return;
+        }
+        if (newPassword.length() < 6 || confirmPassword.length() < 6) {
+            displayMessage("Your password must be longer than 6 characters", red);
+            return;
+        }
+        user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    displaySuccessMessage("Successfully change your password");
+                    displayMessage("Successfully change your password", green);
                 } else {
-                    displayErrorMessage("Cannot update password.");
+                    displayMessage("Cannot update password.", red);
                 }
             }
         });
@@ -429,12 +423,12 @@ public class ProfileInfo extends Fragment {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    displaySuccessMessage("Successfully change your email");
+                    displayMessage("Successfully change your email", green);
                     rootRef.child("users").child(user.getUid()).child("email").setValue(email);
                     currentEmail = email;
                     emailField.setHint(currentEmail);
                 } else {
-                    displayErrorMessage("Cannot update email.");
+                    displayMessage("Cannot update email.", red);
                 }
             }
         });
@@ -458,12 +452,11 @@ public class ProfileInfo extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            if (updateUserInformation(user)){
-                                displaySuccessMessage("Your profile is updated!");
-                                displayUserInfo();
-                            }
+                            updateUserInformation(user);
+                            displayMessage("Your profile is updated!", green);
+                            displayUserInfo();
                         } else {
-                            displayErrorMessage("Your old password is not correct.");
+                            displayMessage("Your old password is not correct.", red);
                         }
                     }
                 });
@@ -482,7 +475,7 @@ public class ProfileInfo extends Fragment {
      *
      * @param user The current logged in Firebase user
      */
-    public boolean updateUserInformation(@NonNull FirebaseUser user) {
+    public void updateUserInformation(@NonNull FirebaseUser user) {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         SharedPreferences.Editor editor = preferences.edit();
 
@@ -501,14 +494,6 @@ public class ProfileInfo extends Fragment {
             editor.putString("userEmail", email);
         }
         if (!newPassword.isEmpty() && !confirmPassword.isEmpty()) {
-            if (!newPassword.equals(confirmPassword)) {
-                displayErrorMessage("Password do not match.");
-                return false;
-            }
-            if (newPassword.length() < 6 || confirmPassword.length() < 6) {
-                displayErrorMessage("Your password must be longer than 6 characters");
-                return false;
-            }
             changePassword(user, newPassword, confirmPassword);
         }
 
@@ -518,7 +503,6 @@ public class ProfileInfo extends Fragment {
         }
         editor.commit();
         uploadFile();
-        return true;
     }
 
     /**
