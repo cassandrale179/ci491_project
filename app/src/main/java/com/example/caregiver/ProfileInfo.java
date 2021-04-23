@@ -80,7 +80,7 @@ public class ProfileInfo extends Fragment {
     int red;
     int green;
 
-    android.app.AlertDialog.Builder builder;
+    private AlertDialog.Builder builder;
     private static final int PICK_IMAGE_REQUEST = 234;
     private static final int CAPTURED_IMAGE_REQUEST = 1024;
     String currentPhotoPath;
@@ -132,14 +132,12 @@ public class ProfileInfo extends Fragment {
 
         String role = preferences.getString("userRole", "");
 
-        if(role.equals("caregiver")){
-            Id =  preferences.getString("userId", "");
-        } else if(role.equals("caregivee")){
-            Id =  preferences.getString("userId", "");
-        }
-
-
-
+//        if(role.equals("caregiver")){
+//            Id =  preferences.getString("userId", "");
+//        } else if(role.equals("caregivee")){
+//            Id =  preferences.getString("userId", "");
+//        }
+        Id =  preferences.getString("userId", "");
 
         if (role.equals("caregiver")) {
             notesField.setVisibility(view.GONE);
@@ -216,7 +214,6 @@ public class ProfileInfo extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
-                        //Log.d("Success -123",storageReference.toString());
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
                         imageView.setImageBitmap(bitmap);
                     }
@@ -230,14 +227,12 @@ public class ProfileInfo extends Fragment {
 
         imageView = (ImageView) view.findViewById(R.id.profileImage);
 
-        builder = new android.app.AlertDialog.Builder(getActivity());
+        builder = new AlertDialog.Builder(getActivity());
 
         profileImageTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Uncomment the below code to Set the message and title from the strings.xml file
-                //builder.setMessage(R.string.dialog_message)
-                // .setTitle(R.string.dialog_title);
+
                 // add a list
                 String[] options = {"Gallery", "Click"};
                 builder.setItems(options, new DialogInterface.OnClickListener() {
@@ -251,7 +246,7 @@ public class ProfileInfo extends Fragment {
                     }
                 });
                 //Creating dialog box
-                android.app.AlertDialog alert = builder.create();
+                AlertDialog alert = builder.create();
                 //Setting the title manually
                 alert.setTitle("Upload Image from Gallery or Click an Image");
                 alert.show();
@@ -322,7 +317,6 @@ public class ProfileInfo extends Fragment {
             File f = new File(currentPhotoPath);
             imageView.setImageURI(Uri.fromFile(f));
             filePath = Uri.fromFile(f);
-            //Log.d("FILEPATH URI","Absolute URL of the image is " + Uri.fromFile(f));
 
         }
     }
@@ -341,7 +335,6 @@ public class ProfileInfo extends Fragment {
             String uploadingFolderFilename = Id;
 
             String uploadingFilename = uploadingFolderFilename+("/")+"ProfilePicture";
-            //Log.d("Tag","UploadingFilename"+uploadingFilename);
 
             StorageReference riversRef = storageReference.child(uploadingFilename);
             riversRef.putFile(filePath)
