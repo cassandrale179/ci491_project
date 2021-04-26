@@ -128,12 +128,6 @@ public class TaskSingleView extends AppCompatActivity {
         GradientDrawable timerBg = (GradientDrawable) timer.getBackground();
         timerBg.setColor(getResources().getColor(R.color.black));
 
-        // Set background color for the help me button
-        TextView helpBtn = findViewById(R.id.helpMe);
-        GradientDrawable helpBg = (GradientDrawable) helpBtn.getBackground();
-        helpBg.setColor(getResources().getColor(R.color.gray));
-        helpBtn.setTextColor(Color.BLACK);
-
         // Add listener on the back arrow on the single task view screen
         ImageView backArrow = (ImageView) findViewById(R.id.backArrow);
         backArrow.setOnClickListener(new View.OnClickListener() {@Override
