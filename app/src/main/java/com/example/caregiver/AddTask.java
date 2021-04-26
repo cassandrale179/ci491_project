@@ -264,8 +264,10 @@ public class AddTask extends AppCompatActivity {
         }
     }
 
+    /**
+     * Function to query the latest room under a caregivee id.
+     */
     protected void queryLatestRooms(){
-
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String caregiveeNames = preferences.getString("caregiveeInfo", null);
         caregiverId = preferences.getString("userId", "");
@@ -299,8 +301,6 @@ public class AddTask extends AppCompatActivity {
     }
 
     protected void createSpinners() {
-        Log.d("createSpinners is called!", caregiveeRooms.toString());
-
         // Render list on the caregivee spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 this, android.R.layout.simple_spinner_item, caregivee_spinner_options);
