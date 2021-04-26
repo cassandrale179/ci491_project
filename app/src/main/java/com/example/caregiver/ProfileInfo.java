@@ -329,7 +329,6 @@ public class ProfileInfo extends Fragment {
      * Function to upload file
      */
     private void uploadFile() {
-        Log.e("Filepath",filePath.toString());
         if (filePath != null) {
             storageReference = FirebaseStorage.getInstance().getReference();
             ProgressDialog progressDialog = new ProgressDialog(getActivity());
