@@ -23,8 +23,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    /** Navigation function to move to Identification Screen **/
-    public void openIdentification(View v){
+    /**
+     * Navigation function to move to Identification Screen
+     **/
+    public void openIdentification(View v) {
+
         /* userRole = "caregivee" or "caregiver" */
         String userRole = (String) v.getTag();
 
@@ -32,9 +35,8 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = preferences.edit();
         editor.apply();
 
-        Intent i = new Intent(MainActivity.this, Identification.class);
-        i.putExtra("userRole", userRole);
-        startActivity(i);
+        Intent intent = new Intent(MainActivity.this, Identification.class);
+        intent.putExtra("userRole", userRole);
+        startActivity(intent);
     }
-
 }
