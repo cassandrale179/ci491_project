@@ -225,7 +225,6 @@ public class Task implements Parcelable {
                     JsonObject roomObject = (JsonObject) parser.parse(gson.toJson(firebaseRooms));
                     List<String> rooms = roomObject.entrySet().stream().map(
                             i -> i.getKey()).collect(Collectors.toCollection(ArrayList::new));
-                    Log.d("rooms!!!!", rooms.toString());
                     callback.onDataReceived(rooms);
                 } else {
                     callback.onDataReceived(null);
