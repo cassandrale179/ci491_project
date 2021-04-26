@@ -21,6 +21,7 @@ import android.provider.MediaStore;
 import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -538,4 +539,6 @@ public class ProfileInfo extends Fragment {
             startActivity(i);
         }
     };
+
+
 }
