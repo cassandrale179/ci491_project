@@ -210,4 +210,32 @@ public class Task implements Parcelable {
         task.dateCompleted = completionDate;
         task.timeCompleted = completionTime;
     }
+
+    public void getAllRooms(String caregiveeId,  App.RoomCallback callback){
+        Gson gson = new Gson();
+        JsonParser parser = new JsonParser();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref = database.child("users/" + caregiveeId);
+        ref.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Object firebaseRooms = snapshot.child("rooms").getValue();
+                if (firebaseRooms != null){
+                    JsonObject roomObject = (JsonObject) parser.parse(gson.toJson(firebaseRooms));
+                    List<String> rooms = roomObject.entrySet().stream().map(
+                            i -> i.getKey()).collect(Collectors.toCollection(ArrayList::new));
+                    Log.d("rooms!!!!", rooms.toString());
+                    callback.onDataReceived(rooms);
+                } else {
+                    callback.onDataReceived(null);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 }

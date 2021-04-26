@@ -18,5 +18,11 @@ public class App extends Application {
     public interface TaskCallback {
         void onDataReceived(List<Task> tasks);
     }
+
+
+    /* Return a list of rooms associated with that caregivee */
+    public interface RoomCallback {
+        void onDataReceived(List<String> rooms);
+    }
 }
 

@@ -18,6 +18,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,6 +29,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.caregiver.model.Task;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseError;
@@ -41,14 +43,18 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class AddTask extends AppCompatActivity {
 
@@ -77,7 +83,6 @@ public class AddTask extends AppCompatActivity {
 
     //firebase storage reference
     private StorageReference storageReference;
-    DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     private static final int PICK_IMAGE_REQUEST = 234;
     private static final int CAPTURED_IMAGE_REQUEST = 1024;
     private String uploadingFolderFilename;
@@ -124,8 +129,8 @@ public class AddTask extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference();
 
         // Handling create spinner options
-        createSpinners();
         displayUserInfo();
+        queryLatestRooms();
 
         // navigate back to dashboard
         Button backButton = findViewById(R.id.taskCancelButton);
@@ -259,23 +264,42 @@ public class AddTask extends AppCompatActivity {
         }
     }
 
-    protected void createSpinners() {
-        Gson gson = new Gson();
+    protected void queryLatestRooms(){
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String caregiveeRoomsStr = preferences.getString("caregiveeRooms", null);
         String caregiveeNames = preferences.getString("caregiveeInfo", null);
         caregiverId = preferences.getString("userId", "");
 
-        if (caregiveeNames != null) {
-            HashMap<String, String> caregiveeInfo = gson.fromJson(caregiveeNames, HashMap.class);
-            caregiveeInfo.forEach((id, name) -> {
-                caregivee_spinner_options.add(name);
-                caregivee_spinner_ids.add(id);
+        Gson gson = new Gson();
+        HashMap<String, String> caregiveeInfo = gson.fromJson(caregiveeNames, HashMap.class);
+
+        // This implement the asynchronous call method to get Tasks using Customized Call back
+        // See: https://stackoverflow.com/questions/51402623/how-to-wait-for-an-asynchronous-method
+        caregiveeInfo.forEach((id, name) -> {
+            caregivee_spinner_options.add(name);
+            caregivee_spinner_ids.add(id);
+            Task taskModelObject = new Task();
+            taskModelObject.getAllRooms(id, new App.RoomCallback() {
+                @Override
+                public void onDataReceived(List<String> rooms) {
+                  if (rooms != null){
+                      rooms.add("none");
+                      caregiveeRooms.put(id, rooms);
+                  } else {
+                      caregiveeRooms.put(id, Arrays.asList("none"));
+                  }
+
+                  // Create spinner
+                  if (caregiveeRooms.size() == caregiveeInfo.size()){
+                      createSpinners();
+                  }
+                }
             });
-        }
-        if (caregiveeRoomsStr != null) {
-            caregiveeRooms = gson.fromJson(caregiveeRoomsStr, HashMap.class);
-        }
+        });
+    }
+
+    protected void createSpinners() {
+        Log.d("createSpinners is called!", caregiveeRooms.toString());
 
         // Render list on the caregivee spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
@@ -287,17 +311,8 @@ public class AddTask extends AppCompatActivity {
         caregiveeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 selectedCaregiveeId = caregivee_spinner_ids.get(pos);
-
-                // If caregivee has not defined their room, we give them default value.
-                if (caregiveeRooms.size() > 0 && caregiveeRooms.containsKey(selectedCaregiveeId)) {
+                if (caregiveeRooms.containsKey(selectedCaregiveeId)){
                     List<String> rooms = caregiveeRooms.get(selectedCaregiveeId);
-                    rooms.add("none");
-                    ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (
-                            AddTask.this, android.R.layout.simple_spinner_item, rooms);
-                    adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    roomSpinner.setAdapter(adapter2);
-                } else {
-                    List<String> rooms = Arrays.asList("none");
                     ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (
                             AddTask.this, android.R.layout.simple_spinner_item, rooms);
                     adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -226,9 +226,7 @@ public class TaskFragment extends Fragment {
             Gson gson = new Gson();
             if (caregiveeInfo != null && caregiveeRooms != null) {
                 String caregiveeInfoStr = gson.toJson(caregiveeInfo);
-                String caregiveeRoomStr = gson.toJson(caregiveeRooms);
                 editor.putString("caregiveeInfo", caregiveeInfoStr);
-                editor.putString("caregiveeRooms", caregiveeRoomStr);
                 editor.apply();
             }
         }
