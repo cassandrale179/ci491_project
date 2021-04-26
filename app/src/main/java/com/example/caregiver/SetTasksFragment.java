@@ -1,5 +1,6 @@
 package com.example.caregiver;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.caregiver.model.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -140,6 +142,9 @@ public class SetTasksFragment extends Fragment {
         getAllCaregiveeTasks(caregiveeID);
         listView.setAdapter(listAdapter);
 
+        Button backButton = view.findViewById(R.id.backButtonSetTasks);
+        backButton.setOnClickListener(backtoHomePage);
+
 
         // Update assigned status for assigned tasks
         Button button = view.findViewById(R.id.assignTasksButton);
@@ -156,8 +161,24 @@ public class SetTasksFragment extends Fragment {
                     task.toggleAssignedStatus();
                 }
             }
+
+            String toastMessage = "Tasks were successfully assigned";
+            Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
+
+
         });
         fragmentView = view;
         return view;
     }
+
+    /*
+     * Function to go back. It is called when clicked on the Back button.
+     */
+    private View.OnClickListener backtoHomePage = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext(), Dashboard.class);
+            startActivity(i);
+        }
+    };
 }
