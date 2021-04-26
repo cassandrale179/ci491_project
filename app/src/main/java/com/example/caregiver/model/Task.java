@@ -109,6 +109,14 @@ public class Task implements Parcelable {
         dest.writeString(room);
     }
 
+    public void toggleAssignedStatus() {
+        this.assignedStatus = !this.assignedStatus;
+    }
+
+    @Override
+    public String toString(){
+        return this.taskName;
+    }
     /**
      * Returns all tasks associated with that caregivee.
      * @param caregiveeId the String that represent the caregivee ID
@@ -131,7 +139,6 @@ public class Task implements Parcelable {
                     JsonObject roomObject = (JsonObject) parser.parse(gson.toJson(firebaseRooms));
                     List<String> rooms = roomObject.entrySet().stream().map(
                             i -> i.getKey()).collect(Collectors.toCollection(ArrayList::new));
-
 
                     // For each room, get their corresponding tasks
                     for (String roomStr : rooms) {

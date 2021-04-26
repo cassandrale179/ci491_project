@@ -9,14 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.WrapperListAdapter;
 
+import com.example.caregiver.model.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,7 +22,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -53,15 +49,16 @@ public class SetTasksFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    private Task[] getRoomTasks(DataSnapshot roomSnapshot)
-    {
+    private Task[] getRoomTasks(DataSnapshot roomSnapshot) {
         ArrayList<Task> tasks = new ArrayList<>();
         for (DataSnapshot task : roomSnapshot.child("tasks").getChildren()) {
             String name = "   " + task.child("name").getValue().toString();
             String id = task.getKey();
             boolean status = task.child("assignedStatus").getValue().equals(true);
             String room = roomSnapshot.getKey();
-            Task taskObject = new Task(id, name, status, room);
+            Task taskObject = new Task(
+                    null, null, id, name, null,
+                    status, null, room);
             tasks.add(taskObject);
             numTasks++;
             if (status) {
@@ -89,7 +86,7 @@ public class SetTasksFragment extends Fragment {
                 for (DataSnapshot roomSnapshot: snapshot.getChildren()) {
                     Task[] tasks = getRoomTasks(roomSnapshot);
                     for (Task task : tasks) {
-                        listAdapter.add(task, task.getAssignedStatus());
+                        listAdapter.add(task, task.assignedStatus);
                     }
                 }
                 updateNumSelectedText();
@@ -126,46 +123,6 @@ public class SetTasksFragment extends Fragment {
         name.addValueEventListener(valueEventListener);
     }
 
-    public class Task {
-        private String taskID;
-        private String name;
-        private boolean assignedStatus;
-        private String room;
-
-        public Task(String id, String name, boolean assignedStatus, String room) {
-            this.taskID = id;
-            this.name = name;
-            this.assignedStatus = assignedStatus;
-            this.room = room;
-        }
-
-        public String getTaskID() {
-            return taskID;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getRoom() {
-            return room;
-        }
-
-        public boolean getAssignedStatus() {
-            return assignedStatus;
-        }
-
-        public void toggleAssignedStatus()
-        {
-            assignedStatus = !assignedStatus;
-        }
-
-        @Override
-        public String toString()
-        {
-            return name;
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -191,8 +148,8 @@ public class SetTasksFragment extends Fragment {
             for (Task task : tasks) {
                 DatabaseReference taskRef = database
                         .child("users").child(caregiveeID)
-                        .child("rooms").child(task.getRoom())
-                        .child("tasks").child(task.getTaskID());
+                        .child("rooms").child(task.room)
+                        .child("tasks").child(task.taskId);
                 boolean isSelected = listAdapter.getSelectedObjects().contains(task);
                 taskRef.updateChildren(Collections.singletonMap("assignedStatus", isSelected));
                 if(isSelected != task.assignedStatus) {

@@ -46,6 +46,7 @@ public class HomeCaregiver extends Fragment {
     ArrayList<User> caregivees = new ArrayList<>();
     DatabaseReference userRef;
     String userId;
+    String email;
 
 
     public HomeCaregiver() { }
@@ -63,7 +64,7 @@ public class HomeCaregiver extends Fragment {
     /**
      * Return list of caregivees associated with the caregiver.
      */
-    public void queryCaregivees() {
+    public void queryCaregiveesAndEmailAddress() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         userId = preferences.getString("userId", "");
         userRef = database.child("users/" + userId);
@@ -79,6 +80,8 @@ public class HomeCaregiver extends Fragment {
             }
 
             displayCaregiveeList();
+            email = snapshot.child("email").getValue().toString();
+
         }@Override
         public void onCancelled(@NonNull DatabaseError error) {
             Log.d("error", "Can't query caregivees for this caregiver");
@@ -147,11 +150,34 @@ public class HomeCaregiver extends Fragment {
         builder.setMessage("Want to remove " + caregivees.get(groupPosition).name + " from your care?")
                 .setPositiveButton("Yes", (dialog, which) ->{
                     String caregiveeId = caregivees.get(groupPosition).id;
+                    setAssignedStatusForCaregivee(caregiveeId);
                     userRef.child("caregivees").child(caregiveeId).removeValue();
                     ref.child(caregiveeId).child("caregivers").child(userId).removeValue();
                     startActivity(new Intent(getContext(), Dashboard.class));
                 }).setNegativeButton("No", null);
         builder.create().show();
+    }
+
+    /**
+     * After caregiver deleted caregivee, all tasks assigned to them should be false.
+     * @param caregiveeId the caregivee whom tasks should be set to false
+     */
+    public void setAssignedStatusForCaregivee(String caregiveeId){
+        Task taskModelObject = new Task();
+        taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
+            @Override
+            public void onDataReceived(List<Task> tasks){
+                for (Task task : tasks){
+                    DatabaseReference taskRef =  database.child("users").child(caregiveeId)
+                            .child("rooms").child(task.room)
+                            .child("tasks").child(task.taskId);
+                    if (task.assignedStatus && task.caregiverId.equals(userId)){
+                        task.assignedStatus = false;
+                        taskRef.child("assignedStatus").setValue(false);
+                    }
+                }
+            }
+        });
     }
 
     public void setOnChildListener(){
@@ -167,6 +193,7 @@ public class HomeCaregiver extends Fragment {
                     Intent i = new Intent(getContext(), ViewProgress.class);
                     i.putExtra("caregiveeName", caregivees.get(groupPosition).name);
                     i.putExtra("caregiveeID", caregivees.get(groupPosition).id);
+                    i.putExtra("caregiverEmail", email);
                     startActivity(i);
                     break;
                 case 3:
@@ -200,7 +227,7 @@ public class HomeCaregiver extends Fragment {
         caregiveeList = (ExpandableListView) view.findViewById(R.id.caregiveeHomelist);
 
         // Call firebase to query the caregivees
-        queryCaregivees();
+        queryCaregiveesAndEmailAddress();
 
         // Set the floating action button to redirect to match request page
         FloatingActionButton plusButton = view.findViewById(R.id.addCaregiveeButton);
