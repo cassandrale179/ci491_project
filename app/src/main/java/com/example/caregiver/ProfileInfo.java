@@ -146,6 +146,7 @@ public class ProfileInfo extends Fragment {
 
         Id =  preferences.getString("userId", "");
 
+
         if (role.equals("caregiver")) {
             notesField.setVisibility(view.GONE);
         }
@@ -210,49 +211,51 @@ public class ProfileInfo extends Fragment {
         }
 
         //Initialized the storage reference
-        storageReference1 = FirebaseStorage.getInstance().getReference()
-                .child(Id).child("ProfilePicture");
-        //Populate the imageview with the associated image
-        storageReference1.getBytes(1024*1024*5)
-                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                        imageView.setImageBitmap(bitmap);
-                    }
-                });
-
-        //Initialized the storage reference
-        storageReference = FirebaseStorage.getInstance().getReference();
-
-        //navigate to Profile Picture
-        TextView profileImageTextView = view.findViewById(R.id.ProfilePicTextView);
-
-        imageView = (ImageView) view.findViewById(R.id.profileImage);
-
-        builder = new AlertDialog.Builder(getActivity());
-
-        profileImageTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // add a list
-                String[] options = {"Gallery", "Click"};
-                builder.setItems(options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0) { //Gallery
-                            showFileChooser();
-                        } else if (which == 1) {//Click
-                            dispatchTakePictureIntent();
+        if (Id != null){
+            storageReference1 = FirebaseStorage.getInstance().getReference()
+                    .child(Id).child("ProfilePicture");
+            //Populate the imageview with the associated image
+            storageReference1.getBytes(1024*1024*5)
+                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] bytes) {
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                            imageView.setImageBitmap(bitmap);
                         }
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.setTitle("Upload Image from Gallery or Click an Image");
-                alert.show();
-            }
-        });
+                    });
+
+            //Initialized the storage reference
+            storageReference = FirebaseStorage.getInstance().getReference();
+
+            //navigate to Profile Picture
+            TextView profileImageTextView = view.findViewById(R.id.ProfilePicTextView);
+
+            imageView = (ImageView) view.findViewById(R.id.profileImage);
+
+            builder = new AlertDialog.Builder(getActivity());
+
+            profileImageTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    // add a list
+                    String[] options = {"Gallery", "Click"};
+                    builder.setItems(options, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (which == 0) { //Gallery
+                                showFileChooser();
+                            } else if (which == 1) {//Click
+                                dispatchTakePictureIntent();
+                            }
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.setTitle("Upload Image from Gallery or Click an Image");
+                    alert.show();
+                }
+            });
+        }
 
         return view;
     }
