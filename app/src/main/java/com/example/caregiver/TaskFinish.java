@@ -88,20 +88,15 @@ public class TaskFinish extends AppCompatActivity {
         GradientDrawable helpBg = (GradientDrawable) timerCircle.getBackground();
         helpBg.setColor(getResources().getColor(R.color.teal_700));
 
-//        // Add listener on the back arrow on the single task view screen
-//        ImageView backArrow = (ImageView) findViewById(R.id.backArrow);
-//        backArrow.setOnClickListener(new View.OnClickListener() {@Override
-//        public void onClick(View v) {
-//            Intent i = new Intent(TaskFinish.this, Dashboard.class);
-//            startActivity(i);
-//        }
-//        });
-
         Bundle b = getIntent().getExtras();
         if (b != null) {
             String taskStr = b.getString("finishTask");
             String taskTime = b.getString("finishTime");
-            timerCircle.setText(taskTime + ":00");
+
+            int mins = Integer.parseInt(taskTime) / 60;
+            int seconds = Integer.parseInt(taskTime) - mins * 60;
+            String displayTime = String.valueOf(mins) + ":" + String.valueOf(seconds);
+            timerCircle.setText(displayTime);
             doSomething(taskStr, Integer.valueOf(taskTime));
         } else {
             Log.d("error", "Cannot get task.");

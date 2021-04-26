@@ -99,7 +99,7 @@ public class TaskSingleView extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(TaskSingleView.this);
                 timer.stop();
                 timeStarted = false;
-                timeWhenStopped = Math.abs(timer.getBase() -  SystemClock.elapsedRealtime());
+                timeWhenStopped = Math.abs(SystemClock.elapsedRealtime() -  timer.getBase());
 
                 // Pop up open dialog-box to check if they actually finished task.
                 builder.setMessage("Finish your task?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {@Override
@@ -110,7 +110,13 @@ public class TaskSingleView extends AppCompatActivity {
                     i.putExtra("finishTask", taskStr);
                     startActivity(i);
                 }
-                }).setNegativeButton("No", null);
+                }).setNegativeButton("No",  new DialogInterface.OnClickListener() {@Override
+                public void onClick(DialogInterface dialog, int which) {
+                    timer.setBase( SystemClock.elapsedRealtime() - timeWhenStopped);
+                    timer.start();
+                    timeStarted = true;
+                }
+                });
                 AlertDialog alert = builder.create();
                 alert.show();
             }
