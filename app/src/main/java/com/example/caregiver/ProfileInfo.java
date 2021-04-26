@@ -21,6 +21,7 @@ import android.provider.MediaStore;
 import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -329,7 +330,6 @@ public class ProfileInfo extends Fragment {
      * Function to upload file
      */
     private void uploadFile() {
-        Log.e("Filepath",filePath.toString());
         if (filePath != null) {
             storageReference = FirebaseStorage.getInstance().getReference();
             ProgressDialog progressDialog = new ProgressDialog(getActivity());
@@ -538,4 +538,6 @@ public class ProfileInfo extends Fragment {
             startActivity(i);
         }
     };
+
+
 }

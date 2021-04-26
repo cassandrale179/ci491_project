@@ -51,12 +51,14 @@ public class ViewProgress extends AppCompatActivity {
         TextView nameText = findViewById(R.id.progressNameText);
         nameText.setText("Progress chart for " + caregiveeName);
 
-        // Setup back button
-        ImageView backArrow = findViewById(R.id.backArrowButton);
-        backArrow.setOnClickListener(view -> {
-            onBackPressed();
-        });
-      // Load all caregivee tasks
+//        // Setup back button
+//        ImageView backArrow = findViewById(R.id.backArrowButton);
+//        backArrow.setOnClickListener(view -> {
+//            onBackPressed();
+//        });
+
+
+        // Load all caregivee tasks
         Task taskModelObject = new Task();
         taskModelObject.getAllTasks(caregiveeID, new App.TaskCallback() {
             @Override
