@@ -88,7 +88,6 @@ public class TaskFinish extends AppCompatActivity {
         GradientDrawable helpBg = (GradientDrawable) timerCircle.getBackground();
         helpBg.setColor(getResources().getColor(R.color.teal_700));
 
-
         Bundle b = getIntent().getExtras();
         if (b != null) {
             String taskStr = b.getString("finishTask");
