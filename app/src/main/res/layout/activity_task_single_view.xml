@@ -10,50 +10,55 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_marginTop="70dp"
         android:gravity="center"
-        android:layout_marginTop="50dp">
+        android:orientation="vertical">
+
         <TextView
             android:id="@+id/taskName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginBottom="30dp"
-            android:textSize="40dp"
-            android:textColor="@color/black" />
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="40dp" />
+
         <ImageView
             android:id="@+id/singleTaskImage"
             android:layout_width="250dp"
             android:layout_height="250dp"
             app:srcCompat="@drawable/checklist" />
+
         <TextView
             android:id="@+id/taskNotes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginBottom="30dp"
-            android:textSize="20dp"
-            android:textColor="@color/black"/>
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="30dp"
             android:orientation="horizontal"
-            android:paddingLeft="15sp"
-            android:paddingRight="15sp"
-            android:layout_marginTop="30dp">
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
 
             <Chronometer
                 android:id="@+id/timer"
-                android:layout_width="80sp"
-                android:layout_height="80sp"
+                android:layout_width="120sp"
+                android:layout_height="120sp"
+                android:layout_marginLeft="50dp"
                 android:layout_marginRight="20dp"
                 android:background="@drawable/text_view_circle"
                 android:gravity="center"
@@ -64,18 +69,11 @@
                 android:id="@+id/playBtn"
                 android:layout_width="120sp"
                 android:layout_height="120sp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="40dp"
+                android:gravity="center"
                 app:srcCompat="@drawable/play_img" />
 
-
-            <TextView
-                android:id="@+id/helpMe"
-                android:layout_width="80sp"
-                android:layout_height="80sp"
-                android:background="@drawable/text_view_circle"
-                android:gravity="center"
-                android:text="Help"
-                android:textSize="18dp" />
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
