@@ -55,7 +55,7 @@
             </ListView>
 
             <ListView
-                android:id="@+id/timeList"
+                android:id="@+id/statusList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             </ListView>

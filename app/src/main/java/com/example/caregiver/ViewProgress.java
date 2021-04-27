@@ -8,8 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -64,7 +63,7 @@ public class ViewProgress extends AppCompatActivity {
             @Override
             public void onDataReceived(List<Task> tasks){
                 renderTaskList(tasks);
-                renderTimeList(tasks);
+                renderStatusList(tasks);
             }
         });
     }
@@ -131,8 +130,8 @@ public class ViewProgress extends AppCompatActivity {
      * Render the list on the right to display status of completed task
      * @param taskList
      */
-    protected  void renderTimeList(List<Task> taskList){
-        final ListView timeListView =  findViewById(R.id.timeList);
+    protected  void renderStatusList(List<Task> taskList){
+        final ListView statusListView =  findViewById(R.id.statusList);
         List <Map< String,  String >> data = new ArrayList < Map < String, String >> ();
         for (Task t: taskList) {
             Map< String, String > taskItem = new HashMap< String,
@@ -151,18 +150,40 @@ public class ViewProgress extends AppCompatActivity {
                         android.R.id.text1,
                         android.R.id.text2
                 });
-        timeListView.setAdapter(adapter);
+        statusListView.setAdapter(adapter);
     }
 
     public void emailSelf(View view)
     {
         EmailService emailService = new EmailService(this);
-        emailService.sendEmail(new String[]{caregiverEmail}, "Caregiver test email", "Test");
+        String emailBody = generateProgressReport();
+        emailService.sendEmail(new String[]{caregiverEmail}, "Caregiver progress report: " + caregiveeName, emailBody);
     }
 
     public void emailAllCaregivers(View view)
     {
         EmailService emailService = new EmailService(this);
-        emailService.sendEmail(allCaregiverEmails, "Caregiver test email", "Test");
+        String emailBody = generateProgressReport();
+        emailService.sendEmail(allCaregiverEmails, "Caregiver progress report: " + caregiveeName, emailBody);
+    }
+
+    private String generateProgressReport()
+    {
+        String report = "Progress report for " + caregiveeName + ":\n";
+        report += "\n";
+
+        ListAdapter taskListAdapter = ((ListView)findViewById(R.id.taskList)).getAdapter();
+        ListAdapter statusListAdapter = ((ListView)findViewById(R.id.statusList)).getAdapter();
+
+        int numLines = taskListAdapter.getCount();
+        for (int i = 0; i < numLines; i++)
+        {
+            report += ((Map<String, String>)taskListAdapter.getItem(i)).get("title") + "\n";
+            report += "\t" + ((Map<String,String>)statusListAdapter.getItem(i)).get("title") + "\n";
+            report += "\t" + ((Map<String, String>)taskListAdapter.getItem(i)).get("subtitle") + "\n";
+            report += "\n";
+        }
+
+        return report;
     }
 }
