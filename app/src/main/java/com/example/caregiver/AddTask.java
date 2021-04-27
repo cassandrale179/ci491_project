@@ -3,14 +3,17 @@ package com.example.caregiver;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -84,6 +87,8 @@ public class AddTask extends AppCompatActivity {
     //firebase storage reference
     private StorageReference storageReference;
     private static final int PICK_IMAGE_REQUEST = 234;
+
+    private static final int MULTIPLE_REQUEST = 123;
     private static final int CAPTURED_IMAGE_REQUEST = 1024;
     private String uploadingFolderFilename;
     private String uploadingFilename;
@@ -114,6 +119,10 @@ public class AddTask extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestPermissions(new String[] {Manifest.permission.CAMERA,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE}, MULTIPLE_REQUEST);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
 
@@ -139,6 +148,9 @@ public class AddTask extends AppCompatActivity {
         //navigate to upload media
         TextView uploadMedia = findViewById(R.id.UploadMediaTextView);
 
+
+
+
         builder = new AlertDialog.Builder(this);
 
         uploadMedia.setOnClickListener(new View.OnClickListener() {
@@ -160,6 +172,37 @@ public class AddTask extends AppCompatActivity {
                 alert.show();
             }
         });
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.d("Permission-123", grantResults.toString());
+        //Log.d("Permission-12345", PackageManager.PERMISSION_GRANTED);
+
+        switch(requestCode){
+            case MULTIPLE_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(this, "Camera permission granted", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show();
+                }
+
+                if (grantResults.length > 0 && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(this, "Read - Files permission granted", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(this, "Read - Files permission denied", Toast.LENGTH_SHORT).show();
+                }
+
+                if (grantResults.length > 0 && grantResults[2] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(this, "Write - Files permission granted", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(this, "Write - Files permission denied", Toast.LENGTH_SHORT).show();
+                }
+        }
+
     }
 
     private void showFileChooser() {
@@ -207,7 +250,7 @@ public class AddTask extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == PICK_IMAGE_REQUEST   && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
