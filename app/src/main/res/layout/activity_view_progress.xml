@@ -81,7 +81,4 @@
                 android:text="MYSELF"
                 android:onClick = "emailSelf"/>
         </LinearLayout>
-
-    </LinearLayout>
-
 </RelativeLayout>
