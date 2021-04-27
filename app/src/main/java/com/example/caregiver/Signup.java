@@ -139,15 +139,7 @@ public class Signup extends AppCompatActivity {
                 editor.putString("userRole", userRole);
                 editor.apply();
 
-                Intent i;
-                if (userRole.equals("caregivee"))
-                {
-                    i = new Intent(Signup.this, Dashboard.class);
-                }
-                else
-                {
-                    i = new Intent(Signup.this, Request.class);
-                }
+                Intent i = new Intent(Signup.this, Dashboard.class);
                 startActivity(i);
 
             } else {

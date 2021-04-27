@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ProfileInfo">
 
     <!-- All fields with invisibility = gone means that it is only displayed if the
@@ -40,6 +41,16 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             app:srcCompat="@drawable/identification_screen_logo" />
+
+        <TextView
+            android:id="@+id/ProfilePicTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add/Change Profile"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:textColor="@color/teal_700"
+            android:layout_marginBottom="1dp"/>
 
         <TextView
             android:id="@+id/profileTextLabel"
@@ -84,36 +95,30 @@
             android:padding="10dp"
             android:layout_marginBottom="10dp"/>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/profileNewPassword"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:ems="10"
-                android:inputType="textPassword"
-                android:background="@color/gray"
-                android:padding="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginRight="10dp"
-                android:hint="New Password"
-                android:layout_weight="0.5"/>
+        <EditText
+            android:id="@+id/profileNewPassword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:background="@color/gray"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"
+            android:hint="New Password" />
 
-            <EditText
-                android:id="@+id/profileNewPassword2"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:ems="10"
-                android:inputType="textPassword"
-                android:background="@color/gray"
-                android:padding="10dp"
-                android:layout_marginBottom="10dp"
-                android:hint="Confirm Password"
-                android:layout_weight="0.5"/>
-        </LinearLayout>
+        <EditText
+            android:id="@+id/profileConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:background="@color/gray"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"
+            android:hint="Confirm Password"
+       />
+
 
         <EditText
             android:id="@+id/profileNotes"
@@ -126,6 +131,7 @@
             android:background="@color/gray"
             android:padding="10dp"
             android:layout_marginBottom="10dp" />
+
 
     <LinearLayout
         android:layout_width="fill_parent"

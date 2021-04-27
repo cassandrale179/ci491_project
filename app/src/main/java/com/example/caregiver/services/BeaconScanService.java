@@ -279,7 +279,7 @@ public class BeaconScanService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         // query tasks for the room the user is in
-        rooms.addValueEventListener(new ValueEventListener() {
+        rooms.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot roomSnapShot : snapshot.getChildren()) {

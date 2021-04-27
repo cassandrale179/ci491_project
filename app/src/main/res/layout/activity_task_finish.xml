@@ -7,19 +7,11 @@
     android:orientation="vertical"
     tools:context=".TaskFinish">
 
-    <ImageView
-        android:id="@+id/backArrow"
-        android:layout_width="100dp"
-        android:layout_height="70dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        app:srcCompat="@drawable/left_arrow" />
-
     <TextView
+        android:id="@+id/taskFinishTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="40dp"
-        android:text="Brush Your Teeth"
         android:gravity="center"
         android:textStyle="bold"
         android:textColor="@color/black"

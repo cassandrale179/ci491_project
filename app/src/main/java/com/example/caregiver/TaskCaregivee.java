@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.example.caregiver.model.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -69,23 +70,22 @@ public class TaskCaregivee extends Fragment {
         if (caregiveeId.isEmpty()) {
             return;
         }
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference ref = database.child("users/" + caregiveeId);
-        ref.addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)@Override
-        public void onDataChange(@NonNull DataSnapshot snapshot) {
-            Object roomObject = snapshot.child("rooms").getValue();
-            if (roomObject != null) {
-                taskList = Task.getAssignedTaskList(caregiveeId, roomObject);
+
+        // This implement the asynchronous call method to get Tasks using Customized Call back
+        // See: https://stackoverflow.com/questions/51402623/how-to-wait-for-an-asynchronous-method
+        Task taskModelObject = new Task();
+        taskModelObject.getAllTasks(caregiveeId, new App.TaskCallback() {
+            @Override
+            public void onDataReceived(List<Task> tasks){
+                for (Task task : tasks){
+                    if (task.assignedStatus){
+                        taskList.add(task);
+                    }
+                }
                 displayTaskList(taskList);
             }
-        }@Override
-        public void onCancelled(@NonNull DatabaseError error) {
-            Log.d("error", "Can't query caregivees for this caregiver");
-        }
         });
     }
-
 
     protected void displayTaskList(List < Task > tasks) {
         List < Map < String,  String >> data = new ArrayList < Map < String, String >> ();

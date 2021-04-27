@@ -35,15 +35,21 @@ import java.util.Map;
 public class TaskFinish extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    protected void doSomething(@NonNull String taskStr, @NonNull String time){
+    protected void doSomething(@NonNull String taskStr, @NonNull int time){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String caregiveeId = preferences.getString("userId", "");
         if (caregiveeId.isEmpty()) {
             return;
         }
         JsonObject task = new Gson().fromJson(taskStr, JsonObject.class);
-        String room = task.get("room").toString().replace("\"", "");
-        String taskId = task.get("taskId").toString().replace("\"", "");
+        String room = task.get("room").getAsString();
+        String taskId = task.get("taskId").getAsString();
+
+        // Set task name on view
+        String taskName = task.get("taskName").getAsString();
+        TextView taskTitleView = findViewById(R.id.taskFinishTitle);
+        taskTitleView.setText(taskName);
+
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference taskRef = database
                 .child("users").child(caregiveeId)
@@ -82,21 +88,16 @@ public class TaskFinish extends AppCompatActivity {
         GradientDrawable helpBg = (GradientDrawable) timerCircle.getBackground();
         helpBg.setColor(getResources().getColor(R.color.teal_700));
 
-        // Add listener on the back arrow on the single task view screen
-        ImageView backArrow = (ImageView) findViewById(R.id.backArrow);
-        backArrow.setOnClickListener(new View.OnClickListener() {@Override
-        public void onClick(View v) {
-            Intent i = new Intent(TaskFinish.this, Dashboard.class);
-            startActivity(i);
-        }
-        });
-
         Bundle b = getIntent().getExtras();
         if (b != null) {
             String taskStr = b.getString("finishTask");
             String taskTime = b.getString("finishTime");
-            timerCircle.setText(taskTime + ":00");
-            doSomething(taskStr, taskTime);
+
+            int mins = Integer.parseInt(taskTime) / 60;
+            int seconds = Integer.parseInt(taskTime) - mins * 60;
+            String displayTime = String.valueOf(mins) + ":" + String.valueOf(seconds);
+            timerCircle.setText(displayTime);
+            doSomething(taskStr, Integer.valueOf(taskTime));
         } else {
             Log.d("error", "Cannot get task.");
         }
