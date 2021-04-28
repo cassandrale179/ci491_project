@@ -56,7 +56,6 @@ public class ViewProgress extends AppCompatActivity {
             @Override
             public void onDataReceived(List<Task> tasks){
                 renderTaskList(tasks);
-                renderStatusList(tasks);
             }
         });
     }
@@ -102,7 +101,7 @@ public class ViewProgress extends AppCompatActivity {
                 String sub = "Time completed: " + t.timeCompleted + " seconds";
                 taskItem.put("subtitle", sub);
             } else {
-                taskItem.put("subtitle", "Time completed: N/A");
+                taskItem.put("subtitle", "Time completed: incomplete");
             }
             data.add(taskItem);
         }
@@ -119,32 +118,6 @@ public class ViewProgress extends AppCompatActivity {
         taskListView.setAdapter(adapter);
     }
 
-    /**
-     * Render the list on the right to display status of completed task
-     * @param taskList
-     */
-    protected  void renderStatusList(List<Task> taskList){
-        final ListView statusListView =  findViewById(R.id.statusList);
-        List <Map< String,  String >> data = new ArrayList < Map < String, String >> ();
-        for (Task t: taskList) {
-            Map< String, String > taskItem = new HashMap< String,
-                    String >(2);
-            taskItem.put("title", t.completionStatus);
-            taskItem.put("subtitle", ""); // we need this to align two list
-            data.add(taskItem);
-        }
-
-        SimpleAdapter adapter = new SimpleAdapter(
-                this, data, android.R.layout.simple_list_item_2, new String[]{
-                "title",
-                "subtitle"
-        },
-                new int[]{
-                        android.R.id.text1,
-                        android.R.id.text2
-                });
-        statusListView.setAdapter(adapter);
-    }
 
     public void emailSelf(View view)
     {
@@ -166,13 +139,11 @@ public class ViewProgress extends AppCompatActivity {
         report += "\n";
 
         ListAdapter taskListAdapter = ((ListView)findViewById(R.id.taskList)).getAdapter();
-        ListAdapter statusListAdapter = ((ListView)findViewById(R.id.statusList)).getAdapter();
 
         int numLines = taskListAdapter.getCount();
         for (int i = 0; i < numLines; i++)
         {
             report += ((Map<String, String>)taskListAdapter.getItem(i)).get("title") + "\n";
-            report += "\t" + ((Map<String,String>)statusListAdapter.getItem(i)).get("title") + "\n";
             report += "\t" + ((Map<String, String>)taskListAdapter.getItem(i)).get("subtitle") + "\n";
             report += "\n";
         }
