@@ -37,13 +37,16 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EditTask extends AppCompatActivity {
@@ -69,6 +72,28 @@ public class EditTask extends AppCompatActivity {
 
     String currentPhotoPath;
 
+    // Key is the caregivee id, value is a list of rooms in that caregivee's house
+    String[] caregiveeRooms;
+
+    // This implement the asynchronous call method to get Tasks using Customized Call back
+    // See: https://stackoverflow.com/questions/51402623/how-to-wait-for-an-asynchronous-method
+    protected void queryLatestRooms(String caregiveeId){
+        Task taskModelObject = new Task();
+        taskModelObject.getAllRooms(caregiveeId, new App.RoomCallback() {
+            @Override
+            public void onDataReceived(List<String> rooms) {
+                if (rooms != null){
+                    rooms.add("none");
+                } else {
+                    rooms = Arrays.asList("none");
+                }
+                caregiveeRooms = rooms.toArray(new String[0]);
+                createSpinner(caregiveeRooms, currTask.room);
+            }
+        });
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,13 +102,15 @@ public class EditTask extends AppCompatActivity {
         // retrieve info from TaskFragment page intent
         Intent intent = getIntent();
         currTask = intent.getParcelableExtra("currTask");
-        String[] caregiveeRooms = intent.getStringArrayExtra("rooms");
+
         String caregiveeName = intent.getStringExtra("caregiveeName");
 
         if(currTask == null){
             Log.e("FAIL", "EditTask:onCreate could not get selectedTask from TaskFragment.");
             return;
         }
+
+        queryLatestRooms(currTask.caregiveeId);
 
         // get all field/spinners
         taskNameField = findViewById(R.id.taskName);
@@ -97,7 +124,6 @@ public class EditTask extends AppCompatActivity {
         taskNameField.setText(currTask.taskName, TextView.BufferType.EDITABLE);
         taskNotesField.setText(currTask.taskNote, TextView.BufferType.EDITABLE);
         caregiveeField.setText(caregiveeName, TextView.BufferType.NORMAL);
-        createSpinner(caregiveeRooms, currTask.room);
 
         //Initialized the storage reference
         storageReference = FirebaseStorage.getInstance().getReference()
