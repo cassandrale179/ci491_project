@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:layout_marginTop="100dp">
+        android:layout_marginTop="50dp">
 
         <TextView
             android:id="@+id/textView7"
@@ -43,23 +43,18 @@
             android:layout_width="match_parent"
             android:layout_height="30dp" />
 
-        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:orientation="horizontal">
 
-            <ListView
-                android:id="@+id/taskList"
-                android:layout_width="262dp"
-                android:layout_height="wrap_content">
-            </ListView>
+        <ListView
+            android:id="@+id/taskList"
+            android:layout_width="match_parent"
+            android:layout_height="210dp"></ListView>
 
-            <ListView
-                android:id="@+id/statusList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </ListView>
-        </LinearLayout>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
 
         <TextView
             android:id="@+id/sendEmailText"
