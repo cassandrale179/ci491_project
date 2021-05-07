@@ -74,6 +74,17 @@
                 android:gravity="center"
                 app:srcCompat="@drawable/play_img" />
 
+            <ImageView
+                android:id="@+id/pauseBtn"
+                android:layout_width="120sp"
+                android:layout_height="120sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="40dp"
+                android:gravity="center"
+                app:srcCompat="@drawable/pause_btn"
+                android:visibility="gone"/>
+
+
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
