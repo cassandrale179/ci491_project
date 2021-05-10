@@ -82,46 +82,54 @@ public class TaskSingleView extends AppCompatActivity {
      * Handle timer counting and pause.
      * @param timer The timer button.
      */
-    protected void setTimer(Chronometer timer){
-        ImageView playButton = findViewById(R.id.playBtn);
-        playButton.setOnClickListener(new View.OnClickListener() {@Override
-        public void onClick(View v) {
+    protected void setTimer(Chronometer timer, ImageView playBtn, ImageView pauseBtn){
 
-            // If the timer hasn't start yet, start timer.
+        // Set listener for the play button
+        playBtn.setOnClickListener(new View.OnClickListener() {@Override
+        public void onClick(View v) {
             if (timeStarted == false) {
                 timer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
                 timer.start();
                 timeStarted = true;
+                playBtn.setVisibility(View.GONE);
+                pauseBtn.setVisibility(View.VISIBLE);
             }
+        }});
 
-            // When timer is paused, check if caregivee finished task.
-            else {
+        // Set listener for the pause button
+        pauseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(TaskSingleView.this);
                 timer.stop();
                 timeStarted = false;
                 timeWhenStopped = Math.abs(SystemClock.elapsedRealtime() -  timer.getBase());
+                playBtn.setVisibility(View.VISIBLE);
+                pauseBtn.setVisibility(View.GONE);
 
-                // Pop up open dialog-box to check if they actually finished task.
-                builder.setMessage("Finish your task?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {@Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent i = new Intent(TaskSingleView.this, TaskFinish.class);
-                    long elapsedMillis = timeWhenStopped / 1000;
-                    i.putExtra("finishTime", String.valueOf(elapsedMillis));
-                    i.putExtra("finishTask", taskStr);
-                    startActivity(i);
-                }
-                }).setNegativeButton("No",  new DialogInterface.OnClickListener() {@Override
-                public void onClick(DialogInterface dialog, int which) {
-                    timer.setBase( SystemClock.elapsedRealtime() - timeWhenStopped);
-                    timer.start();
-                    timeStarted = true;
-                }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
+            // Pop up open dialog-box to check if they actually finished task.
+            builder.setMessage("Finish your task?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {@Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent i = new Intent(TaskSingleView.this, TaskFinish.class);
+                long elapsedMillis = timeWhenStopped / 1000;
+                i.putExtra("finishTime", String.valueOf(elapsedMillis));
+                i.putExtra("finishTask", taskStr);
+                startActivity(i);
             }
-        }
+            }).setNegativeButton("No",  new DialogInterface.OnClickListener() {@Override
+            public void onClick(DialogInterface dialog, int which) {
+                timer.setBase( SystemClock.elapsedRealtime() - timeWhenStopped);
+                timer.start();
+                timeStarted = true;
+                playBtn.setVisibility(View.GONE);
+                pauseBtn.setVisibility(View.VISIBLE);
+            }});
+            AlertDialog alert = builder.create();
+            alert.show();
+            }
         });
+
+
     }
 
     @Override
@@ -134,7 +142,11 @@ public class TaskSingleView extends AppCompatActivity {
         GradientDrawable timerBg = (GradientDrawable) timer.getBackground();
         timerBg.setColor(getResources().getColor(R.color.black));
 
+        // Get the play and pause button
+        ImageView playBtn = (ImageView) findViewById(R.id.playBtn);
+        ImageView pauseBtn = (ImageView) findViewById(R.id.pauseBtn);
+
         setTitleAndNotes();
-        setTimer(timer);
+        setTimer(timer, playBtn, pauseBtn);
     }
 }

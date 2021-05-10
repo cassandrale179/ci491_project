@@ -95,7 +95,7 @@ public class TaskFinish extends AppCompatActivity {
 
             int mins = Integer.parseInt(taskTime) / 60;
             int seconds = Integer.parseInt(taskTime) - mins * 60;
-            String displayTime = String.valueOf(mins) + ":" + String.valueOf(seconds);
+            String displayTime = String.format("%02d:%02d", mins, seconds);
             timerCircle.setText(displayTime);
             doSomething(taskStr, Integer.valueOf(taskTime));
         } else {
