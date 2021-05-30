@@ -1,5 +1,6 @@
 
 # CI491 Project
+<img width="900" alt="Screen Shot 2021-05-30 at 5 10 52 PM" src="https://user-images.githubusercontent.com/22923895/120120252-020c8080-c16a-11eb-8061-a0920ddf01a7.png">
 
 
 ## 1. Installation
